@@ -1,0 +1,6 @@
+@RookieShop.WebApi_HostAddress = http://localhost:5027
+
+GET {{RookieShop.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
