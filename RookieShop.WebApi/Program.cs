@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -18,8 +19,24 @@ builder.Services.AddControllers();
 
 builder.Services.AddProblemDetails();
 
+builder.Services.AddCors(cors =>
+{
+    cors.AddPolicy("rookie-shop-back-office-cors", policy =>
+    {
+        policy
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithOrigins("http://localhost:5173");
+    });
+});
+
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.Authority = builder.Configuration["Keycloak:AuthSettings:Authority"];
@@ -31,28 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            RoleClaimType = "roles"
-        };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnTokenValidated = (context) =>
-            {
-                if (context.Principal?.Identity is not ClaimsIdentity claimsIdentity)
-                {
-                    return Task.CompletedTask;
-                }
-                
-                var roles = context.Principal.FindAll("roles");
-
-                foreach (var role in roles)
-                {
-                    claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, role.Value));
-                }
-                
-                return Task.CompletedTask;
-            }
+            ValidateIssuerSigningKey = true
         };
     });
 
@@ -88,6 +84,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("rookie-shop-back-office-cors");
 
 app.UseExceptionHandler();
 

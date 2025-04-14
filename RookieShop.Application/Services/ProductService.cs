@@ -38,7 +38,7 @@ public class ProductService
     {
         var query = (from product in _dbContext.Products.Include(p => p.Category)
             join rating in _dbContext.Ratings on product.Sku equals rating.Sku into ratings
-            select Map(product, ratings.Average(r => r.Score), ratings.Count())).AsNoTracking();
+            select Map(product, ratings.Any() ? ratings.Average(r => r.Score) : 0f, ratings.Count())).AsNoTracking();
 
         var productDto = await query.FirstOrDefaultAsync(cancellationToken);
 
@@ -56,7 +56,7 @@ public class ProductService
         var query = (from product in _dbContext.Products.Include(p => p.Category)
             join rating in _dbContext.Ratings on product.Sku equals rating.Sku into ratings
             orderby product.UpdatedDate descending
-            select Map(product, ratings.Average(r => r.Score), ratings.Count())).AsNoTracking();
+            select Map(product, ratings.Any() ? ratings.Average(r => r.Score) : 0f, ratings.Count())).AsNoTracking();
         
         var productDtos = await query
             .Skip((pageNumber - 1) * pageSize)
@@ -81,7 +81,7 @@ public class ProductService
             join rating in _dbContext.Ratings on product.Sku equals rating.Sku into ratings
             where product.IsFeatured
             orderby product.UpdatedDate descending
-            select Map(product, ratings.Average(r => r.Score), ratings.Count())).AsNoTracking();
+            select Map(product, ratings.Any() ? ratings.Average(r => r.Score) : 0f, ratings.Count())).AsNoTracking();
         
         var productDtos = await query
             .Take(maxCount)
@@ -97,7 +97,7 @@ public class ProductService
             join rating in _dbContext.Ratings on product.Sku equals rating.Sku into ratings
             where product.Category.Id == categoryId
             orderby product.UpdatedDate descending
-            select Map(product, ratings.Average(r => r.Score), ratings.Count())).AsNoTracking();
+            select Map(product, ratings.Any() ? ratings.Average(r => r.Score) : 0f, ratings.Count())).AsNoTracking();
         
         var productDtos = await query
             .Skip((pageNumber - 1) * pageSize)
