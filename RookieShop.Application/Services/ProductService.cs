@@ -38,6 +38,7 @@ public class ProductService
     {
         var query = (from product in _dbContext.Products.Include(p => p.Category)
             join rating in _dbContext.Ratings on product.Sku equals rating.Sku into ratings
+            where product.Sku == sku
             select Map(product, ratings.Any() ? ratings.Average(r => r.Score) : 0f, ratings.Count())).AsNoTracking();
 
         var productDto = await query.FirstOrDefaultAsync(cancellationToken);

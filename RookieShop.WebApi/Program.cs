@@ -1,11 +1,12 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using RookieShop.Application.Abstractions;
 using RookieShop.Application.Services;
+using RookieShop.WebApi.Customers;
+using RookieShop.WebApi.ExceptionHandlers;
+using RookieShop.WebApi.Infrastructure.CustomerService;
 using RookieShop.WebApi.Infrastructure.Persistence;
 using RookieShop.WebApi.Infrastructure.ProfanityChecker;
 
@@ -18,6 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<RookieShopExceptionHandler>();
 
 builder.Services.AddCors(cors =>
 {
@@ -39,7 +41,9 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
-        options.Authority = builder.Configuration["Keycloak:AuthSettings:Authority"];
+        var address = builder.Configuration["Keycloak:AuthSettings:Address"];
+        var realm = builder.Configuration["Keycloak:AuthSettings:Realm"];
+        options.Authority = $"{address}/realms/{realm}";
         options.Audience = builder.Configuration["Keycloak:AuthSettings:Audience"];
         options.RequireHttpsMetadata = false;
 
@@ -51,6 +55,10 @@ builder.Services
             ValidateIssuerSigningKey = true
         };
     });
+
+builder.Services.ConfigureOptions<CustomerServiceOptionsSetup>();
+
+builder.Services.AddSingleton<ICustomerService, CustomerService>();
 
 builder.Services.AddDbContext<RookieShopDbContextImpl>((provider, options) =>
 {
@@ -76,6 +84,7 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<RatingService>();
 
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

@@ -33,7 +33,8 @@ public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
         
         builder.HasOne(product => product.Category)
             .WithMany()
-            .HasForeignKey("CategoryId");
+            .HasForeignKey("CategoryId")
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder.Property(product => product.ImageUrl)
             .IsRequired()
