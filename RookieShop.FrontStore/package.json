@@ -1,0 +1,17 @@
+{
+  "name": "rookie-shop-front-store",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "http://github.com/dogsteven/RookieShop",
+  "author": "Khoa Huynh Bach",
+  "license": "MIT",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.4",
+    "flowbite": "^3.1.2",
+    "tailwindcss": "^4.1.4"
+  },
+  "scripts": {
+    "css:build": "npx @tailwindcss/cli -i ./wwwroot/css/site.css -o ./wwwroot/css/styles.css --minify",
+    "watch": "npx @tailwindcss/cli -i ./wwwroot/css/site.css -o ./wwwroot/css/styles.css --minify --watch"
+  }
+}

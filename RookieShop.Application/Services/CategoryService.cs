@@ -15,6 +15,26 @@ public class CategoryService
         _dbContext = dbContext;
     }
 
+    public async Task<CategoryDto> GetCategoryByIdAsync(int id, CancellationToken cancellationToken)
+    {
+        var query = (from category in _dbContext.Categories
+            join product in _dbContext.Products on category.Id equals product.Category.Id into products
+            select new CategoryDto
+            {
+                Id = category.Id, Name = category.Name, Description = category.Description,
+                ProductCount = products.Count()
+            }).AsNoTracking();
+        
+        var categoryDto = await query.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
+        if (categoryDto == null)
+        {
+            throw new CategoryNotFoundException(id);
+        }
+
+        return categoryDto;
+    }
+
     public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync(CancellationToken cancellationToken)
     {
         var query = (from category in _dbContext.Categories

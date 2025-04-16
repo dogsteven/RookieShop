@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RookieShop.Application.Entities;
 using RookieShop.Application.Models;
 using RookieShop.Application.Services;
 
@@ -16,6 +17,14 @@ public class CategoryController : ControllerBase
     public CategoryController(CategoryService categoryService)
     {
         _categoryService = categoryService;
+    }
+
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoryDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CategoryDto>> GetCategoryByIdAsync(int id, CancellationToken cancellationToken)
+    {
+        return Ok(await _categoryService.GetCategoryByIdAsync(id, cancellationToken));
     }
 
     [HttpGet]

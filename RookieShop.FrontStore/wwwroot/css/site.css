@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default.css";
+@config "../../tailwind.config.js";
+
+html {
+  position: relative;
+  min-height: 100%;
+}

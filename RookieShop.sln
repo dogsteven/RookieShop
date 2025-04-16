@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.Application", "R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.WebApi", "RookieShop.WebApi\RookieShop.WebApi.csproj", "{5DC07F40-FAFC-4628-991B-869594A62ECD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.FrontStore", "RookieShop.FrontStore\RookieShop.FrontStore.csproj", "{B3D6D57F-8C8C-4050-83CD-ADB545F60FD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{5DC07F40-FAFC-4628-991B-869594A62ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DC07F40-FAFC-4628-991B-869594A62ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DC07F40-FAFC-4628-991B-869594A62ECD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3D6D57F-8C8C-4050-83CD-ADB545F60FD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3D6D57F-8C8C-4050-83CD-ADB545F60FD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3D6D57F-8C8C-4050-83CD-ADB545F60FD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3D6D57F-8C8C-4050-83CD-ADB545F60FD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
