@@ -28,7 +28,7 @@ public class CustomerService : ICustomerService
         
         var queryString = queries.ToString();
 
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/admin/realms/rookie-shop/roles/customer/users?{queryString}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/admin/realms/rookie-shop/groups/{_options.Value.CustomersGroupId}/members?{queryString}");
         request.Headers.Add("Authorization", $"Bearer {accessToken}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -76,4 +76,5 @@ public class CustomerServiceOptions
     public string Realm { get; set; } = null!;
     public string ClientId { get; set; } = null!;
     public string ClientSecret { get; set; } = null!;
+    public string CustomersGroupId { get; set; } = null!;
 }

@@ -18,5 +18,6 @@ public class CustomerServiceOptionsSetup : IConfigureOptions<CustomerServiceOpti
         options.Realm = _configuration["Keycloak:AuthSettings:Realm"]!;
         options.ClientId = _configuration["Keycloak:ServiceAccount:ClientId"]!;
         options.ClientSecret = _configuration["Keycloak:ServiceAccount:ClientSecret"]!;
+        options.CustomersGroupId = _configuration["Keycloak:ServiceAccount:CustomersGroupId"]!;
     }
 }

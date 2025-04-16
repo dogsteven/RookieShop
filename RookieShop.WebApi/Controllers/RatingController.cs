@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RookieShop.Application.Models;
@@ -53,7 +54,7 @@ public class RatingController : ControllerBase
         [FromBody] WriteRatingBody body,
         CancellationToken cancellationToken)
     {
-        var customerId = new Guid(User.FindFirst("sub")!.Value);
+        var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         
         await _ratingService.WriteRatingAsync(customerId, sku, body.Score, body.Comment, cancellationToken);
 

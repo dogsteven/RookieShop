@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RookieShop.WebApi.Customers;
 
@@ -17,7 +18,8 @@ public class CustomerController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IEnumerable<Customer>> GetCustomers(
+    [Authorize(Roles = "admin")]
+    public async Task<IEnumerable<Customer>> GetCustomersAsync(
         [FromQuery] int? pageNumber,
         [FromQuery] int? pageSize,
         CancellationToken cancellationToken)
