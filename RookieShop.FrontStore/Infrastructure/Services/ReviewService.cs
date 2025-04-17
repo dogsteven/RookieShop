@@ -6,12 +6,12 @@ using RookieShop.FrontStore.Models.Shared.Application;
 
 namespace RookieShop.FrontStore.Infrastructure.Services;
 
-public class RatingService : IRatingService
+public class ReviewService : IReviewService
 {
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public RatingService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+    public ReviewService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
     {
         _httpClient = httpClientFactory.CreateClient("RookieShop.WebApi");
         _httpContextAccessor = httpContextAccessor;
@@ -25,7 +25,7 @@ public class RatingService : IRatingService
         
         var queryString = queries.ToString();
 
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Rating/{sku}?{queryString}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Review/{sku}?{queryString}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         
@@ -44,7 +44,7 @@ public class RatingService : IRatingService
         
         var accessToken = _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
         
-        var request = new HttpRequestMessage(HttpMethod.Post, $"/api/Rating/{sku}");
+        var request = new HttpRequestMessage(HttpMethod.Post, $"/api/Review/{sku}");
 
         var body = new
         {

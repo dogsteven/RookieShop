@@ -37,33 +37,6 @@ public class HomeController : Controller
         });
     }
 
-    public async Task<IActionResult> ProductCatalog(int? pageNumber, int? pageSize, CancellationToken cancellationToken)
-    {
-        var productPage = await _productService.GetProductsAsync(int.Max(pageNumber ?? 1, 1), int.Max(pageSize ?? 12, 8), cancellationToken);
-
-        return View(new ProductCatalogViewModel
-        {
-            ProductPage = productPage
-        });
-    }
-
-    public async Task<IActionResult> ProductsByCategory(int id, int? pageNumber, int? pageSize, CancellationToken cancellationToken)
-    {
-        var categoryTask = _categoryService.GetCategoryByIdAsync(id, cancellationToken);
-        var productPageTask = _productService.GetProductsByCategoryIdAsync(id, int.Max(pageNumber ?? 1, 1), int.Max(pageSize ?? 12, 8), cancellationToken);
-        
-        await Task.WhenAll(categoryTask, productPageTask);
-        
-        var category = categoryTask.Result;
-        var productPage = productPageTask.Result;
-
-        return View(new ProductsByCategoryViewModel
-        {
-            Category = category,
-            ProductPage = productPage
-        });
-    }
-
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

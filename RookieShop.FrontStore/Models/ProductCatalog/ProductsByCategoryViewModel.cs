@@ -1,6 +1,6 @@
 using RookieShop.FrontStore.Models.Shared.Application;
 
-namespace RookieShop.FrontStore.Models;
+namespace RookieShop.FrontStore.Models.ProductCatalog;
 
 public class ProductsByCategoryViewModel
 {

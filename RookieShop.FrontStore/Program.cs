@@ -59,7 +59,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSingleton<IProductService, ProductService>();
 builder.Services.AddSingleton<ICategoryService, CategoryService>();
-builder.Services.AddSingleton<IRatingService, RatingService>();
+builder.Services.AddSingleton<IReviewService, ReviewService>();
 
 var app = builder.Build();
 

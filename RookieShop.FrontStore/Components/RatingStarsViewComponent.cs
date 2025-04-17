@@ -6,11 +6,12 @@ namespace RookieShop.FrontStore.Components;
 [ViewComponent(Name = "RatingStars")]
 public class RatingStarsViewComponent : ViewComponent
 {
-    public IViewComponentResult Invoke(int stars)
+    public IViewComponentResult Invoke(int stars, bool isBig)
     {
         return View(new RatingStartsViewModel
         {
-            Stars = stars
+            Stars = stars,
+            IsBig = isBig
         });
     }
 }

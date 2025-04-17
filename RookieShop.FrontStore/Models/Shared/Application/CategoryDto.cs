@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace RookieShop.FrontStore.Models.Shared.Application;
 
 public class CategoryDto
