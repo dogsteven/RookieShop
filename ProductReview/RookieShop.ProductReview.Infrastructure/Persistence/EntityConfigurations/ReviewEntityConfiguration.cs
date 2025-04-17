@@ -10,21 +10,16 @@ public class ReviewEntityConfiguration : IEntityTypeConfiguration<Review>
     {
         builder.ToTable("Reviews", schema: "ProductReview");
 
-        builder.HasKey(review => review.Id);
+        builder.HasKey(review => new { review.WriterId, review.ProductSku });
 
-        builder.ComplexProperty(review => review.Id, reviewId =>
-        {
-            reviewId.Property(id => id.WriterId)
-                .IsRequired()
-                .HasColumnName("WriterId");
+        builder.Property(id => id.WriterId)
+            .IsRequired()
+            .HasColumnName("WriterId");
 
-            reviewId.Property(id => id.ProductSku)
-                .IsRequired()
-                .HasMaxLength(16)
-                .HasColumnName("ProductSku");
-
-            reviewId.IsRequired();
-        });
+        builder.Property(id => id.ProductSku)
+            .IsRequired()
+            .HasMaxLength(16)
+            .HasColumnName("ProductSku");
         
         builder.Property(review => review.Score)
             .IsRequired()
@@ -41,8 +36,8 @@ public class ReviewEntityConfiguration : IEntityTypeConfiguration<Review>
 
         builder.HasMany(review => review.Reactions)
             .WithOne()
-            .HasForeignKey(reaction => reaction.ReviewId);
+            .HasForeignKey(reaction => new { reaction.WriterId, reaction.ProductSku });
 
-        builder.HasIndex(review => review.Id.ProductSku);
+        builder.HasIndex(review => review.ProductSku);
     }
 }

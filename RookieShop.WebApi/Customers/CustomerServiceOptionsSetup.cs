@@ -1,9 +1,8 @@
 using Microsoft.Extensions.Options;
-using RookieShop.WebApi.Customers;
 
-namespace RookieShop.WebApi.Infrastructure.CustomerService;
+namespace RookieShop.WebApi.Customers;
 
-public class CustomerServiceOptionsSetup : IConfigureOptions<CustomerServiceOptions>
+public class CustomerServiceOptionsSetup : IConfigureOptions<CustomerServiceOptions> 
 {
     private readonly IConfiguration _configuration;
 
@@ -18,6 +17,6 @@ public class CustomerServiceOptionsSetup : IConfigureOptions<CustomerServiceOpti
         options.Realm = _configuration["Keycloak:AuthSettings:Realm"]!;
         options.ClientId = _configuration["Keycloak:ServiceAccount:ClientId"]!;
         options.ClientSecret = _configuration["Keycloak:ServiceAccount:ClientSecret"]!;
-        options.CustomersGroupId = _configuration["Keycloak:ServiceAccount:CustomersGroupId"]!;
+        options.CustomersGroupId = _configuration["Keycloak:Customers:GroupId"]!;
     }
 }

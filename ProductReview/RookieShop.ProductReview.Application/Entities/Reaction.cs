@@ -4,7 +4,9 @@ public class Reaction
 {
     public Guid ReactorId { get; set; }
     
-    public ReviewId ReviewId { get; set; }
+    public Guid WriterId { get; set; }
+    
+    public string ProductSku { get; set; }
     
     public ReactionType Type { get; set; }
     

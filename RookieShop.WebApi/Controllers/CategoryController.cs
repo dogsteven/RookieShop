@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RookieShop.Application.Entities;
-using RookieShop.Application.Models;
-using RookieShop.Application.Services;
+using RookieShop.ProductCatalog.Application.Commands;
+using RookieShop.ProductCatalog.Application.Models;
+using RookieShop.ProductCatalog.Application.Queries;
 
 namespace RookieShop.WebApi.Controllers;
 
@@ -12,11 +13,13 @@ namespace RookieShop.WebApi.Controllers;
 [Produces("application/problem+json")]
 public class CategoryController : ControllerBase
 {
-    private readonly CategoryService _categoryService;
+    private readonly CategoryQueryService _categoryQueryService;
+    private readonly IScopedMediator _scopedMediator;
 
-    public CategoryController(CategoryService categoryService)
+    public CategoryController(CategoryQueryService categoryQueryService, IScopedMediator scopedMediator)
     {
-        _categoryService = categoryService;
+        _categoryQueryService = categoryQueryService;
+        _scopedMediator = scopedMediator;
     }
 
     [HttpGet("{id:int}")]
@@ -24,14 +27,14 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CategoryDto>> GetCategoryByIdAsync(int id, CancellationToken cancellationToken)
     {
-        return Ok(await _categoryService.GetCategoryByIdAsync(id, cancellationToken));
+        return Ok(await _categoryQueryService.GetCategoryByIdAsync(id, cancellationToken));
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<CategoryDto>))]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategoriesAsync(CancellationToken cancellationToken)
     {
-        return Ok(await _categoryService.GetCategoriesAsync(cancellationToken));
+        return Ok(await _categoryQueryService.GetCategoriesAsync(cancellationToken));
     }
 
     public class CreateCategoryBody
@@ -59,9 +62,17 @@ public class CategoryController : ControllerBase
     public async Task<ActionResult<CreateCategoryResponse>> CreateCategoryAsync([FromBody] CreateCategoryBody body,
         CancellationToken cancellationToken)
     {
-        var id = await _categoryService.CreateCategoryAsync(body.Name, body.Description, cancellationToken);
+        var createCategory = new CreateCategory
+        {
+            Name = body.Name,
+            Description = body.Description,
+        };
+
+        var client = _scopedMediator.CreateRequestClient<CreateCategory>();
         
-        return Created("", new CreateCategoryResponse { Id = id });
+        var response = await client.GetResponse<CategoryCreatedResponse>(createCategory, cancellationToken);
+        
+        return Created("", new CreateCategoryResponse { Id = response.Message.Id });
     }
     
     public class UpdateCategoryBody
@@ -85,7 +96,14 @@ public class CategoryController : ControllerBase
     public async Task<ActionResult> UpdateCategoryAsync([FromRoute] int id, [FromBody] UpdateCategoryBody body,
         CancellationToken cancellationToken)
     {
-        await _categoryService.UpdateCategoryAsync(id, body.Name, body.Description, cancellationToken);
+        var updateCategory = new UpdateCategory
+        {
+            Id = id,
+            Name = body.Name,
+            Description = body.Description,
+        };
+        
+        await _scopedMediator.Send(updateCategory, cancellationToken);
         
         return NoContent();
     }
@@ -96,7 +114,12 @@ public class CategoryController : ControllerBase
     [Authorize(Roles = "admin")]
     public async Task<ActionResult> DeleteCategoryAsync(int id, CancellationToken cancellationToken)
     {
-        await _categoryService.DeleteCategoryAsync(id, cancellationToken);
+        var deleteCategory = new DeleteCategory
+        {
+            Id = id
+        };
+        
+        await _scopedMediator.Send(deleteCategory, cancellationToken);
         
         return NoContent();
     }

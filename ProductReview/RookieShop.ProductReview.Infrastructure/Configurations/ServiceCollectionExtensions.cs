@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RookieShop.ProductReview.Application.Abstractions;
 using RookieShop.ProductReview.Application.Queries;
 using RookieShop.ProductReview.Infrastructure.Persistence;
+using RookieShop.ProductReview.Infrastructure.ProfanityChecker;
 
 namespace RookieShop.ProductReview.Infrastructure.Configurations;
 
@@ -61,6 +62,13 @@ public class ProductReviewConfigurator
         });
 
         services.AddScoped<ProductReviewDbContext, ProductReviewDbContextImpl>();
+
+        services.AddSingleton<IProfanityChecker>(_ =>
+        {
+            var profanityFilter = new ProfanityFilter.ProfanityFilter();
+
+            return new ProfanityCheckerAdapter(profanityFilter);
+        });
         
         services.AddScoped<ReviewQueryService>();
         

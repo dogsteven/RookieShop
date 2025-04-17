@@ -11,7 +11,7 @@ public class CreateCategory
     public string Description { get; set; } = null!;
 }
 
-public class CreateCategoryResponse
+public class CategoryCreatedResponse
 {
     public int Id { get; set; }
 }
@@ -43,7 +43,7 @@ public class CreateCategoryConsumer : IConsumer<CreateCategory>
         
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        await context.RespondAsync(new CreateCategoryResponse
+        await context.RespondAsync(new CategoryCreatedResponse
         {
             Id = category.Id
         });

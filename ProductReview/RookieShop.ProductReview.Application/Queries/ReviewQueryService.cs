@@ -19,11 +19,11 @@ public class ReviewQueryService
     {
         var query = _dbContext.Reviews
             .OrderByDescending(review => review.CreatedDate)
-            .Where(review => review.Id.ProductSku == productSku)
+            .Where(review => review.ProductSku == productSku)
             .Select(review => new ReviewDto
             {
-                WriterId = review.Id.WriterId,
-                ProductSku = review.Id.ProductSku,
+                WriterId = review.WriterId,
+                ProductSku = review.ProductSku,
                 Score = review.Score,
                 Comment = review.Comment,
                 CreatedDate = review.CreatedDate,

@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RookieShop.Application.Models;
-using RookieShop.Application.Services;
+using RookieShop.ProductCatalog.Application.Commands;
+using RookieShop.ProductCatalog.Application.Models;
+using RookieShop.ProductCatalog.Application.Queries;
 
 namespace RookieShop.WebApi.Controllers;
 
@@ -11,11 +13,13 @@ namespace RookieShop.WebApi.Controllers;
 [Produces("application/problem+json")]
 public class ProductController : ControllerBase
 {
-    private readonly ProductService _productService;
+    private readonly ProductQueryService _productQueryService;
+    private readonly IScopedMediator _scopedMediator;
 
-    public ProductController(ProductService productService)
+    public ProductController(ProductQueryService productQueryService, IScopedMediator scopedMediator)
     {
-        _productService = productService;
+        _productQueryService = productQueryService;
+        _scopedMediator = scopedMediator;
     }
 
     [HttpGet("{sku}")]
@@ -23,7 +27,7 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProductDto>> GetProductBySkuAsync(string sku, CancellationToken cancellationToken)
     {
-        return Ok(await _productService.GetProductBySkuAsync(sku, cancellationToken));
+        return Ok(await _productQueryService.GetProductBySkuAsync(sku, cancellationToken));
     }
 
     [HttpGet("all")]
@@ -33,7 +37,7 @@ public class ProductController : ControllerBase
         [FromQuery] int? pageSize,
         CancellationToken cancellationToken)
     {
-        return Ok(await _productService.GetProductsAsync(pageNumber ?? 1, pageSize ?? 20, cancellationToken));
+        return Ok(await _productQueryService.GetProductsAsync(pageNumber ?? 1, pageSize ?? 20, cancellationToken));
     }
     
     [HttpGet("featured")]
@@ -42,7 +46,7 @@ public class ProductController : ControllerBase
         [FromQuery] int? maxCount,
         CancellationToken cancellationToken)
     {
-        return Ok(await _productService.GetFeaturedProductsAsync(maxCount ?? 12, cancellationToken));
+        return Ok(await _productQueryService.GetFeaturedProductsAsync(maxCount ?? 12, cancellationToken));
     }
     
     [HttpGet("by-category/{categoryId:int}")]
@@ -53,7 +57,7 @@ public class ProductController : ControllerBase
         [FromQuery] int? pageSize,
         CancellationToken cancellationToken)
     {
-        return Ok(await _productService.GetProductsByCategoryAsync(categoryId, pageNumber ?? 1, pageSize ?? 20, cancellationToken));
+        return Ok(await _productQueryService.GetProductsByCategoryAsync(categoryId, pageNumber ?? 1, pageSize ?? 20, cancellationToken));
     }
 
     public class CreateProductBody
@@ -64,7 +68,7 @@ public class ProductController : ControllerBase
         [Required, MinLength(1), MaxLength(100)]
         public string Name { get; set; }
         
-        [Required, MaxLength(500)]
+        [Required, MaxLength(1000)]
         public string Description { get; set; }
         
         [Required]
@@ -73,7 +77,7 @@ public class ProductController : ControllerBase
         [Required]
         public int CategoryId { get; set; }
         
-        [Required, Url, MinLength(1), MaxLength(250)]
+        [Required, Url, MinLength(1), MaxLength(500)]
         public string ImageUrl { get; set; }
         
         [Required]
@@ -91,8 +95,18 @@ public class ProductController : ControllerBase
     public async Task<ActionResult> CreateProductAsync([FromBody] CreateProductBody body,
         CancellationToken cancellationToken)
     {
-        await _productService.CreateProductAsync(body.Sku, body.Name, body.Description, body.Price,
-            body.CategoryId, body.ImageUrl, body.IsFeatured, cancellationToken);
+        var createProduct = new CreateProduct
+        {
+            Sku = body.Sku,
+            Name = body.Name,
+            Description = body.Description,
+            Price = body.Price,
+            CategoryId = body.CategoryId,
+            ImageUrl = body.ImageUrl,
+            IsFeatured = body.IsFeatured
+        };
+
+        await _scopedMediator.Send(createProduct, cancellationToken);
 
         return Created();
     }
@@ -102,7 +116,7 @@ public class ProductController : ControllerBase
         [Required, MinLength(1), MaxLength(100)]
         public string Name { get; set; }
         
-        [Required, MaxLength(500)]
+        [Required, MaxLength(1000)]
         public string Description { get; set; }
         
         [Required]
@@ -111,7 +125,7 @@ public class ProductController : ControllerBase
         [Required]
         public int CategoryId { get; set; }
         
-        [Required, Url, MinLength(1), MaxLength(250)]
+        [Required, Url, MinLength(1), MaxLength(500)]
         public string ImageUrl { get; set; }
         
         [Required]
@@ -130,8 +144,18 @@ public class ProductController : ControllerBase
     public async Task<ActionResult> UpdateProductAsync([FromRoute] string sku, [FromBody] UpdateProductBody body,
         CancellationToken cancellationToken)
     {
-        await _productService.UpdateProductAsync(sku, body.Name, body.Description, body.Price, body.CategoryId,
-            body.ImageUrl, body.IsFeatured, cancellationToken);
+        var updateProduct = new UpdateProduct
+        {
+            Sku = sku,
+            Name = body.Name,
+            Description = body.Description,
+            Price = body.Price,
+            CategoryId = body.CategoryId,
+            ImageUrl = body.ImageUrl,
+            IsFeatured = body.IsFeatured
+        };
+        
+        await _scopedMediator.Send(updateProduct, cancellationToken);
 
         return NoContent();
     }
@@ -142,7 +166,12 @@ public class ProductController : ControllerBase
     [Authorize(Roles = "admin")]
     public async Task<ActionResult> DeleteProductAsync([FromRoute] string sku, CancellationToken cancellationToken)
     {
-        await _productService.DeleteProductAsync(sku, cancellationToken);
+        var deleteProduct = new DeleteProduct
+        {
+            Sku = sku
+        };
+        
+        await _scopedMediator.Send(deleteProduct, cancellationToken);
         
         return NoContent();
     }

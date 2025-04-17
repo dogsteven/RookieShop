@@ -1,14 +1,9 @@
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using RookieShop.Application.Abstractions;
-using RookieShop.Application.Services;
+using RookieShop.ProductCatalog.Infrastructure.Configurations;
+using RookieShop.ProductReview.Infrastructure.Configurations;
 using RookieShop.WebApi.Customers;
-using RookieShop.WebApi.ExceptionHandlers;
-using RookieShop.WebApi.Infrastructure.CustomerService;
-using RookieShop.WebApi.Infrastructure.Persistence;
-using RookieShop.WebApi.Infrastructure.ProfanityChecker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +14,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 builder.Services.AddProblemDetails();
-builder.Services.AddExceptionHandler<RookieShopExceptionHandler>();
 
 builder.Services.AddCors(cors =>
 {
@@ -33,6 +27,7 @@ builder.Services.AddCors(cors =>
 });
 
 builder.Services.AddAuthorization();
+
 builder.Services
     .AddAuthentication(options =>
     {
@@ -60,29 +55,51 @@ builder.Services.ConfigureOptions<CustomerServiceOptionsSetup>();
 
 builder.Services.AddSingleton<ICustomerService, CustomerService>();
 
-builder.Services.AddDbContext<RookieShopDbContextImpl>((provider, options) =>
+builder.Services.AddMassTransit(bus =>
 {
-    var configuration = provider.GetRequiredService<IConfiguration>();
-    
-    var connectionString = configuration.GetConnectionString("Postgresql");
+    bus.AddProductCatalogConsumers();
 
-    options.UseNpgsql(connectionString, npgsqlOptions =>
+    bus.AddMediator(mediator =>
     {
-        npgsqlOptions.MigrationsAssembly("RookieShop.WebApi");
+        mediator.AddProductCatalogConsumers();
+        mediator.AddProductCatalogConsumers();
+    });
+    
+    bus.UsingRabbitMq((context, rabbitMq) =>
+    {
+        rabbitMq.Host(builder.Configuration["Messaging:RabbitMq:Host"]!, host =>
+        {
+            host.Username(builder.Configuration["Messaging:RabbitMq:Username"]!);
+            host.Password(builder.Configuration["Messaging:RabbitMq:Password"]!);
+        });
+        
+        rabbitMq.ConfigureEndpoints(context);
     });
 });
 
-builder.Services.AddScoped<RookieShopDbContext, RookieShopDbContextImpl>();
-builder.Services.AddScoped<IPurchaseChecker, RookieShopDbContextImpl>();
-builder.Services.AddSingleton<IProfanityChecker>(_ =>
+builder.Services.AddProductCatalog(productCatalog =>
 {
-    var filter = new ProfanityFilter.ProfanityFilter();
-    return new ProfanityCheckerAdapter(filter);
+    productCatalog.SetDatabaseConnectionString(provider =>
+    {
+        var configuration = provider.GetRequiredService<IConfiguration>();
+
+        return configuration.GetConnectionString("Postgresql")!;
+    });
+    
+    productCatalog.SetMigrationAssembly("RookieShop.WebApi");
 });
 
-builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<RatingService>();
+builder.Services.AddProductReview(productReview =>
+{
+    productReview.SetDatabaseConnectionString(provider =>
+    {
+        var configuration = provider.GetRequiredService<IConfiguration>();
+
+        return configuration.GetConnectionString("Postgresql")!;
+    });
+
+    productReview.SetMigrationAssembly("RookieShop.WebApi");
+});
 
 builder.Services.AddHttpClient();
 

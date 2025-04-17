@@ -34,11 +34,9 @@ public class MakeReactionConsumer : IConsumer<MakeReaction>
         var reactionType = message.ReactionType;
         
         var cancellationToken = context.CancellationToken;
-        
-        var ratingId = new ReviewId(writerId, productSku);
-        
+
         var existingReaction = await _dbContext.Reactions
-            .FirstOrDefaultAsync(reaction => reaction.ReactorId == reactorId && reaction.ReviewId == ratingId, cancellationToken);
+            .FirstOrDefaultAsync(reaction => reaction.ReactorId == reactorId && reaction.WriterId == writerId && reaction.ProductSku == productSku, cancellationToken);
 
         if (existingReaction != null)
         {
@@ -49,7 +47,8 @@ public class MakeReactionConsumer : IConsumer<MakeReaction>
             var reaction = new Reaction
             {
                 ReactorId = reactorId,
-                ReviewId = ratingId,
+                WriterId = writerId,
+                ProductSku = productSku,
                 Type = reactionType
             };
             

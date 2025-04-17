@@ -21,11 +21,13 @@ public class WriteReviewConsumer : IConsumer<WriteReview>
 {
     private readonly ProductReviewDbContext _dbContext;
     private readonly IProfanityChecker _profanityChecker;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public WriteReviewConsumer(ProductReviewDbContext dbContext, IProfanityChecker profanityChecker)
+    public WriteReviewConsumer(ProductReviewDbContext dbContext, IProfanityChecker profanityChecker, IPublishEndpoint publishEndpoint)
     {
         _dbContext = dbContext;
         _profanityChecker = profanityChecker;
+        _publishEndpoint = publishEndpoint;
     }
     
     public async Task Consume(ConsumeContext<WriteReview> context)
@@ -47,7 +49,8 @@ public class WriteReviewConsumer : IConsumer<WriteReview>
 
         var rating = new Review
         {
-            Id = new ReviewId(writerId, productSku),
+            WriterId = writerId,
+            ProductSku = productSku,
             Score = score,
             Comment = comment,
             CreatedDate = DateTime.UtcNow
@@ -57,7 +60,7 @@ public class WriteReviewConsumer : IConsumer<WriteReview>
         
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        await context.Publish(new ReviewWrote
+        await _publishEndpoint.Publish(new ReviewWrote
         {
             WriterId = writerId,
             ProductSku = productSku,

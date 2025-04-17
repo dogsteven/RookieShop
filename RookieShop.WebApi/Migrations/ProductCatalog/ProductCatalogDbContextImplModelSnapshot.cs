@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using RookieShop.WebApi.Infrastructure.Persistence;
+using RookieShop.ProductCatalog.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace RookieShop.WebApi.Migrations
+namespace RookieShop.WebApi.Migrations.ProductCatalog
 {
-    [DbContext(typeof(RookieShopDbContextImpl))]
-    partial class RookieShopDbContextImplModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ProductCatalogDbContextImpl))]
+    partial class ProductCatalogDbContextImplModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -22,7 +22,7 @@ namespace RookieShop.WebApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("RookieShop.Application.Entities.Category", b =>
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,10 +45,10 @@ namespace RookieShop.WebApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories", "ProductCatalog");
                 });
 
-            modelBuilder.Entity("RookieShop.Application.Entities.Product", b =>
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Product", b =>
                 {
                     b.Property<string>("Sku")
                         .HasMaxLength(16)
@@ -64,14 +64,14 @@ namespace RookieShop.WebApi.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
                         .HasColumnName("Description");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("ImageUrl");
 
                     b.Property<bool>("IsFeatured")
@@ -96,50 +96,73 @@ namespace RookieShop.WebApi.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products", "ProductCatalog");
                 });
 
-            modelBuilder.Entity("RookieShop.Application.Entities.Rating", b =>
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Rating", b =>
                 {
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("CustomerId");
-
                     b.Property<string>("Sku")
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)")
                         .HasColumnName("Sku");
 
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)")
-                        .HasColumnName("Comment");
+                    b.Property<int>("FiveCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("FiveCount");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CreatedDate");
+                    b.Property<int>("FourCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("FourCount");
 
-                    b.Property<float>("Score")
-                        .HasColumnType("real")
+                    b.Property<int>("OneCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("OneCount");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("double precision")
                         .HasColumnName("Score");
 
-                    b.HasKey("CustomerId", "Sku");
+                    b.Property<int>("ThreeCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("ThreeCount");
 
-                    b.HasIndex("Sku");
+                    b.Property<int>("TwoCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("TwoCount");
 
-                    b.ToTable("Ratings", (string)null);
+                    b.Property<DateTime>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Sku");
+
+                    b.ToTable("Ratings", "ProductCatalog");
                 });
 
-            modelBuilder.Entity("RookieShop.Application.Entities.Product", b =>
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Product", b =>
                 {
-                    b.HasOne("RookieShop.Application.Entities.Category", "Category")
+                    b.HasOne("RookieShop.ProductCatalog.Application.Entities.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Rating", b =>
+                {
+                    b.HasOne("RookieShop.ProductCatalog.Application.Entities.Product", null)
+                        .WithOne("Rating")
+                        .HasForeignKey("RookieShop.ProductCatalog.Application.Entities.Rating", "Sku")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Product", b =>
+                {
+                    b.Navigation("Rating")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
