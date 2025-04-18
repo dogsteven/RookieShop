@@ -1,6 +1,8 @@
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Entities;
+using RookieShop.ProductCatalog.Application.Exceptions;
 
 namespace RookieShop.ProductCatalog.Application.Commands;
 
@@ -32,6 +34,13 @@ public class CreateCategoryConsumer : IConsumer<CreateCategory>
         var description = message.Description;
         
         var cancellationToken = context.CancellationToken;
+        
+        var alreadyExists = await _dbContext.Categories.AnyAsync(category => category.Name == name, cancellationToken);
+
+        if (alreadyExists)
+        {
+            throw new CategoryAlreadyExistsException(name);
+        }
         
         var category = new Category
         {

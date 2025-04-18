@@ -31,6 +31,13 @@ public class UpdateCategoryConsumer : IConsumer<UpdateCategory>
         var description = message.Description;
         
         var cancellationToken = context.CancellationToken;
+
+        var alreadyExists = await _dbContext.Categories.AnyAsync(category => category.Name == name, cancellationToken);
+
+        if (alreadyExists)
+        {
+            throw new CategoryAlreadyExistsException(name);
+        }
         
         var category = await _dbContext.Categories
             .FirstOrDefaultAsync(category => category.Id == id, cancellationToken);

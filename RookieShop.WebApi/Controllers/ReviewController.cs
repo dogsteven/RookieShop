@@ -4,6 +4,7 @@ using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RookieShop.ProductReview.Application.Commands;
+using RookieShop.ProductReview.Application.Entities;
 using RookieShop.ProductReview.Application.Models;
 using RookieShop.ProductReview.Application.Queries;
 
@@ -53,7 +54,7 @@ public class ReviewController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = "customer")]
-    public async Task<ActionResult> WriteRatingAsync(
+    public async Task<ActionResult> WriteReviewAsync(
         [FromRoute] string sku,
         [FromBody] WriteReviewBody body,
         CancellationToken cancellationToken)
@@ -70,6 +71,38 @@ public class ReviewController : ControllerBase
         
         await _scopedMediator.Send(writeReview, cancellationToken);
 
+        return NoContent();
+    }
+
+    public class MakeReactionBody
+    {
+        [Required]
+        public ReactionType Type { get; set; }
+    }
+
+    [HttpPost("{sku}/{writerId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Roles = "customer")]
+    public async Task<ActionResult> MakeReactionAsync(
+        [FromRoute] string sku,
+        [FromRoute] Guid writerId,
+        [FromBody] MakeReactionBody body,
+        CancellationToken cancellationToken)
+    {
+        var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var makeReaction = new MakeReaction
+        {
+            ReactorId = customerId,
+            WriterId = writerId,
+            ProductSku = sku,
+            ReactionType = body.Type,
+        };
+        
+        await _scopedMediator.Send(makeReaction, cancellationToken);
+        
         return NoContent();
     }
 }

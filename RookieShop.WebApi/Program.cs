@@ -1,9 +1,13 @@
 using MassTransit;
+using MassTransit.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using RookieShop.ProductCatalog.Infrastructure.Configurations;
 using RookieShop.ProductReview.Infrastructure.Configurations;
 using RookieShop.WebApi.Customers;
+using RookieShop.WebApi.ExceptionHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +17,22 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource =>
+    {
+        resource.AddService("RookieShop", serviceVersion: "1.0.0", serviceInstanceId: Environment.MachineName);
+    })
+    .WithTracing(tracing =>
+    {
+        tracing
+            .AddSource(DiagnosticHeaders.DefaultListenerName)
+            .AddZipkinExporter();
+    });
+
 builder.Services.AddProblemDetails();
+
+builder.Services.AddExceptionHandler<ProductCatalogExceptionHandler>();
+builder.Services.AddExceptionHandler<ProductReviewExceptionHandler>();
 
 builder.Services.AddCors(cors =>
 {
@@ -62,7 +81,7 @@ builder.Services.AddMassTransit(bus =>
     bus.AddMediator(mediator =>
     {
         mediator.AddProductCatalogConsumers();
-        mediator.AddProductCatalogConsumers();
+        mediator.AddProductReviewConsumers();
     });
     
     bus.UsingRabbitMq((context, rabbitMq) =>

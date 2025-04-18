@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using RookieShop.ProductReview.Application.Abstractions;
 using RookieShop.ProductReview.Application.Entities;
+using RookieShop.ProductReview.Application.Exceptions;
 
 namespace RookieShop.ProductReview.Application.Commands;
 
@@ -34,6 +35,19 @@ public class MakeReactionConsumer : IConsumer<MakeReaction>
         var reactionType = message.ReactionType;
         
         var cancellationToken = context.CancellationToken;
+
+        var customerHasWrittenReview = await _dbContext.Reviews
+            .AnyAsync(review => review.WriterId == writerId && review.ProductSku == productSku, cancellationToken);
+
+        if (!customerHasWrittenReview)
+        {
+            throw new CustomerHasNotWrittenReviewException(writerId, productSku);
+        }
+
+        if (reactorId == writerId)
+        {
+            throw new MakeReactionToOwnReviewException();
+        }
 
         var existingReaction = await _dbContext.Reactions
             .FirstOrDefaultAsync(reaction => reaction.ReactorId == reactorId && reaction.WriterId == writerId && reaction.ProductSku == productSku, cancellationToken);

@@ -45,6 +45,13 @@ public class CreateProductConsumer : IConsumer<CreateProduct>
         
         var cancellationToken = context.CancellationToken;
         
+        var alreadyExists = await _dbContext.Products.AnyAsync(product => product.Sku == sku, cancellationToken);
+
+        if (alreadyExists)
+        {
+            throw new ProductAlreadyExistsException(sku);
+        }
+        
         var category = await _dbContext.Categories
             .FirstOrDefaultAsync(category => category.Id == categoryId, cancellationToken);
 
