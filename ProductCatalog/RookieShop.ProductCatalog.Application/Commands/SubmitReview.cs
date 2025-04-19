@@ -1,4 +1,5 @@
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Entities;
 using RookieShop.ProductCatalog.Application.Events;
@@ -48,6 +49,14 @@ public class SubmitReviewConsumer : IConsumer<SubmitReview>
         if (hasProfanity)
         {
             throw new ProfaneCommentException();
+        }
+        
+        var productExists = await _dbContext.Products
+            .AnyAsync(product => product.Sku == productSku, cancellationToken);
+
+        if (!productExists)
+        {
+            throw new ProductNotFoundException(productSku);
         }
 
         var rating = new Review

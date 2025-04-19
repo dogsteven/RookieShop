@@ -36,14 +36,6 @@ public class MakeReactionConsumer : IConsumer<MakeReaction>
         
         var cancellationToken = context.CancellationToken;
         
-        var productExists = await _dbContext.Products
-            .AnyAsync(product => product.Sku == productSku, cancellationToken);
-
-        if (!productExists)
-        {
-            throw new ProductNotFoundException(productSku);
-        }
-        
         var customerHasWrittenReview = await _dbContext.Reviews
             .AnyAsync(review => review.WriterId == writerId && review.ProductSku == productSku, cancellationToken);
 
