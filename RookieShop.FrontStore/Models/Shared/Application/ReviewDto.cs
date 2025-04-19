@@ -4,6 +4,8 @@ public class ReviewDto
 {
     public Guid WriterId { get; init; }
 
+    public string WriterName { get; init; } = null!;
+
     public string ProductSku { get; init; } = null!;
     
     public int Score { get; init; }

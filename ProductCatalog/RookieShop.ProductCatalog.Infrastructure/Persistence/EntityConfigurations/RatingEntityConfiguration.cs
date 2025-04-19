@@ -10,9 +10,9 @@ public class RatingEntityConfiguration : IEntityTypeConfiguration<Rating>
     {
         builder.ToTable("Ratings", schema: "ProductCatalog");
 
-        builder.HasKey(rating => rating.Sku);
+        builder.HasKey(rating => rating.ProductSku);
         
-        builder.Property(rating => rating.Sku)
+        builder.Property(rating => rating.ProductSku)
             .IsRequired()
             .HasMaxLength(16)
             .HasColumnName("Sku");

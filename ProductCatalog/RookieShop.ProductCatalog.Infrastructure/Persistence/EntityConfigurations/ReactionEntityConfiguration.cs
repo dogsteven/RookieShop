@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RookieShop.ProductReview.Application.Entities;
+using RookieShop.ProductCatalog.Application.Entities;
 
-namespace RookieShop.ProductReview.Infrastructure.Persistence.EntityConfigurations;
+namespace RookieShop.ProductCatalog.Infrastructure.Persistence.EntityConfigurations;
 
 public class ReactionEntityConfiguration : IEntityTypeConfiguration<Reaction>
 {
     public void Configure(EntityTypeBuilder<Reaction> builder)
     {
-        builder.ToTable("Reactions", schema: "ProductReview");
+        builder.ToTable("Reactions", schema: "ProductCatalog");
 
         builder.HasKey(reaction => new { reaction.ReactorId, reaction.WriterId, reaction.ProductSku });
 

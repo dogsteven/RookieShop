@@ -17,7 +17,7 @@ public class ReviewService : IReviewService
         _httpContextAccessor = httpContextAccessor;
     }
     
-    public async Task<Pagination<RatingDto>> GetRatingsBySkuAsync(string sku, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Pagination<ReviewDto>> GetRatingsBySkuAsync(string sku, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var queries = HttpUtility.ParseQueryString(string.Empty);
         queries["pageSize"] = $"{pageSize}";
@@ -31,7 +31,7 @@ public class ReviewService : IReviewService
         
         response.EnsureSuccessStatusCode();
         
-        var pagination = await response.Content.ReadFromJsonAsync<Pagination<RatingDto>>(cancellationToken: cancellationToken);
+        var pagination = await response.Content.ReadFromJsonAsync<Pagination<ReviewDto>>(cancellationToken: cancellationToken);
         
         ArgumentNullException.ThrowIfNull(pagination);
         

@@ -1,6 +1,7 @@
 using MassTransit;
 using RookieShop.ProductCatalog.Application.Commands;
-using RookieShop.ProductCatalog.Application.EventConsumers;
+using RookieShop.ProductCatalog.Application.Events;
+using RookieShop.ProductReview.Application.Commands;
 
 namespace RookieShop.ProductCatalog.Infrastructure.Configurations;
 
@@ -8,7 +9,7 @@ public static class MassTransitConfigurationExtensions
 {
     public static IBusRegistrationConfigurator AddProductCatalogConsumers(this IBusRegistrationConfigurator bus)
     {
-        bus.AddConsumer<ApplyRatingConsumer>((_, consumer) =>
+        bus.AddConsumer<ApplyScoreConsumer>((_, consumer) =>
         {
             consumer.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(250)));
         });
@@ -26,6 +27,9 @@ public static class MassTransitConfigurationExtensions
         mediator.AddConsumer<CreateCategoryConsumer>();
         mediator.AddConsumer<UpdateCategoryConsumer>();
         mediator.AddConsumer<DeleteCategoryConsumer>();
+
+        mediator.AddConsumer<SubmitReviewConsumer>();
+        mediator.AddConsumer<MakeReactionConsumer>();
         
         return mediator;
     }

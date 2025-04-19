@@ -1,14 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RookieShop.ProductReview.Application.Entities;
+using RookieShop.ProductCatalog.Application.Entities;
 
-namespace RookieShop.ProductReview.Infrastructure.Persistence.EntityConfigurations;
+namespace RookieShop.ProductCatalog.Infrastructure.Persistence.EntityConfigurations;
 
 public class ReviewEntityConfiguration : IEntityTypeConfiguration<Review>
 {
     public void Configure(EntityTypeBuilder<Review> builder)
     {
-        builder.ToTable("Reviews", schema: "ProductReview");
+        builder.ToTable("Reviews", schema: "ProductCatalog");
 
         builder.HasKey(review => new { review.WriterId, review.ProductSku });
 
@@ -33,7 +33,7 @@ public class ReviewEntityConfiguration : IEntityTypeConfiguration<Review>
         builder.Property(review => review.CreatedDate)
             .IsRequired()
             .HasColumnName("CreatedDate");
-
+        
         builder.HasMany(review => review.Reactions)
             .WithOne()
             .HasForeignKey(reaction => new { reaction.WriterId, reaction.ProductSku });

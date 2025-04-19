@@ -25,7 +25,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ProductCatalog\RookieShop.ProductCatalog.Infrastructure\RookieShop.ProductCatalog.Infrastructure.csproj" />
-      <ProjectReference Include="..\ProductReview\RookieShop.ProductReview.Infrastructure\RookieShop.ProductReview.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

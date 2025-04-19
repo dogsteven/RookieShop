@@ -12,7 +12,7 @@ using RookieShop.ProductCatalog.Infrastructure.Persistence;
 namespace RookieShop.WebApi.Migrations.ProductCatalog
 {
     [DbContext(typeof(ProductCatalogDbContextImpl))]
-    [Migration("20250417123317_InitDatabase")]
+    [Migration("20250419123204_InitDatabase")]
     partial class InitDatabase
     {
         /// <inheritdoc />
@@ -104,7 +104,7 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
 
             modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Rating", b =>
                 {
-                    b.Property<string>("Sku")
+                    b.Property<string>("ProductSku")
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)")
                         .HasColumnName("Sku");
@@ -137,9 +137,72 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                         .IsConcurrencyToken()
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Sku");
+                    b.HasKey("ProductSku");
 
                     b.ToTable("Ratings", "ProductCatalog");
+                });
+
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Reaction", b =>
+                {
+                    b.Property<Guid>("ReactorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ReactorId");
+
+                    b.Property<Guid>("WriterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("WriterId");
+
+                    b.Property<string>("ProductSku")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("ProductSku");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Type");
+
+                    b.HasKey("ReactorId", "WriterId", "ProductSku");
+
+                    b.HasIndex("WriterId", "ProductSku");
+
+                    b.ToTable("Reactions", "ProductCatalog");
+                });
+
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Review", b =>
+                {
+                    b.Property<Guid>("WriterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("WriterId");
+
+                    b.Property<string>("ProductSku")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("ProductSku");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("Comment");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CreatedDate");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("integer")
+                        .HasColumnName("Score");
+
+                    b.Property<string>("WriterName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("WriterId", "ProductSku");
+
+                    b.HasIndex("ProductSku");
+
+                    b.ToTable("Reviews", "ProductCatalog");
                 });
 
             modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Product", b =>
@@ -157,7 +220,16 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                 {
                     b.HasOne("RookieShop.ProductCatalog.Application.Entities.Product", null)
                         .WithOne("Rating")
-                        .HasForeignKey("RookieShop.ProductCatalog.Application.Entities.Rating", "Sku")
+                        .HasForeignKey("RookieShop.ProductCatalog.Application.Entities.Rating", "ProductSku")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Reaction", b =>
+                {
+                    b.HasOne("RookieShop.ProductCatalog.Application.Entities.Review", null)
+                        .WithMany("Reactions")
+                        .HasForeignKey("WriterId", "ProductSku")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -166,6 +238,11 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                 {
                     b.Navigation("Rating")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Review", b =>
+                {
+                    b.Navigation("Reactions");
                 });
 #pragma warning restore 612, 618
         }

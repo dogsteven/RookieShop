@@ -1,4 +1,4 @@
-namespace RookieShop.ProductReview.Application.Abstractions;
+namespace RookieShop.ProductCatalog.Application.Abstractions;
 
 public interface IProfanityChecker
 {

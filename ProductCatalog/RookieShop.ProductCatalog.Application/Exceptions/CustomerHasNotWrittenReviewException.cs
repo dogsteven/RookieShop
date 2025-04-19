@@ -1,4 +1,4 @@
-namespace RookieShop.ProductReview.Application.Exceptions;
+namespace RookieShop.ProductCatalog.Application.Exceptions;
 
 public class CustomerHasNotWrittenReviewException : Exception
 {

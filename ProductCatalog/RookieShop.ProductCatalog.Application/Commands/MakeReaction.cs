@@ -1,8 +1,8 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using RookieShop.ProductReview.Application.Abstractions;
-using RookieShop.ProductReview.Application.Entities;
-using RookieShop.ProductReview.Application.Exceptions;
+using RookieShop.ProductCatalog.Application.Abstractions;
+using RookieShop.ProductCatalog.Application.Entities;
+using RookieShop.ProductCatalog.Application.Exceptions;
 
 namespace RookieShop.ProductReview.Application.Commands;
 
@@ -19,9 +19,9 @@ public class MakeReaction
 
 public class MakeReactionConsumer : IConsumer<MakeReaction>
 {
-    private readonly ProductReviewDbContext _dbContext;
+    private readonly ProductCatalogDbContext _dbContext;
 
-    public MakeReactionConsumer(ProductReviewDbContext dbContext)
+    public MakeReactionConsumer(ProductCatalogDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -35,7 +35,15 @@ public class MakeReactionConsumer : IConsumer<MakeReaction>
         var reactionType = message.ReactionType;
         
         var cancellationToken = context.CancellationToken;
+        
+        var productExists = await _dbContext.Products
+            .AnyAsync(product => product.Sku == productSku, cancellationToken);
 
+        if (!productExists)
+        {
+            throw new ProductNotFoundException(productSku);
+        }
+        
         var customerHasWrittenReview = await _dbContext.Reviews
             .AnyAsync(review => review.WriterId == writerId && review.ProductSku == productSku, cancellationToken);
 

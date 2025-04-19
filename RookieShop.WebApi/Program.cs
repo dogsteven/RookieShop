@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using RookieShop.ProductCatalog.Infrastructure.Configurations;
-using RookieShop.ProductReview.Infrastructure.Configurations;
 using RookieShop.WebApi.Customers;
 using RookieShop.WebApi.ExceptionHandlers;
 
@@ -32,7 +31,6 @@ builder.Services.AddOpenTelemetry()
 builder.Services.AddProblemDetails();
 
 builder.Services.AddExceptionHandler<ProductCatalogExceptionHandler>();
-builder.Services.AddExceptionHandler<ProductReviewExceptionHandler>();
 
 builder.Services.AddCors(cors =>
 {
@@ -81,7 +79,6 @@ builder.Services.AddMassTransit(bus =>
     bus.AddMediator(mediator =>
     {
         mediator.AddProductCatalogConsumers();
-        mediator.AddProductReviewConsumers();
     });
     
     bus.UsingRabbitMq((context, rabbitMq) =>
@@ -106,18 +103,6 @@ builder.Services.AddProductCatalog(productCatalog =>
     });
     
     productCatalog.SetMigrationAssembly("RookieShop.WebApi");
-});
-
-builder.Services.AddProductReview(productReview =>
-{
-    productReview.SetDatabaseConnectionString(provider =>
-    {
-        var configuration = provider.GetRequiredService<IConfiguration>();
-
-        return configuration.GetConnectionString("Postgresql")!;
-    });
-
-    productReview.SetMigrationAssembly("RookieShop.WebApi");
 });
 
 builder.Services.AddHttpClient();

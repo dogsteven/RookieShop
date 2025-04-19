@@ -1,40 +1,43 @@
 using MassTransit;
-using RookieShop.ProductReview.Application.Abstractions;
-using RookieShop.ProductReview.Application.Entities;
-using RookieShop.ProductReview.Application.Exceptions;
-using RookieShop.ProductReview.Contracts.Events;
+using RookieShop.ProductCatalog.Application.Abstractions;
+using RookieShop.ProductCatalog.Application.Entities;
+using RookieShop.ProductCatalog.Application.Events;
+using RookieShop.ProductCatalog.Application.Exceptions;
 
-namespace RookieShop.ProductReview.Application.Commands;
+namespace RookieShop.ProductCatalog.Application.Commands;
 
-public class WriteReview
+public class SubmitReview
 {
     public Guid WriterId { get; set; }
 
     public string ProductSku { get; set; } = null!;
+
+    public string WriterName { get; set; } = null!;
     
     public int Score { get; set; }
 
     public string Comment { get; set; } = null!;
 }
 
-public class WriteReviewConsumer : IConsumer<WriteReview>
+public class SubmitReviewConsumer : IConsumer<SubmitReview>
 {
-    private readonly ProductReviewDbContext _dbContext;
+    private readonly ProductCatalogDbContext _dbContext;
     private readonly IProfanityChecker _profanityChecker;
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public WriteReviewConsumer(ProductReviewDbContext dbContext, IProfanityChecker profanityChecker, IPublishEndpoint publishEndpoint)
+    public SubmitReviewConsumer(ProductCatalogDbContext dbContext, IProfanityChecker profanityChecker, IPublishEndpoint publishEndpoint)
     {
         _dbContext = dbContext;
         _profanityChecker = profanityChecker;
         _publishEndpoint = publishEndpoint;
     }
     
-    public async Task Consume(ConsumeContext<WriteReview> context)
+    public async Task Consume(ConsumeContext<SubmitReview> context)
     {
         var message = context.Message;
         var writerId = message.WriterId;
         var productSku = message.ProductSku;
+        var writerName = message.WriterName;
         var score = message.Score;
         var comment = message.Comment;
         
@@ -51,6 +54,7 @@ public class WriteReviewConsumer : IConsumer<WriteReview>
         {
             WriterId = writerId,
             ProductSku = productSku,
+            WriterName = writerName,
             Score = score,
             Comment = comment,
             CreatedDate = DateTime.UtcNow
@@ -60,9 +64,8 @@ public class WriteReviewConsumer : IConsumer<WriteReview>
         
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        await _publishEndpoint.Publish(new ReviewWrote
+        await _publishEndpoint.Publish(new ReviewSubmitted
         {
-            WriterId = writerId,
             ProductSku = productSku,
             Score = score
         }, cancellationToken);

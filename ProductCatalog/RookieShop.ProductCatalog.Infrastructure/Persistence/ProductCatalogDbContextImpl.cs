@@ -17,6 +17,8 @@ public class ProductCatalogDbContextImpl : ProductCatalogDbContext
         modelBuilder.ApplyConfiguration(new ProductEntityConfiguration());
         modelBuilder.ApplyConfiguration(new RatingEntityConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new ReviewEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new ReactionEntityConfiguration());
     }
 }
 

@@ -50,17 +50,17 @@ public class ProductCatalogController : Controller
         var sku = id;
         
         var productTask = _productService.GetProductBySkuAsync(sku, cancellationToken);
-        var ratingPageTask = _reviewService.GetRatingsBySkuAsync(sku, int.Max(pageNumber ?? 1, 1), 10, cancellationToken);
+        var reviewPageTask = _reviewService.GetRatingsBySkuAsync(sku, int.Max(pageNumber ?? 1, 1), 10, cancellationToken);
         
-        await Task.WhenAll(productTask, ratingPageTask);
+        await Task.WhenAll(productTask, reviewPageTask);
         
         var product = productTask.Result;
-        var ratingPage = ratingPageTask.Result;
+        var reviewPage = reviewPageTask.Result;
 
         return View(new ProductDetailsViewModel
         {
             Product = product,
-            RatingPage = ratingPage
+            ReviewPage = reviewPage
         });
     }
 }

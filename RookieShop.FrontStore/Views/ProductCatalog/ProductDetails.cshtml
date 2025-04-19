@@ -88,11 +88,11 @@
 
   if (Model.Product.Rating.Count > 0)
   {
-    onePercentage = (double)Model.Product.Rating.OneCount / Model.Product.Rating.Count;
-    twoPercentage = (double)Model.Product.Rating.TwoCount / Model.Product.Rating.Count;
-    threePercentage = (double)Model.Product.Rating.ThreeCount / Model.Product.Rating.Count;
-    fourPercentage = (double)Model.Product.Rating.FourCount / Model.Product.Rating.Count;
-    fivePercentage = (double)Model.Product.Rating.FiveCount / Model.Product.Rating.Count;
+    onePercentage = Convert.ToInt32(Math.Round(100 * (Convert.ToDouble(Model.Product.Rating.OneCount) / Model.Product.Rating.Count)));
+    twoPercentage = Convert.ToInt32(Math.Round(100 * (Convert.ToDouble(Model.Product.Rating.TwoCount) / Model.Product.Rating.Count)));
+    threePercentage = Convert.ToInt32(Math.Round(100 * (Convert.ToDouble(Model.Product.Rating.ThreeCount) / Model.Product.Rating.Count)));
+    fourPercentage = Convert.ToInt32(Math.Round(100 * (Convert.ToDouble(Model.Product.Rating.FourCount) / Model.Product.Rating.Count)));
+    fivePercentage =  Convert.ToInt32(Math.Round(100 * (Convert.ToDouble(Model.Product.Rating.FiveCount) / Model.Product.Rating.Count)));
   }
 }
 
@@ -172,64 +172,63 @@
       </div>
     </div>
 
+
     <div class="mt-6 divide-y divide-gray-200 dark:divide-gray-700">
-      <div class="gap-3 pb-6 sm:flex sm:items-start">
-        <div class="shrink-0 space-y-2 sm:w-48 md:w-72">
-          <div class="flex items-center gap-0.5">
-            <svg class="h-4 w-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-            </svg>
+      @foreach (var reviewEntry in Model.ReviewPage.Items.Select((review, index) => new { Review = review, Index = index }))
+      {
+        var review = reviewEntry.Review;
+        var index = reviewEntry.Index;
 
-            <svg class="h-4 w-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-            </svg>
+        var paddingClass = index == 0 ? "pb-6" : "py-6";
+        
+        <div class="gap-3 @paddingClass sm:flex sm:items-start">
+          <div class="shrink-0 space-y-2 sm:w-48 md:w-72">
+            @await Component.InvokeAsync("RatingStars", new { stars = review.Score, isBig = false })
 
-            <svg class="h-4 w-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-            </svg>
+            <div class="space-y-0.5">
+              <p class="text-base font-semibold text-gray-900 dark:text-white">@review.WriterName</p>
+              <p class="text-sm font-normal text-gray-500 dark:text-gray-400">@review.CreatedDate</p>
+            </div>
 
-            <svg class="h-4 w-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-            </svg>
-
-            <svg class="h-4 w-4 text-yellow-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-            </svg>
+            <div class="inline-flex items-center gap-1">
+              <svg class="h-5 w-5 text-primary-700 dark:text-primary-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  fill-rule="evenodd"
+                  d="M12 2c-.791 0-1.55.314-2.11.874l-.893.893a.985.985 0 0 1-.696.288H7.04A2.984 2.984 0 0 0 4.055 7.04v1.262a.986.986 0 0 1-.288.696l-.893.893a2.984 2.984 0 0 0 0 4.22l.893.893a.985.985 0 0 1 .288.696v1.262a2.984 2.984 0 0 0 2.984 2.984h1.262c.261 0 .512.104.696.288l.893.893a2.984 2.984 0 0 0 4.22 0l.893-.893a.985.985 0 0 1 .696-.288h1.262a2.984 2.984 0 0 0 2.984-2.984V15.7c0-.261.104-.512.288-.696l.893-.893a2.984 2.984 0 0 0 0-4.22l-.893-.893a.985.985 0 0 1-.288-.696V7.04a2.984 2.984 0 0 0-2.984-2.984h-1.262a.985.985 0 0 1-.696-.288l-.893-.893A2.984 2.984 0 0 0 12 2Zm3.683 7.73a1 1 0 1 0-1.414-1.413l-4.253 4.253-1.277-1.277a1 1 0 0 0-1.415 1.414l1.985 1.984a1 1 0 0 0 1.414 0l4.96-4.96Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <p class="text-sm font-medium text-gray-900 dark:text-white">Verified purchase</p>
+            </div>
           </div>
 
-          <div class="space-y-0.5">
-            <p class="text-base font-semibold text-gray-900 dark:text-white">Micheal Gough</p>
-            <p class="text-sm font-normal text-gray-500 dark:text-gray-400">November 18 2023 at 15:35</p>
-          </div>
+          <div class="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
+            <p class="text-base font-normal text-gray-500 dark:text-gray-400">@review.Comment</p>
 
-          <div class="inline-flex items-center gap-1">
-            <svg class="h-5 w-5 text-primary-700 dark:text-primary-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                fill-rule="evenodd"
-                d="M12 2c-.791 0-1.55.314-2.11.874l-.893.893a.985.985 0 0 1-.696.288H7.04A2.984 2.984 0 0 0 4.055 7.04v1.262a.986.986 0 0 1-.288.696l-.893.893a2.984 2.984 0 0 0 0 4.22l.893.893a.985.985 0 0 1 .288.696v1.262a2.984 2.984 0 0 0 2.984 2.984h1.262c.261 0 .512.104.696.288l.893.893a2.984 2.984 0 0 0 4.22 0l.893-.893a.985.985 0 0 1 .696-.288h1.262a2.984 2.984 0 0 0 2.984-2.984V15.7c0-.261.104-.512.288-.696l.893-.893a2.984 2.984 0 0 0 0-4.22l-.893-.893a.985.985 0 0 1-.288-.696V7.04a2.984 2.984 0 0 0-2.984-2.984h-1.262a.985.985 0 0 1-.696-.288l-.893-.893A2.984 2.984 0 0 0 12 2Zm3.683 7.73a1 1 0 1 0-1.414-1.413l-4.253 4.253-1.277-1.277a1 1 0 0 0-1.415 1.414l1.985 1.984a1 1 0 0 0 1.414 0l4.96-4.96Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <p class="text-sm font-medium text-gray-900 dark:text-white">Verified purchase</p>
+            <div class="flex items-center gap-4">
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Was it helpful to you?</p>
+              <div class="flex items-center">
+                <a id="review-thumb-up-@index">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11c.889-.086 1.416-.543 2.156-1.057a22.323 22.323 0 0 0 3.958-5.084 1.6 1.6 0 0 1 .582-.628 1.549 1.549 0 0 1 1.466-.087c.205.095.388.233.537.406a1.64 1.64 0 0 1 .384 1.279l-1.388 4.114M7 11H4v6.5A1.5 1.5 0 0 0 5.5 19v0A1.5 1.5 0 0 0 7 17.5V11Zm6.5-1h4.915c.286 0 .372.014.626.15.254.135.472.332.637.572a1.874 1.874 0 0 1 .215 1.673l-2.098 6.4C17.538 19.52 17.368 20 16.12 20c-2.303 0-4.79-.943-6.67-1.475"/>
+                  </svg>
+                </a>
+
+                <label for="review-thumb-up-@index" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"> Yes: @review.NumberOfLikes </label>
+              </div>
+              <div class="flex items-center">
+                <a id="review-thumb-down-@index">
+                  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13c-.889.086-1.416.543-2.156 1.057a22.322 22.322 0 0 0-3.958 5.084 1.6 1.6 0 0 1-.582.628 1.549 1.549 0 0 1-1.466.087 1.587 1.587 0 0 1-.537-.406 1.666 1.666 0 0 1-.384-1.279l1.389-4.114M17 13h3V6.5A1.5 1.5 0 0 0 18.5 5v0A1.5 1.5 0 0 0 17 6.5V13Zm-6.5 1H5.585c-.286 0-.372-.014-.626-.15a1.797 1.797 0 0 1-.637-.572 1.873 1.873 0 0 1-.215-1.673l2.098-6.4C6.462 4.48 6.632 4 7.88 4c2.302 0 4.79.943 6.67 1.475"/>
+                  </svg>
+                </a>
+
+                <label for="review-thumb-down-@index" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No: @review.NumberOfDislikes </label>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
-          <p class="text-base font-normal text-gray-500 dark:text-gray-400">My old IMAC was from 2013. This replacement was well needed. Very fast, and the colour matches my office set up perfectly. The display is out of this world and I’m very happy with this purchase.</p>
-
-          @* <div class="flex items-center gap-4"> *@
-          @*   <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Was it helpful to you?</p> *@
-          @*   <div class="flex items-center"> *@
-          @*     <input id="reviews-radio-1" type="radio" value="" name="reviews-radio" class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" /> *@
-          @*     <label for="reviews-radio-1" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"> Yes: 3 </label> *@
-          @*   </div> *@
-          @*   <div class="flex items-center"> *@
-          @*     <input id="reviews-radio-2" type="radio" value="" name="reviews-radio" class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" /> *@
-          @*     <label for="reviews-radio-2" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">No: 0 </label> *@
-          @*   </div> *@
-          @* </div> *@
-        </div>
-      </div>
+      }
     </div>
 
     <div class="mt-6 text-center">

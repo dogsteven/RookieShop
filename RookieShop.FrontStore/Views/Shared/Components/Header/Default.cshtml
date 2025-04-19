@@ -1,17 +1,19 @@
+@using System.Security.Claims
 <header>
     <nav class="bg-white dark:bg-gray-800 antialiased">
         <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0 py-4">
             <div class="flex items-center justify-between">
-
-                <div class="flex items-center space-x-8">
+                <div class="flex items-center">
                     <div class="shrink-0">
                         <a asp-controller="Home" asp-action="Index">
-                            <img class="block w-auto h-8 dark:hidden" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/logo-full.svg" alt="">
-                            <img class="hidden w-auto h-8 dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/logo-full-dark.svg" alt="">
+                            <img class="block w-auto h-12 dark:hidden antialiased" src="https://www.svgrepo.com/show/217771/shopping-logo.svg" alt="">
+                            <img class="hidden w-auto h-12 dark:block antialiased" src="https://www.svgrepo.com/show/217771/shopping-logo.svg" alt="">
                         </a>
                     </div>
-
-                    <ul class="hidden lg:flex items-center justify-start gap-6 md:gap-8 py-3 sm:justify-center">
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <ul class="lg:flex items-center justify-start gap-6 md:gap-8 py-3 sm:justify-center">
                         <li>
                             <a asp-controller="Home" asp-action="Index" class="flex text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500">
                                 Home
@@ -19,7 +21,7 @@
                         </li>
                     </ul>
 
-                    <ul class="hidden lg:flex items-center justify-start gap-6 md:gap-8 py-3 sm:justify-center">
+                    <ul class="lg:flex items-center justify-start gap-6 md:gap-8 py-3 sm:justify-center">
                         <li>
                             <a asp-controller="ProductCatalog" asp-action="Index" class="flex text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500">
                                 Products
@@ -83,7 +85,7 @@
                         @if (User.Identity is { IsAuthenticated: true })
                         {
                             <ul class="p-2 text-start text-sm font-medium text-gray-900 dark:text-white">
-                                <li><a href="#" title="" class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"> My Account </a></li>
+                                <li><a href="#" title="" class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"> @(User.Claims.FirstOrDefault(claim => claim.Type == "name")?.Value) </a></li>
                             </ul>
 
                             <div class="p-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -112,22 +114,10 @@
             <div id="ecommerce-navbar-menu-1" class="bg-gray-50 dark:bg-gray-700 dark:border-gray-600 border border-gray-200 rounded-lg py-3 hidden px-4 mt-4">
                 <ul class="text-gray-900 dark:text-white text-sm font-medium dark:text-white space-y-3">
                     <li>
-                        <a href="#" class="hover:text-primary-700 dark:hover:text-primary-500">Home</a>
+                        <a asp-controller="Home" asp-action="Index" class="hover:text-primary-700 dark:hover:text-primary-500">Home</a>
                     </li>
                     <li>
-                        <a href="#" class="hover:text-primary-700 dark:hover:text-primary-500">Best Sellers</a>
-                    </li>
-                    <li>
-                        <a href="#" class="hover:text-primary-700 dark:hover:text-primary-500">Gift Ideas</a>
-                    </li>
-                    <li>
-                        <a href="#" class="hover:text-primary-700 dark:hover:text-primary-500">Games</a>
-                    </li>
-                    <li>
-                        <a href="#" class="hover:text-primary-700 dark:hover:text-primary-500">Electronics</a>
-                    </li>
-                    <li>
-                        <a href="#" class="hover:text-primary-700 dark:hover:text-primary-500">Home & Garden</a>
+                        <a asp-controller="ProductCatalog" asp-action="Index" class="hover:text-primary-700 dark:hover:text-primary-500">Products</a>
                     </li>
                 </ul>
             </div>

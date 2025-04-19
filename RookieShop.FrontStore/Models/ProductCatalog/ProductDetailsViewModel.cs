@@ -5,5 +5,5 @@ namespace RookieShop.FrontStore.Models.ProductCatalog;
 public class ProductDetailsViewModel
 {
     public ProductDto Product { get; set; } = null!;
-    public Pagination<RatingDto> RatingPage { get; set; } = null!;
+    public Pagination<ReviewDto> ReviewPage { get; set; } = null!;
 }

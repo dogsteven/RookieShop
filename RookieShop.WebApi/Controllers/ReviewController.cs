@@ -3,10 +3,11 @@ using System.Security.Claims;
 using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RookieShop.ProductCatalog.Application.Commands;
+using RookieShop.ProductCatalog.Application.Entities;
+using RookieShop.ProductCatalog.Application.Models;
+using RookieShop.ProductCatalog.Application.Queries;
 using RookieShop.ProductReview.Application.Commands;
-using RookieShop.ProductReview.Application.Entities;
-using RookieShop.ProductReview.Application.Models;
-using RookieShop.ProductReview.Application.Queries;
 
 namespace RookieShop.WebApi.Controllers;
 
@@ -54,22 +55,24 @@ public class ReviewController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = "customer")]
-    public async Task<ActionResult> WriteReviewAsync(
+    public async Task<ActionResult> SubmitReviewAsync(
         [FromRoute] string sku,
         [FromBody] WriteReviewBody body,
         CancellationToken cancellationToken)
     {
         var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var customerName = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "Empty";
 
-        var writeReview = new WriteReview
+        var submitReview = new SubmitReview
         {
             WriterId = customerId,
+            WriterName = customerName,
             ProductSku = sku,
             Score = body.Score,
             Comment = body.Comment,
         };
         
-        await _scopedMediator.Send(writeReview, cancellationToken);
+        await _scopedMediator.Send(submitReview, cancellationToken);
 
         return NoContent();
     }

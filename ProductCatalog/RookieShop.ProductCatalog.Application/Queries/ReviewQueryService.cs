@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
-using RookieShop.ProductReview.Application.Abstractions;
-using RookieShop.ProductReview.Application.Entities;
-using RookieShop.ProductReview.Application.Models;
+using RookieShop.ProductCatalog.Application.Abstractions;
+using RookieShop.ProductCatalog.Application.Entities;
+using RookieShop.ProductCatalog.Application.Models;
 
-namespace RookieShop.ProductReview.Application.Queries;
+namespace RookieShop.ProductCatalog.Application.Queries;
 
 public class ReviewQueryService
 {
-    private readonly ProductReviewDbContext _dbContext;
+    private readonly ProductCatalogDbContext _dbContext;
 
-    public ReviewQueryService(ProductReviewDbContext dbContext)
+    public ReviewQueryService(ProductCatalogDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -18,12 +18,13 @@ public class ReviewQueryService
         CancellationToken cancellationToken)
     {
         var query = _dbContext.Reviews
-            .OrderByDescending(review => review.CreatedDate)
             .Where(review => review.ProductSku == productSku)
+            .OrderByDescending(review => review.CreatedDate)
             .Select(review => new ReviewDto
             {
                 WriterId = review.WriterId,
                 ProductSku = review.ProductSku,
+                WriterName = review.WriterName,
                 Score = review.Score,
                 Comment = review.Comment,
                 CreatedDate = review.CreatedDate,
@@ -31,7 +32,7 @@ public class ReviewQueryService
                 NumberOfDislikes = review.Reactions.Count(reaction => reaction.Type == ReactionType.Dislike)
             })
             .AsNoTracking();
-        
+
         var reviewDtos = await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

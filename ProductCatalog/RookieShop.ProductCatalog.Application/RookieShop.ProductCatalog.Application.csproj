@@ -11,8 +11,4 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\ProductReview\RookieShop.ProductReview.Contracts\RookieShop.ProductReview.Contracts.csproj" />
-    </ItemGroup>
-
 </Project>

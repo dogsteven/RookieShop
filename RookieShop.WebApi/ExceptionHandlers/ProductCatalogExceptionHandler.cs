@@ -60,6 +60,33 @@ public class ProductCatalogExceptionHandler : IExceptionHandler
                     Detail = exception.Message
                 };
                 break;
+            
+            case ProfaneCommentException:
+                problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Profane comment detected",
+                    Detail = exception.Message
+                };
+                break;
+            
+            case CustomerHasNotWrittenReviewException:
+                problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Customer has not written review",
+                    Detail = exception.Message
+                };
+                break;
+            
+            case MakeReactionToOwnReviewException:
+                problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Make reaction to own review",
+                    Detail = exception.Message
+                };
+                break;
                 
             default:
                 return false;

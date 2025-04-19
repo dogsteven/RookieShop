@@ -55,7 +55,7 @@ public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasOne(product => product.Rating)
             .WithOne()
-            .HasForeignKey<Rating>(rating => rating.Sku)
+            .HasForeignKey<Rating>(rating => rating.ProductSku)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasIndex("CategoryId");

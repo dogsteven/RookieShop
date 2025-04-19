@@ -13,6 +13,7 @@
     <ItemGroup>
       <PackageReference Include="MassTransit" Version="8.4.0" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+      <PackageReference Include="Profanity.Detector" Version="0.1.8" />
     </ItemGroup>
 
 </Project>

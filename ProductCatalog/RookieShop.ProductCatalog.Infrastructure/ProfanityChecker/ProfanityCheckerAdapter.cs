@@ -1,7 +1,7 @@
 using ProfanityFilter.Interfaces;
-using RookieShop.ProductReview.Application.Abstractions;
+using RookieShop.ProductCatalog.Application.Abstractions;
 
-namespace RookieShop.ProductReview.Infrastructure.ProfanityChecker;
+namespace RookieShop.ProductCatalog.Infrastructure.ProfanityChecker;
 
 public class ProfanityCheckerAdapter : IProfanityChecker
 {

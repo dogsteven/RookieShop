@@ -31,6 +31,23 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                 });
 
             migrationBuilder.CreateTable(
+                name: "Reviews",
+                schema: "ProductCatalog",
+                columns: table => new
+                {
+                    WriterId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProductSku = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    WriterName = table.Column<string>(type: "text", nullable: false),
+                    Score = table.Column<int>(type: "integer", nullable: false),
+                    Comment = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => new { x.WriterId, x.ProductSku });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 schema: "ProductCatalog",
                 columns: table => new
@@ -55,6 +72,28 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reactions",
+                schema: "ProductCatalog",
+                columns: table => new
+                {
+                    ReactorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    WriterId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProductSku = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reactions", x => new { x.ReactorId, x.WriterId, x.ProductSku });
+                    table.ForeignKey(
+                        name: "FK_Reactions_Reviews_WriterId_ProductSku",
+                        columns: x => new { x.WriterId, x.ProductSku },
+                        principalSchema: "ProductCatalog",
+                        principalTable: "Reviews",
+                        principalColumns: new[] { "WriterId", "ProductSku" },
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,6 +127,18 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                 schema: "ProductCatalog",
                 table: "Products",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reactions_WriterId_ProductSku",
+                schema: "ProductCatalog",
+                table: "Reactions",
+                columns: new[] { "WriterId", "ProductSku" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ProductSku",
+                schema: "ProductCatalog",
+                table: "Reviews",
+                column: "ProductSku");
         }
 
         /// <inheritdoc />
@@ -98,7 +149,15 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                 schema: "ProductCatalog");
 
             migrationBuilder.DropTable(
+                name: "Reactions",
+                schema: "ProductCatalog");
+
+            migrationBuilder.DropTable(
                 name: "Products",
+                schema: "ProductCatalog");
+
+            migrationBuilder.DropTable(
+                name: "Reviews",
                 schema: "ProductCatalog");
 
             migrationBuilder.DropTable(
