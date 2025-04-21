@@ -1,9 +1,9 @@
-using RookieShop.FrontStore.Models.Shared.Application;
+using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 
 namespace RookieShop.FrontStore.Models.Shared.Components;
 
 public class ProductCardViewModel
 {
-    public ProductDto Product { get; set; } = null!;
+    public Product Product { get; set; } = null!;
     public bool ShowFeaturedTag { get; set; }
 }

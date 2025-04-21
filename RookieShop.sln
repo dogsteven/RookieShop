@@ -10,6 +10,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.ProductCatalog.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.ProductCatalog.Infrastructure", "ProductCatalog\RookieShop.ProductCatalog.Infrastructure\RookieShop.ProductCatalog.Infrastructure.csproj", "{6E2439D0-EA71-4842-92EB-BE2193673BAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.Shared", "RookieShop.Shared\RookieShop.Shared.csproj", "{0EEB36F2-9A16-48A5-A65D-4903464355EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImageGallery", "ImageGallery", "{36481EF8-A800-4708-A20B-2216B2547086}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.ImageGallery", "ImageGallery\RookieShop.ImageGallery\RookieShop.ImageGallery.csproj", "{B4E9D17A-7FE0-40E3-B466-8C13AF02CDF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,9 +38,18 @@ Global
 		{6E2439D0-EA71-4842-92EB-BE2193673BAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E2439D0-EA71-4842-92EB-BE2193673BAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E2439D0-EA71-4842-92EB-BE2193673BAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EEB36F2-9A16-48A5-A65D-4903464355EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EEB36F2-9A16-48A5-A65D-4903464355EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EEB36F2-9A16-48A5-A65D-4903464355EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EEB36F2-9A16-48A5-A65D-4903464355EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4E9D17A-7FE0-40E3-B466-8C13AF02CDF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4E9D17A-7FE0-40E3-B466-8C13AF02CDF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4E9D17A-7FE0-40E3-B466-8C13AF02CDF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4E9D17A-7FE0-40E3-B466-8C13AF02CDF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{91F24BBA-CC04-4F71-A05A-DBA034349EF3} = {F67F5420-EA42-4801-BFA1-45A0C62B52EC}
 		{6E2439D0-EA71-4842-92EB-BE2193673BAB} = {F67F5420-EA42-4801-BFA1-45A0C62B52EC}
+		{B4E9D17A-7FE0-40E3-B466-8C13AF02CDF7} = {36481EF8-A800-4708-A20B-2216B2547086}
 	EndGlobalSection
 EndGlobal

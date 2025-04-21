@@ -16,7 +16,7 @@ public class ProductDto
     
     public string CategoryName { get; init; }
     
-    public string ImageUrl { get; init; }
+    public Guid PrimaryImageId { get; init; }
     
     public bool IsFeatured { get; init; }
     
@@ -34,7 +34,7 @@ public class ProductDto
         Price = product.Price;
         CategoryId = product.Category.Id;
         CategoryName = product.Category.Name;
-        ImageUrl = product.ImageUrl;
+        PrimaryImageId = product.PrimaryImageId;
         IsFeatured = product.IsFeatured;
         CreatedDate = product.CreatedDate;
         UpdatedDate = product.UpdatedDate;

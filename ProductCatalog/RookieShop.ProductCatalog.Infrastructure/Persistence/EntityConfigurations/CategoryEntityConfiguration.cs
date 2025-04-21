@@ -26,5 +26,8 @@ public class CategoryEntityConfiguration : IEntityTypeConfiguration<Category>
             .IsRequired()
             .HasMaxLength(250)
             .HasColumnName("Description");
+
+        builder.HasIndex(category => category.Name)
+            .IsUnique();
     }
 }

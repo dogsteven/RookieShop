@@ -1,12 +1,15 @@
+using Azure.Storage.Blobs;
 using MassTransit;
 using MassTransit.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using RookieShop.ImageGallery.Infrastructure.Configurations;
 using RookieShop.ProductCatalog.Infrastructure.Configurations;
-using RookieShop.WebApi.Customers;
 using RookieShop.WebApi.ExceptionHandlers;
+using RookieShop.WebApi.HostedServices;
+using RookieShop.WebApi.Modules.Customers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +34,7 @@ builder.Services.AddOpenTelemetry()
 builder.Services.AddProblemDetails();
 
 builder.Services.AddExceptionHandler<ProductCatalogExceptionHandler>();
+builder.Services.AddExceptionHandler<ImageGalleryExceptionHandler>();
 
 builder.Services.AddCors(cors =>
 {
@@ -75,10 +79,12 @@ builder.Services.AddSingleton<ICustomerService, CustomerService>();
 builder.Services.AddMassTransit(bus =>
 {
     bus.AddProductCatalogConsumers();
+    bus.AddImageGalleryConsumers();
 
     bus.AddMediator(mediator =>
     {
         mediator.AddProductCatalogConsumers();
+        mediator.AddImageGalleryConsumers();
     });
     
     bus.UsingRabbitMq((context, rabbitMq) =>
@@ -103,6 +109,29 @@ builder.Services.AddProductCatalog(productCatalog =>
     });
     
     productCatalog.SetMigrationAssembly("RookieShop.WebApi");
+});
+
+builder.Services.AddHostedService<AzureBlobCreateContainerHostedService>();
+
+builder.Services.AddSingleton<BlobServiceClient>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+
+    var connectionString = configuration.GetConnectionString("Azurite")!;
+
+    return new BlobServiceClient(connectionString);
+});
+
+builder.Services.AddImageGallery(imageGallery =>
+{
+    imageGallery.SetDatabaseConnectionString(provider =>
+    {
+        var configuration = provider.GetRequiredService<IConfiguration>();
+
+        return configuration.GetConnectionString("Postgresql")!;
+    });
+    
+    imageGallery.SetMigrationAssembly("RookieShop.WebApi");
 });
 
 builder.Services.AddHttpClient();

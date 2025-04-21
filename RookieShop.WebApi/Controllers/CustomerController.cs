@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RookieShop.WebApi.Customers;
+using RookieShop.WebApi.Modules.Customers;
 
 namespace RookieShop.WebApi.Controllers;
 

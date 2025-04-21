@@ -26,6 +26,10 @@
       <Folder Include="wwwroot\lib\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\RookieShop.Shared\RookieShop.Shared.csproj" />
+    </ItemGroup>
+
     <Target Name="Tailwind" BeforeTargets="Build">
         <Exec Command="yarn run css:build" />
     </Target>

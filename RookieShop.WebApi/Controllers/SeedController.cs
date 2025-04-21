@@ -54,8 +54,8 @@ public class SeedController : ControllerBase
             [Required]
             public int CategoryId { get; set; }
         
-            [Required, Url, MinLength(1), MaxLength(500)]
-            public string ImageUrl { get; set; }
+            [Required]
+            public Guid PrimaryImageId { get; set; }
         
             [Required]
             public bool IsFeatured { get; set; }
@@ -88,7 +88,7 @@ public class SeedController : ControllerBase
                 Description = product.Description,
                 Price = product.Price,
                 CategoryId = product.CategoryId,
-                ImageUrl = product.ImageUrl,
+                PrimaryImageId = product.PrimaryImageId,
                 IsFeatured = product.IsFeatured
             }, cancellationToken);
         }

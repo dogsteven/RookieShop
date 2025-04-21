@@ -36,10 +36,9 @@ public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
             .HasForeignKey("CategoryId")
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.Property(product => product.ImageUrl)
+        builder.Property(product => product.PrimaryImageId)
             .IsRequired()
-            .HasMaxLength(500)
-            .HasColumnName("ImageUrl");
+            .HasColumnName("PrimaryImageId");
         
         builder.Property(product => product.IsFeatured)
             .IsRequired()

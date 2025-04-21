@@ -1,8 +1,7 @@
 using System.Diagnostics;
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
-using RookieShop.FrontStore.Abstractions;
 using RookieShop.FrontStore.Models;
+using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 
 namespace RookieShop.FrontStore.Controllers;
 

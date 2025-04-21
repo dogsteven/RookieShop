@@ -2,8 +2,8 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using RookieShop.FrontStore.Abstractions;
-using RookieShop.FrontStore.Infrastructure.Services;
+using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
+using RookieShop.FrontStore.Modules.ProductCatalog.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,7 +58,13 @@ builder.Services.AddHttpClient("RookieShop.WebApi", client =>
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddSingleton<IProductService, ProductService>();
+builder.Services.AddSingleton<IProductService>(provider =>
+{
+    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+    var imagGalleryBasePath = builder.Configuration["RookieShop:WebApi:Address"]!;
+    
+    return new ProductService(httpClientFactory, imagGalleryBasePath);
+});
 builder.Services.AddSingleton<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<IReviewService, ReviewService>();
 

@@ -2,9 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 using RookieShop.ProductCatalog.Application.Commands;
 using RookieShop.ProductCatalog.Application.Models;
 using RookieShop.ProductCatalog.Application.Queries;
+using RookieShop.Shared.Models;
 
 namespace RookieShop.WebApi.Controllers;
 
@@ -77,8 +79,8 @@ public class ProductController : ControllerBase
         [Required]
         public int CategoryId { get; set; }
         
-        [Required, Url, MinLength(1), MaxLength(500)]
-        public string ImageUrl { get; set; }
+        [Required]
+        public Guid PrimaryImageId { get; set; }
         
         [Required]
         public bool IsFeatured { get; set; }
@@ -102,7 +104,7 @@ public class ProductController : ControllerBase
             Description = body.Description,
             Price = body.Price,
             CategoryId = body.CategoryId,
-            ImageUrl = body.ImageUrl,
+            PrimaryImageId = body.PrimaryImageId,
             IsFeatured = body.IsFeatured
         };
 
@@ -125,8 +127,8 @@ public class ProductController : ControllerBase
         [Required]
         public int CategoryId { get; set; }
         
-        [Required, Url, MinLength(1), MaxLength(500)]
-        public string ImageUrl { get; set; }
+        [Required]
+        public Guid PrimaryImageId { get; set; }
         
         [Required]
         public bool IsFeatured { get; set; }
@@ -151,7 +153,7 @@ public class ProductController : ControllerBase
             Description = body.Description,
             Price = body.Price,
             CategoryId = body.CategoryId,
-            ImageUrl = body.ImageUrl,
+            PrimaryImageId = body.PrimaryImageId,
             IsFeatured = body.IsFeatured
         };
         

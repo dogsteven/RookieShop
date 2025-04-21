@@ -45,6 +45,9 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Categories", "ProductCatalog");
                 });
 
@@ -68,12 +71,6 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("Description");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("ImageUrl");
-
                     b.Property<bool>("IsFeatured")
                         .HasColumnType("boolean")
                         .HasColumnName("IsFeatured");
@@ -87,6 +84,10 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric")
                         .HasColumnName("Price");
+
+                    b.Property<Guid>("PrimaryImageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("PrimaryImageId");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("timestamp with time zone")

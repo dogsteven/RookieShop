@@ -17,7 +17,7 @@ public class UpdateProduct
     
     public int CategoryId { get; set; }
 
-    public string ImageUrl { get; set; } = null!;
+    public Guid PrimaryImageId { get; set; }
     
     public bool IsFeatured { get; set; }
 }
@@ -39,7 +39,7 @@ public class UpdateProductConsumer : IConsumer<UpdateProduct>
         var description = message.Description;
         var price = message.Price;
         var categoryId = message.CategoryId;
-        var imageUrl = message.ImageUrl;
+        var primaryImageId = message.PrimaryImageId;
         var isFeatured = message.IsFeatured;
         
         var cancellationToken = context.CancellationToken;
@@ -55,7 +55,7 @@ public class UpdateProductConsumer : IConsumer<UpdateProduct>
         product.Name = name;
         product.Description = description;
         product.Price = price;
-        product.ImageUrl = imageUrl;
+        product.PrimaryImageId = primaryImageId;
         product.IsFeatured = isFeatured;
         product.UpdatedDate = DateTime.UtcNow;
 

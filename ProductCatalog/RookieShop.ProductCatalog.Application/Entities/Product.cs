@@ -12,7 +12,7 @@ public class Product
     
     public Category Category { get; set; }
     
-    public string ImageUrl { get; set; }
+    public Guid PrimaryImageId { get; set; }
     
     public bool IsFeatured { get; set; }
     

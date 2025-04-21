@@ -3,11 +3,13 @@ using System.Security.Claims;
 using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 using RookieShop.ProductCatalog.Application.Commands;
 using RookieShop.ProductCatalog.Application.Entities;
 using RookieShop.ProductCatalog.Application.Models;
 using RookieShop.ProductCatalog.Application.Queries;
 using RookieShop.ProductReview.Application.Commands;
+using RookieShop.Shared.Models;
 
 namespace RookieShop.WebApi.Controllers;
 
@@ -37,7 +39,7 @@ public class ReviewController : ControllerBase
         return Ok(await _reviewQueryService.GetReviewsByProductSku(sku, pageNumber ?? 1, pageSize ?? 5, cancellationToken));
     }
     
-    public class WriteReviewBody
+    public class SubmitReviewBody
     {
         [Required, Range(1, 5)]
         public int Score { get; set; }
@@ -46,7 +48,7 @@ public class ReviewController : ControllerBase
         public string Comment { get; set; }
         
 #pragma warning disable CS8618, CS9264
-        public WriteReviewBody() {}
+        public SubmitReviewBody() {}
 #pragma warning restore CS8618, CS9264
     }
 
@@ -57,7 +59,7 @@ public class ReviewController : ControllerBase
     [Authorize(Roles = "customer")]
     public async Task<ActionResult> SubmitReviewAsync(
         [FromRoute] string sku,
-        [FromBody] WriteReviewBody body,
+        [FromBody] SubmitReviewBody body,
         CancellationToken cancellationToken)
     {
         var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
