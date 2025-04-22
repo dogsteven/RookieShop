@@ -12,7 +12,7 @@ public class ImageDto
 
     public DateTime CreatedDate { get; init; }
     
-    public bool IsUploaded { get; init; }
+    public bool IsSynced { get; init; }
     
 #pragma warning disable CS8618, CS9264
     public ImageDto() {}
@@ -24,6 +24,6 @@ public class ImageDto
         ContentType = image.ContentType;
         TempFileName = image.TempFileName;
         CreatedDate = image.CreatedDate;
-        IsUploaded = image.IsUploaded;
+        IsSynced = image.IsSynced;
     }
 }

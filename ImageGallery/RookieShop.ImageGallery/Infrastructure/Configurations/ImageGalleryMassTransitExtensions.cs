@@ -8,7 +8,12 @@ public static class ImageGalleryMassTransitExtensions
 {
     public static IBusRegistrationConfigurator AddImageGalleryConsumers(this IBusRegistrationConfigurator bus)
     {
-        bus.AddConsumer<UploadImageToStorageConsumer>((_, consumer) =>
+        bus.AddConsumer<SyncImageToStorageConsumer>((_, consumer) =>
+        {
+            consumer.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(1000)));
+        });
+        
+        bus.AddConsumer<DeleteTemporaryImageOnSyncConsumer>((_, consumer) =>
         {
             consumer.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(1000)));
         });

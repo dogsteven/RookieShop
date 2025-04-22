@@ -10,7 +10,7 @@ public class Image
 
     public readonly DateTime CreatedDate;
     
-    public bool IsUploaded { get; private set; }
+    public bool IsSynced { get; private set; }
     
 #pragma warning disable CS8618, CS9264
     public Image() {}
@@ -22,11 +22,11 @@ public class Image
         ContentType = contentType;
         TempFileName = tempFileName;
         CreatedDate = DateTime.UtcNow;
-        IsUploaded = false;
+        IsSynced = false;
     }
 
-    public void MarkAsUploaded()
+    public void MarkAsSynced()
     {
-        IsUploaded = true;
+        IsSynced = true;
     }
 }

@@ -55,7 +55,7 @@ public class ImageQueryService
 
         Stream stream;
 
-        if (!image.IsUploaded)
+        if (!image.IsSynced)
         {
             stream = new FileStream(image.TempFileName, FileMode.Open);
         }

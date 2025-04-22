@@ -30,8 +30,8 @@ public class ImageEntityConfiguration : IEntityTypeConfiguration<Image>
             .IsRequired()
             .HasColumnName("CreatedDate");
         
-        builder.Property(image => image.IsUploaded)
+        builder.Property(image => image.IsSynced)
             .IsRequired()
-            .HasColumnName("IsUploaded");
+            .HasColumnName("IsSynced");
     }
 }

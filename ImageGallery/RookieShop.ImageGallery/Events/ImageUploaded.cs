@@ -9,12 +9,12 @@ public class ImageUploaded
     public Guid Id { get; set; }
 }
 
-public class UploadImageToStorageConsumer : IConsumer<ImageUploaded>
+public class SyncImageToStorageConsumer : IConsumer<ImageUploaded>
 {
     private readonly ImageGalleryDbContext _dbContext;
     private readonly IImageStorage _imageStorage;
 
-    public UploadImageToStorageConsumer(ImageGalleryDbContext dbContext, IImageStorage imageStorage)
+    public SyncImageToStorageConsumer(ImageGalleryDbContext dbContext, IImageStorage imageStorage)
     {
         _dbContext = dbContext;
         _imageStorage = imageStorage;
@@ -38,8 +38,13 @@ public class UploadImageToStorageConsumer : IConsumer<ImageUploaded>
         
         await _imageStorage.SaveImageAsync(id, fileStream, cancellationToken);
         
-        image.MarkAsUploaded();
+        image.MarkAsSynced();
         
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        await context.Publish(new ImageSynced
+        {
+            Id = image.Id
+        }, cancellationToken);
     }
 }
