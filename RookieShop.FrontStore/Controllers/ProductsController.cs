@@ -20,7 +20,7 @@ public class ProductsController : Controller
 
     public async Task<IActionResult> Index(int? pageNumber, CancellationToken cancellationToken)
     {
-        var productPage = await _productService.GetProductsAsync(int.Max(pageNumber ?? 1, 1), 12, cancellationToken);
+        var productPage = await _productService.GetProductsAsync(int.Max(pageNumber ?? 1, 1), 8, cancellationToken);
 
         return View(new ProductCatalogViewModel
         {
