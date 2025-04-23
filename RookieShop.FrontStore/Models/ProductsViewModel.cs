@@ -3,7 +3,7 @@ using RookieShop.Shared.Models;
 
 namespace RookieShop.FrontStore.Models;
 
-public class ProductCatalogViewModel
+public class ProductsViewModel
 {
     public Pagination<Product> ProductPage { get; set; } = null!;
 }

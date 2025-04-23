@@ -8,11 +8,12 @@ using RookieShop.FrontStore.Modules.ProductCatalog.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
 .AddCookie(options =>
@@ -21,7 +22,6 @@ builder.Services.AddAuthentication(options =>
     options.LogoutPath = "/Account/Logout";
 
     options.Cookie.HttpOnly = true;
-    options.Cookie.SameSite = SameSiteMode.Strict;
 })
 .AddOpenIdConnect(options =>
 {
@@ -38,7 +38,7 @@ builder.Services.AddAuthentication(options =>
 
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.ResponseType = OpenIdConnectResponseType.Code;
-
+    options.UseTokenLifetime = true;
     options.SaveTokens = true;
     options.GetClaimsFromUserInfoEndpoint = true;
     options.RequireHttpsMetadata = false;
@@ -64,9 +64,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IProductService>(provider =>
 {
     var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
-    var imagGalleryBasePath = builder.Configuration["RookieShop:WebApi:Address"]!;
+    var imageGalleryBasePath = builder.Configuration["RookieShop:WebApi:Address"]!;
     
-    return new ProductService(httpClientFactory, imagGalleryBasePath);
+    return new ProductService(httpClientFactory, imageGalleryBasePath);
 });
 builder.Services.AddSingleton<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<IReviewService, ReviewService>();
@@ -87,6 +87,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -7,7 +9,7 @@
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true"/>
 </head>
 <body>
-    @await Component.InvokeAsync("Header")
+    @await Component.InvokeAsync("Header", new { cancellationToken = HttpContextAccessor.HttpContext?.RequestAborted })
 
     <div class="">
         <main role="main">
@@ -15,6 +17,9 @@
         </main>
     </div>
     <script src="~/js/flowbite.min.js"></script>
+    <script type="text/javascript">
+        initFlowbite();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
-</body>
+    </body>
 </html>

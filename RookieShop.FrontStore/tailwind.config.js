@@ -6,6 +6,7 @@ module.exports = {
         './Shared/**/*.cshtml',
         './**/*.html',
         './node_modules/flowbite/**/*.js',
+        './wwwroot/**/*.js',
     ],
     theme: {
         extend: {

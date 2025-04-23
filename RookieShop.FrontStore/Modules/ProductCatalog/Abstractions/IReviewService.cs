@@ -6,6 +6,6 @@ namespace RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 public interface IReviewService
 {
     public Task<Pagination<Review>> GetRatingsBySkuAsync(string sku, int pageNumber, int pageSize, CancellationToken cancellationToken);
-    public Task SubmitReviewAsync(string sku, float score, string comment, CancellationToken cancellationToken);
+    public Task SubmitReviewAsync(string sku, int score, string comment, CancellationToken cancellationToken);
     public Task MakeReactionAsync(Guid writerId, string sku, bool likeReaction, CancellationToken cancellationToken);
 }

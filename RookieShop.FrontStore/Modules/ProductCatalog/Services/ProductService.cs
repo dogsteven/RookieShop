@@ -1,4 +1,5 @@
 using System.Web;
+using Microsoft.AspNetCore.Authentication;
 using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 using RookieShop.Shared.Models;
 using IProductService = RookieShop.FrontStore.Modules.ProductCatalog.Abstractions.IProductService;

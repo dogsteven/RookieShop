@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using System.Web;
 using Microsoft.AspNetCore.Authentication;
@@ -11,11 +12,13 @@ public class ReviewService : IReviewService
 {
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<ReviewService> _logger;
 
-    public ReviewService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+    public ReviewService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, ILogger<ReviewService> logger)
     {
         _httpClient = httpClientFactory.CreateClient("RookieShop.WebApi");
         _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
     }
     
     public async Task<Pagination<Review>> GetRatingsBySkuAsync(string sku, int pageNumber, int pageSize, CancellationToken cancellationToken)
@@ -39,22 +42,24 @@ public class ReviewService : IReviewService
         return pagination;
     }
 
-    public async Task SubmitReviewAsync(string sku, float score, string comment, CancellationToken cancellationToken)
+    public async Task SubmitReviewAsync(string sku, int score, string comment, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(_httpContextAccessor.HttpContext);
         
-        var accessToken = _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+        var accessToken = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+        
+        _logger.LogInformation("Access Token: {0}", accessToken);
         
         var request = new HttpRequestMessage(HttpMethod.Post, $"/api/Review/{sku}");
 
         var body = new
         {
-            Score = score,
-            Comment = comment
+            score = score,
+            comment = comment
         };
 
         request.Headers.Add("Authorization", $"Bearer {accessToken}");
-        request.Content = new StringContent(JsonSerializer.Serialize(body));
+        request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         
@@ -65,17 +70,17 @@ public class ReviewService : IReviewService
     {
         ArgumentNullException.ThrowIfNull(_httpContextAccessor.HttpContext);
         
-        var accessToken = _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+        var accessToken = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
         
         var request = new HttpRequestMessage(HttpMethod.Post, $"/api/Review/{writerId}");
 
         var body = new
         {
-            ReactionType = likeReaction ? 0 : 1
+            reactionType = likeReaction ? 0 : 1
         };
         
         request.Headers.Add("Authorization", $"Bearer {accessToken}");
-        request.Content = new StringContent(JsonSerializer.Serialize(body));
+        request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         
