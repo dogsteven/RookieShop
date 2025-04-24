@@ -1,5 +1,6 @@
 using System.Web;
 using Microsoft.AspNetCore.Authentication;
+using RookieShop.FrontStore.Exceptions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 using RookieShop.Shared.Models;
 using IProductService = RookieShop.FrontStore.Modules.ProductCatalog.Abstractions.IProductService;
@@ -89,11 +90,7 @@ public class ProductService : IProductService
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         
-        response.EnsureSuccessStatusCode();
-        
-        var productDto = await response.Content.ReadFromJsonAsync<ProductDto>(cancellationToken);
-        
-        ArgumentNullException.ThrowIfNull(productDto);
+        var productDto = await response.ReadFromJsonAsync<ProductDto>(cancellationToken);
         
         return Map(productDto);
     }
@@ -109,20 +106,8 @@ public class ProductService : IProductService
         var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/all?{queryString}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        
-        response.EnsureSuccessStatusCode();
-        
-        var pagination = await response.Content.ReadFromJsonAsync<Pagination<ProductDto>>(cancellationToken);
-        
-        ArgumentNullException.ThrowIfNull(pagination);
-        
-        return new Pagination<Product>
-        {
-            Count = pagination.Count,
-            PageNumber = pagination.PageNumber,
-            PageSize = pagination.PageSize,
-            Items = pagination.Items.Select(Map)
-        };
+
+        return (await response.ReadFromJsonAsync<Pagination<ProductDto>>(cancellationToken)).Map(Map);
     }
 
     public async Task<IEnumerable<Product>> GetFeaturedProductsAsync(int maxCount, CancellationToken cancellationToken)
@@ -135,14 +120,8 @@ public class ProductService : IProductService
         var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/featured?{queryString}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        
-        response.EnsureSuccessStatusCode();
-        
-        var productDtos = await response.Content.ReadFromJsonAsync<IEnumerable<ProductDto>>(cancellationToken);
-        
-        ArgumentNullException.ThrowIfNull(productDtos);
-        
-        return productDtos.Select(Map);
+
+        return (await response.ReadFromJsonAsync<IEnumerable<ProductDto>>(cancellationToken)).Select(Map);
     }
 
     public async Task<Pagination<Product>> GetProductsByCategoryIdAsync(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
@@ -157,18 +136,6 @@ public class ProductService : IProductService
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         
-        response.EnsureSuccessStatusCode();
-        
-        var pagination = await response.Content.ReadFromJsonAsync<Pagination<ProductDto>>(cancellationToken);
-        
-        ArgumentNullException.ThrowIfNull(pagination);
-        
-        return new Pagination<Product>
-        {
-            Count = pagination.Count,
-            PageNumber = pagination.PageNumber,
-            PageSize = pagination.PageSize,
-            Items = pagination.Items.Select(Map)
-        };
+        return (await response.ReadFromJsonAsync<Pagination<ProductDto>>(cancellationToken)).Map(Map);
     }
 }

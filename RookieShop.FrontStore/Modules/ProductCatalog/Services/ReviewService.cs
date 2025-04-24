@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Web;
 using Microsoft.AspNetCore.Authentication;
+using RookieShop.FrontStore.Exceptions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 using RookieShop.Shared.Models;
@@ -12,13 +13,11 @@ public class ReviewService : IReviewService
 {
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<ReviewService> _logger;
 
-    public ReviewService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, ILogger<ReviewService> logger)
+    public ReviewService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
     {
         _httpClient = httpClientFactory.CreateClient("RookieShop.WebApi");
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
     }
     
     public async Task<Pagination<Review>> GetRatingsBySkuAsync(string sku, int pageNumber, int pageSize, CancellationToken cancellationToken)
@@ -48,22 +47,16 @@ public class ReviewService : IReviewService
         
         var accessToken = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
         
-        _logger.LogInformation("Access Token: {0}", accessToken);
-        
         var request = new HttpRequestMessage(HttpMethod.Post, $"/api/Review/{sku}");
 
-        var body = new
-        {
-            score = score,
-            comment = comment
-        };
+        var body = new { score, comment };
 
         request.Headers.Add("Authorization", $"Bearer {accessToken}");
         request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        
-        response.EnsureSuccessStatusCode();
+
+        await response.EnsureSuccess(cancellationToken);
     }
     
     public async Task MakeReactionAsync(Guid writerId, string sku, bool likeReaction, CancellationToken cancellationToken)
@@ -74,16 +67,13 @@ public class ReviewService : IReviewService
         
         var request = new HttpRequestMessage(HttpMethod.Post, $"/api/Review/{writerId}");
 
-        var body = new
-        {
-            reactionType = likeReaction ? 0 : 1
-        };
+        var body = new { reactionType = likeReaction ? 0 : 1 };
         
         request.Headers.Add("Authorization", $"Bearer {accessToken}");
         request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccess(cancellationToken);
     }
 }

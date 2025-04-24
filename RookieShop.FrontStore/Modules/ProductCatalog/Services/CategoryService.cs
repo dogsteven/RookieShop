@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+using RookieShop.FrontStore.Exceptions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 
@@ -17,14 +19,8 @@ public class CategoryService : ICategoryService
         var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Category/{id}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        
-        response.EnsureSuccessStatusCode();
-        
-        var category = await response.Content.ReadFromJsonAsync<Category>(cancellationToken);
-        
-        ArgumentNullException.ThrowIfNull(category);
-        
-        return category;
+
+        return await response.ReadFromJsonAsync<Category>(cancellationToken);
     }
 
     public async Task<IEnumerable<Category>> GetCategoriesAsync(CancellationToken cancellationToken)
@@ -32,13 +28,7 @@ public class CategoryService : ICategoryService
         var request = new HttpRequestMessage(HttpMethod.Get, "/api/Category");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        
-        response.EnsureSuccessStatusCode();
-        
-        var categories = await response.Content.ReadFromJsonAsync<IEnumerable<Category>>(cancellationToken);
-        
-        ArgumentNullException.ThrowIfNull(categories);
-        
-        return categories;
+
+        return await response.ReadFromJsonAsync<IEnumerable<Category>>(cancellationToken);
     }
 }

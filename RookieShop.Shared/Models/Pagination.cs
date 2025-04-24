@@ -10,3 +10,18 @@ public class Pagination<TItem>
 
     public IEnumerable<TItem> Items { get; set; } = null!;
 }
+
+public static class PaginationMappingExtensions
+{
+    public static Pagination<TTarget> Map<TItem, TTarget>(this Pagination<TItem> pagination,
+        Func<TItem, TTarget> mapper)
+    {
+        return new Pagination<TTarget>
+        {
+            Count = pagination.Count,
+            PageNumber = pagination.PageNumber,
+            PageSize = pagination.PageSize,
+            Items = pagination.Items.Select(mapper)
+        };
+    }
+}

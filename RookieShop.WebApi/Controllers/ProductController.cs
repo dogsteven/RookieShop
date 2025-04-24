@@ -83,6 +83,9 @@ public class ProductController : ControllerBase
         public Guid PrimaryImageId { get; set; }
         
         [Required]
+        public ISet<Guid> SupportingImageIds { get; set; }
+        
+        [Required]
         public bool IsFeatured { get; set; }
         
 #pragma warning disable CS8618, CS9264
@@ -105,6 +108,7 @@ public class ProductController : ControllerBase
             Price = body.Price,
             CategoryId = body.CategoryId,
             PrimaryImageId = body.PrimaryImageId,
+            SupportingImageIds = body.SupportingImageIds,
             IsFeatured = body.IsFeatured
         };
 
@@ -131,6 +135,9 @@ public class ProductController : ControllerBase
         public Guid PrimaryImageId { get; set; }
         
         [Required]
+        public ISet<Guid> SupportingImageIds { get; set; }
+        
+        [Required]
         public bool IsFeatured { get; set; }
         
 #pragma warning disable CS8618, CS9264
@@ -154,6 +161,7 @@ public class ProductController : ControllerBase
             Price = body.Price,
             CategoryId = body.CategoryId,
             PrimaryImageId = body.PrimaryImageId,
+            SupportingImageIds = body.SupportingImageIds,
             IsFeatured = body.IsFeatured
         };
         

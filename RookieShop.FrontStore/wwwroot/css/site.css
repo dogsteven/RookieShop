@@ -2,6 +2,9 @@
 @import "flowbite/src/themes/default.css";
 @config "../../tailwind.config.js";
 
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 html {
   position: relative;
   min-height: 100%;

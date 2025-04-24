@@ -16,19 +16,20 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
-      <_ContentIncludedByDefault Remove="Pages\Products\ProductDetails.cshtml" />
+        <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.js" />
+        <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.js" />
+        <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
+        <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
+        <_ContentIncludedByDefault Remove="Pages\Products\ProductDetails.cshtml" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\lib\" />
+        <Folder Include="wwwroot\lib\" />
+        <Folder Include="wwwroot\lib\js" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RookieShop.Shared\RookieShop.Shared.csproj" />
+        <ProjectReference Include="..\RookieShop.Shared\RookieShop.Shared.csproj" />
     </ItemGroup>
 
     <Target Name="Tailwind" BeforeTargets="Build">

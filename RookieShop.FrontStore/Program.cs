@@ -2,12 +2,17 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using RookieShop.FrontStore.ExceptionFilters;
 using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<GlobalExceptionFilter>();
+});
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddAuthentication(options =>
@@ -28,11 +33,13 @@ builder.Services.AddAuthentication(options =>
     var address = builder.Configuration["Keycloak:AuthSettings:Address"];
     var realm = builder.Configuration["Keycloak:AuthSettings:Realm"];
     var authority = $"{address}/realms/{realm}";
+    var metadataAddress = $"{authority}/.well-known/openid-configuration";
     
     var clientId = builder.Configuration["Keycloak:ClientSettings:ClientId"];
     var clientSecret = builder.Configuration["Keycloak:ClientSettings:ClientSecret"];
 
     options.Authority = authority;
+    options.MetadataAddress = metadataAddress;
     options.ClientId = clientId;
     options.ClientSecret = clientSecret;
 

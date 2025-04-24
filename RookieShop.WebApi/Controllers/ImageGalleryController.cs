@@ -2,8 +2,6 @@ using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RookieShop.ImageGallery.Commands;
-using RookieShop.ImageGallery.Entities;
-using RookieShop.ImageGallery.Exceptions;
 using RookieShop.ImageGallery.Models;
 using RookieShop.ImageGallery.Queries;
 using RookieShop.Shared.Models;
