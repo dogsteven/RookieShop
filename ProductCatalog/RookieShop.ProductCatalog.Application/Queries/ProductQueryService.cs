@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Abstractions;
+using RookieShop.ProductCatalog.Application.Entities;
 using RookieShop.ProductCatalog.Application.Exceptions;
 using RookieShop.ProductCatalog.Application.Models;
 using RookieShop.Shared.Models;
@@ -14,6 +15,33 @@ public class ProductQueryService
     {
         _dbContext = dbContext;
     }
+
+    private static ProductDto Map(Product product)
+    {
+        return new ProductDto
+        {
+            Sku = product.Sku,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            CategoryId = product.Category.Id,
+            CategoryName = product.Category.Name,
+            PrimaryImageId = product.PrimaryImageId,
+            SupportingImageIds = product.SupportingImageIds,
+            IsFeatured = product.IsFeatured,
+            CreatedDate = product.CreatedDate,
+            UpdatedDate = product.UpdatedDate,
+            Rating = new RatingDto
+            {
+                Score = product.Rating.Score,
+                OneCount = product.Rating.OneCount,
+                TwoCount = product.Rating.TwoCount,
+                ThreeCount = product.Rating.ThreeCount,
+                FourCount = product.Rating.FourCount,
+                FiveCount = product.Rating.FiveCount
+            }
+        };
+    }
     
     public async Task<ProductDto> GetProductBySkuAsync(string sku, CancellationToken cancellationToken)
     {
@@ -21,7 +49,7 @@ public class ProductQueryService
             .Include(product => product.Category)
             .Include(product => product.Rating)
             .Where(p => p.Sku == sku)
-            .Select(product => new ProductDto(product))
+            .Select(product => Map(product))
             .AsNoTracking();
 
         var productDto = await query.FirstOrDefaultAsync(cancellationToken);
@@ -41,7 +69,7 @@ public class ProductQueryService
             .Include(product => product.Category)
             .Include(product => product.Rating)
             .OrderByDescending(product => product.UpdatedDate)
-            .Select(product => new ProductDto(product))
+            .Select(product => Map(product))
             .AsNoTracking();
         
         var productDtos = await query
@@ -68,7 +96,7 @@ public class ProductQueryService
             .Include(product => product.Rating)
             .Where(product => product.IsFeatured)
             .OrderByDescending(product => product.UpdatedDate)
-            .Select(product => new ProductDto(product))
+            .Select(product => Map(product))
             .AsNoTracking();
         
         var productDtos = await query
@@ -86,7 +114,7 @@ public class ProductQueryService
             .Include(product => product.Rating)
             .Where(product => product.Category.Id == categoryId)
             .OrderByDescending(product => product.UpdatedDate)
-            .Select(product => new ProductDto(product))
+            .Select(product => Map(product))
             .AsNoTracking();
         
         var productDtos = await query

@@ -18,6 +18,8 @@ public class ProductDto
     
     public Guid PrimaryImageId { get; init; }
     
+    public IEnumerable<Guid> SupportingImageIds { get; init; }
+    
     public bool IsFeatured { get; init; }
     
     public DateTime CreatedDate { get; init; }
@@ -25,29 +27,10 @@ public class ProductDto
     public DateTime UpdatedDate { get; init; }
 
     public RatingDto Rating { get; init; }
-
-    internal ProductDto(Product product)
-    {
-        Sku = product.Sku;
-        Name = product.Name;
-        Description = product.Description;
-        Price = product.Price;
-        CategoryId = product.Category.Id;
-        CategoryName = product.Category.Name;
-        PrimaryImageId = product.PrimaryImageId;
-        IsFeatured = product.IsFeatured;
-        CreatedDate = product.CreatedDate;
-        UpdatedDate = product.UpdatedDate;
-        Rating = new RatingDto
-        {
-            Score = product.Rating.Score,
-            OneCount = product.Rating.OneCount,
-            TwoCount = product.Rating.TwoCount,
-            ThreeCount = product.Rating.ThreeCount,
-            FourCount = product.Rating.FourCount,
-            FiveCount = product.Rating.FiveCount
-        };
-    }
+    
+#pragma warning disable CS8618, CS9264
+    public ProductDto() {}
+#pragma warning restore CS8618, CS9264
 }
 
 public class RatingDto

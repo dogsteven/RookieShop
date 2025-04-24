@@ -13,6 +13,8 @@ public class Product
     public Category Category { get; set; }
     
     public Guid PrimaryImageId { get; set; }
+
+    public ISet<Guid> SupportingImageIds { get; set; } = new HashSet<Guid>();
     
     public bool IsFeatured { get; set; }
     

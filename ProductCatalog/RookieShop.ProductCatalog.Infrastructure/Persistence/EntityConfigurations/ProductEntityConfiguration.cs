@@ -1,5 +1,8 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RookieShop.ProductCatalog.Application.Entities;
 
 namespace RookieShop.ProductCatalog.Infrastructure.Persistence.EntityConfigurations;
@@ -35,10 +38,15 @@ public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
             .WithMany()
             .HasForeignKey("CategoryId")
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.Property(product => product.PrimaryImageId)
             .IsRequired()
             .HasColumnName("PrimaryImageId");
+
+        builder.PrimitiveCollection(product => product.SupportingImageIds)
+            .IsRequired()
+            .HasColumnName("SupportingImageIds")
+            .HasDefaultValueSql("array[]::uuid[]");
         
         builder.Property(product => product.IsFeatured)
             .IsRequired()
@@ -59,4 +67,29 @@ public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
         
         builder.HasIndex("CategoryId");
     }
+}
+
+public class GuidSetAndStringValueConverter : ValueConverter<ISet<Guid>, string>
+{
+    private static ISet<Guid> ConvertStringToGuidSet(string stringValue)
+    {
+        var guidSet = new HashSet<Guid>();
+
+        foreach (var text in stringValue.Split(','))
+        {
+            if (Guid.TryParse(text, out var result))
+            {
+                guidSet.Add(result);
+            }
+        }
+
+        return guidSet;
+    }
+
+    private static string ConvertGuidSetToString(ISet<Guid> guidSet)
+    {
+        return string.Join(',', guidSet);
+    }
+    
+    public GuidSetAndStringValueConverter() : base((guidSet) => ConvertGuidSetToString(guidSet), (stringValue) => ConvertStringToGuidSet(stringValue)) {}
 }
