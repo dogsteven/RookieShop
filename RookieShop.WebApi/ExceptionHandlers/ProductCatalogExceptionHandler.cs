@@ -25,39 +25,69 @@ public class ProductCatalogExceptionHandler : IExceptionHandler
 
         switch (exception)
         {
-            case ProductNotFoundException:
+            case ProductNotFoundException productNotFoundException:
                 problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status404NotFound,
                     Title = "Product not found",
-                    Detail = exception.Message
+                    Detail = exception.Message,
+                    Extensions = new Dictionary<string, object?>
+                    {
+                        { "Sku", productNotFoundException.Sku }
+                    }
                 };
                 break;
             
-            case ProductAlreadyExistsException:
+            case ProductAlreadyExistsException productAlreadyExistsException:
                 problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status409Conflict,
                     Title = "Product already exists",
-                    Detail = exception.Message
+                    Detail = exception.Message,
+                    Extensions = new Dictionary<string, object?>
+                    {
+                        { "Sku", productAlreadyExistsException.Sku }
+                    }
                 };
                 break;
             
-            case CategoryNotFoundException:
+            case CategoryNotFoundException categoryNotFoundException:
                 problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status404NotFound,
                     Title = "Category not found",
-                    Detail = exception.Message
+                    Detail = exception.Message,
+                    Extensions = new Dictionary<string, object?>
+                    {
+                        { "Id", categoryNotFoundException.Id }
+                    }
                 };
                 break;
             
-            case CategoryAlreadyExistsException:
+            case CategoryAlreadyExistsException categoryAlreadyExistsException:
                 problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status409Conflict,
                     Title = "Category already exists",
-                    Detail = exception.Message
+                    Detail = exception.Message,
+                    Extensions = new Dictionary<string, object?>
+                    {
+                        { "Name", categoryAlreadyExistsException.Name }
+                    }
+                };
+                break;
+            
+            case CustomerHasAlreadyWrittenReviewException customerHasAlreadyWrittenReviewException:
+                problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Customer has already written review",
+                    Detail = "You have already written review for this product.",
+                    Extensions = new Dictionary<string, object?>
+                    {
+                        { "Writer", customerHasAlreadyWrittenReviewException.WriterId },
+                        { "ProductSku", customerHasAlreadyWrittenReviewException.ProductSku }
+                    }
                 };
                 break;
             
@@ -70,12 +100,17 @@ public class ProductCatalogExceptionHandler : IExceptionHandler
                 };
                 break;
             
-            case CustomerHasNotWrittenReviewException:
+            case CustomerHasNotWrittenReviewException customerHasNotWrittenReviewException:
                 problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Title = "Customer has not written review",
-                    Detail = exception.Message
+                    Detail = exception.Message,
+                    Extensions = new Dictionary<string, object?>
+                    {
+                        { "Writer", customerHasNotWrittenReviewException.WriterId },
+                        { "ProductSku", customerHasNotWrittenReviewException.ProductSku }
+                    }
                 };
                 break;
             

@@ -14,7 +14,7 @@ public class Product
     
     public Guid PrimaryImageId { get; set; }
 
-    public ISet<Guid> SupportingImageIds { get; set; } = new HashSet<Guid>();
+    public List<Guid> SupportingImageIds { get; set; } = [];
     
     public bool IsFeatured { get; set; }
     

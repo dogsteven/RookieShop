@@ -60,7 +60,7 @@ public class UpdateProductConsumer : IConsumer<UpdateProduct>
         product.Price = price;
         product.PrimaryImageId = primaryImageId;
         product.SupportingImageIds.Clear();
-        product.SupportingImageIds.UnionWith(supportingImageIds);
+        product.SupportingImageIds.AddRange(supportingImageIds);
         product.IsFeatured = isFeatured;
         product.UpdatedDate = DateTime.UtcNow;
 

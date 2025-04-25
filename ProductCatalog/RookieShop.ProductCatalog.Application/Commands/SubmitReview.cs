@@ -44,6 +44,14 @@ public class SubmitReviewConsumer : IConsumer<SubmitReview>
         
         var cancellationToken = context.CancellationToken;
         
+        var hasWritten = await _dbContext.Reviews
+            .AnyAsync(review => review.ProductSku == productSku && review.WriterId == writerId, cancellationToken);
+
+        if (hasWritten)
+        {
+            throw new CustomerHasAlreadyWrittenReviewException(writerId, productSku);
+        }
+        
         var hasProfanity = await _profanityChecker.CheckProfanityAsync(comment, cancellationToken);
 
         if (hasProfanity)

@@ -7,24 +7,48 @@
 
 <section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
     <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-        <div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
-            <div>
-                <h2 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Errors</h2>
+        @* <div> *@
+        @*     @if (Model.Exception is ProblemDetailsException problemDetailsException) *@
+        @*     { *@
+        @*         var problemDetails = problemDetailsException.ProblemDetails; *@
+        @*          *@
+        @*         <h3 class="mt-3 text-md text-gray-500 dark:text-white">@problemDetails.Title</h3> *@
+        @*         <h3 class="mt-3 text-md text-gray-500 dark:text-white">@problemDetails.Detail</h3> *@
+        @*     } *@
+        @*     else *@
+        @*     { *@
+        @*         <h3 class="mt-3 text-md text-gray-500 dark:text-white">@Model.Exception.Message</h3> *@
+        @*     } *@
+        @* </div> *@
+
+        @if (Model.Exception is ProblemDetailsException problemDetailsException)
+        {
+            <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                <svg class="shrink-0 inline w-4 h-4 me-3 mt-[2px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                </svg>
+                <span class="sr-only">Error</span>
+                <div class="flex flex-col">
+                    <span class="font-medium">Title: @problemDetailsException.ProblemDetails.Title</span>
+                    
+                    <span>Description: @problemDetailsException.ProblemDetails.Detail</span>
+                </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                <svg class="shrink-0 inline w-4 h-4 me-3 mt-[2px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                </svg>
+                <span class="sr-only">Error</span>
+                <div class="flex flex-col">
+                    <span class="font-medium">Error</span>
+                    
+                    <span>@Model.Exception.Message</span>
+                </div>
+            </div>
+        }
         
-        <div>
-            @if (Model.Exception is ProblemDetailsException problemDetailsException)
-            {
-                var problemDetails = problemDetailsException.ProblemDetails;
-                
-                <h3 class="mt-3 text-md text-gray-500 dark:text-white">@problemDetails.Title</h3>
-                <h3 class="mt-3 text-md text-gray-500 dark:text-white">@problemDetails.Detail</h3>
-            }
-            else
-            {
-                <h3 class="mt-3 text-md text-gray-500 dark:text-white">@Model.Exception.Message</h3>
-            }
-        </div>
     </div>
 </section>

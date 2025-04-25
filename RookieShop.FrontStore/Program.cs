@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using RookieShop.FrontStore.ExceptionFilters;
+using RookieShop.FrontStore.Modules.ImageGallery;
 using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Services;
 
@@ -77,6 +78,8 @@ builder.Services.AddSingleton<IProductService>(provider =>
 });
 builder.Services.AddSingleton<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<IReviewService, ReviewService>();
+
+builder.Services.AddSingleton<ImageGalleryUrlResolver>();
 
 var app = builder.Build();
 

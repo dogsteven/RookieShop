@@ -14,7 +14,9 @@ public class Product
 
     public string CategoryName { get; init; } = null!;
 
-    public string PrimaryImageUrl { get; init; } = null!;
+    public Guid PrimaryImageId { get; init; }
+
+    public ISet<Guid> SupportingImageIds { get; init; } = null!;
     
     public bool IsFeatured { get; init; }
     

@@ -75,7 +75,7 @@ public class CreateProductConsumer : IConsumer<CreateProduct>
             Price = price,
             Category = category,
             PrimaryImageId = primaryImageId,
-            SupportingImageIds = supportingImageIds,
+            SupportingImageIds = supportingImageIds.ToList(),
             IsFeatured = isFeatured,
             CreatedDate = now,
             UpdatedDate = now,

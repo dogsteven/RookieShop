@@ -17,72 +17,6 @@ public class ProductService : IProductService
         _httpClient = httpClientFactory.CreateClient("RookieShop.WebApi");
         _imageGalleryBasePath = imageGalleryBasePath;
     }
-
-    private class ProductDto
-    {
-        public string Sku { get; init; } = null!;
-    
-        public string Name { get; init; } = null!;
-    
-        public string Description { get; init; } = null!;
-    
-        public decimal Price { get; init; }
-    
-        public int CategoryId { get; init; }
-    
-        public string CategoryName { get; init; } = null!;
-    
-        public Guid PrimaryImageId { get; init; }
-    
-        public bool IsFeatured { get; init; }
-    
-        public DateTime CreatedDate { get; init; }
-    
-        public DateTime UpdatedDate { get; init; }
-
-        public RatingDto Rating { get; init; } = null!;
-    }
-    
-    private class RatingDto
-    {
-        public double Score { get; init; }
-    
-        public int OneCount { get; init; }
-    
-        public int TwoCount { get; init; }
-    
-        public int ThreeCount { get; init; }
-    
-        public int FourCount { get; init; }
-    
-        public int FiveCount { get; init; }
-    }
-
-    private Product Map(ProductDto product)
-    {
-        return new Product
-        {
-            Sku = product.Sku,
-            Name = product.Name,
-            Description = product.Description,
-            Price = product.Price,
-            CategoryId = product.CategoryId,
-            CategoryName = product.CategoryName,
-            PrimaryImageUrl = $"{_imageGalleryBasePath}/api/ImageGallery/{product.PrimaryImageId}",
-            IsFeatured = product.IsFeatured,
-            CreatedDate = product.CreatedDate,
-            UpdatedDate = product.UpdatedDate,
-            Rating = new Rating
-            {
-                Score = product.Rating.Score,
-                OneCount = product.Rating.OneCount,
-                TwoCount = product.Rating.TwoCount,
-                ThreeCount = product.Rating.ThreeCount,
-                FourCount = product.Rating.FourCount,
-                FiveCount = product.Rating.FiveCount
-            }
-        };
-    }
     
     public async Task<Product> GetProductBySkuAsync(string sku, CancellationToken cancellationToken)
     {
@@ -90,9 +24,7 @@ public class ProductService : IProductService
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         
-        var productDto = await response.ReadFromJsonAsync<ProductDto>(cancellationToken);
-        
-        return Map(productDto);
+        return await response.ReadFromJsonAsync<Product>(cancellationToken);
     }
 
     public async Task<Pagination<Product>> GetProductsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
@@ -107,7 +39,7 @@ public class ProductService : IProductService
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        return (await response.ReadFromJsonAsync<Pagination<ProductDto>>(cancellationToken)).Map(Map);
+        return await response.ReadFromJsonAsync<Pagination<Product>>(cancellationToken);
     }
 
     public async Task<IEnumerable<Product>> GetFeaturedProductsAsync(int maxCount, CancellationToken cancellationToken)
@@ -121,7 +53,7 @@ public class ProductService : IProductService
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        return (await response.ReadFromJsonAsync<IEnumerable<ProductDto>>(cancellationToken)).Select(Map);
+        return await response.ReadFromJsonAsync<IEnumerable<Product>>(cancellationToken);
     }
 
     public async Task<Pagination<Product>> GetProductsByCategoryIdAsync(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
@@ -135,7 +67,7 @@ public class ProductService : IProductService
         var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/by-category/{categoryId}?{queryString}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        
-        return (await response.ReadFromJsonAsync<Pagination<ProductDto>>(cancellationToken)).Map(Map);
+
+        return await response.ReadFromJsonAsync<Pagination<Product>>(cancellationToken);
     }
 }
