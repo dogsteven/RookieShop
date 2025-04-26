@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using RookieShop.ImageGallery.Abstractions;
+using RookieShop.ImageGallery.Application.Abstractions;
+using RookieShop.ImageGallery.Application.Queries;
 using RookieShop.ImageGallery.Infrastructure.Persistence;
 using RookieShop.ImageGallery.Infrastructure.Storage;
-using RookieShop.ImageGallery.Queries;
 
 namespace RookieShop.ImageGallery.Infrastructure.Configurations;
 
@@ -63,6 +63,7 @@ public class ImageGalleryConfigurator
 
         services.AddScoped<ImageGalleryDbContext, ImageGalleryDbContextImpl>();
         
+        services.AddSingleton<ITemporaryStorage, OperatingSystemTemporaryStorage>();
         services.AddSingleton<IPersistentStorage, AzureBlobPersistentStorage>();
 
         services.AddScoped<ImageQueryService>();

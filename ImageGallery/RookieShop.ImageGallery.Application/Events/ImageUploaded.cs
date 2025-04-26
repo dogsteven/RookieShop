@@ -1,21 +1,21 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using RookieShop.ImageGallery.Abstractions;
+using RookieShop.ImageGallery.Application.Abstractions;
 
-namespace RookieShop.ImageGallery.Events;
+namespace RookieShop.ImageGallery.Application.Events;
 
 public class ImageUploaded
 {
     public Guid Id { get; set; }
 }
 
-public class SyncTemporaryFileToStorageConsumer : IConsumer<ImageUploaded>
+public class SyncTemporaryEntryToPersistentStorageConsumer : IConsumer<ImageUploaded>
 {
     private readonly ImageGalleryDbContext _dbContext;
     private readonly ITemporaryStorage _temporaryStorage;
     private readonly IPersistentStorage _persistentStorage;
 
-    public SyncTemporaryFileToStorageConsumer(ImageGalleryDbContext dbContext, ITemporaryStorage temporaryStorage, IPersistentStorage persistentStorage)
+    public SyncTemporaryEntryToPersistentStorageConsumer(ImageGalleryDbContext dbContext, ITemporaryStorage temporaryStorage, IPersistentStorage persistentStorage)
     {
         _dbContext = dbContext;
         _temporaryStorage = temporaryStorage;
@@ -36,9 +36,9 @@ public class SyncTemporaryFileToStorageConsumer : IConsumer<ImageUploaded>
             return;
         }
         
-        await using var fileStream = await _temporaryStorage.OpenAsStreamAsync(image.TempFileName, cancellationToken);
+        await using var stream = await _temporaryStorage.ReadAsync(image.TemporaryEntryId, cancellationToken);
         
-        await _persistentStorage.SaveImageAsync(id, fileStream, cancellationToken);
+        await _persistentStorage.SaveAsync(id, stream, cancellationToken);
         
         image.MarkAsSynced();
         

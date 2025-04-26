@@ -22,7 +22,7 @@ namespace RookieShop.WebApi.Migrations.ImageGallery
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("RookieShop.ImageGallery.Entities.Image", b =>
+            modelBuilder.Entity("RookieShop.ImageGallery.Application.Entities.Image", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,11 +43,11 @@ namespace RookieShop.WebApi.Migrations.ImageGallery
                         .HasColumnType("boolean")
                         .HasColumnName("IsSynced");
 
-                    b.Property<string>("TempFileName")
+                    b.Property<string>("TemporaryEntryId")
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)")
-                        .HasColumnName("TempFileName");
+                        .HasColumnName("TemporaryEntryId");
 
                     b.HasKey("Id");
 

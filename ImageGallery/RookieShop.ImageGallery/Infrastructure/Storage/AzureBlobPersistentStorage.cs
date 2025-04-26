@@ -1,13 +1,13 @@
 using Azure.Storage.Blobs;
 using RookieShop.ImageGallery.Abstractions;
 
-namespace RookieShop.ImageGallery.Infrastructure.ImageStorage;
+namespace RookieShop.ImageGallery.Infrastructure.Storage;
 
-public class AzureBlobImageStorage : IImageStorage
+public class AzureBlobPersistentStorage : IPersistentStorage
 {
     private readonly BlobContainerClient _blobContainerClient;
 
-    public AzureBlobImageStorage(BlobServiceClient blobServiceClient)
+    public AzureBlobPersistentStorage(BlobServiceClient blobServiceClient)
     {
         _blobContainerClient = blobServiceClient.GetBlobContainerClient("rookie-shop-images");
     }

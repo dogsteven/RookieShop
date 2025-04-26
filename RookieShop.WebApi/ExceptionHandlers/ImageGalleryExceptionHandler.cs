@@ -1,7 +1,7 @@
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using RookieShop.ImageGallery.Exceptions;
+using RookieShop.ImageGallery.Application.Exceptions;
 
 namespace RookieShop.WebApi.ExceptionHandlers;
 

@@ -1,20 +1,21 @@
 using Microsoft.EntityFrameworkCore;
-using RookieShop.ImageGallery.Abstractions;
-using RookieShop.ImageGallery.Entities;
-using RookieShop.ImageGallery.Exceptions;
-using RookieShop.ImageGallery.Models;
+using RookieShop.ImageGallery.Application.Abstractions;
+using RookieShop.ImageGallery.Application.Exceptions;
+using RookieShop.ImageGallery.Application.Models;
 using RookieShop.Shared.Models;
 
-namespace RookieShop.ImageGallery.Queries;
+namespace RookieShop.ImageGallery.Application.Queries;
 
 public class ImageQueryService
 {
     private readonly ImageGalleryDbContext _dbContext;
+    private readonly ITemporaryStorage _temporaryStorage;
     private readonly IPersistentStorage _persistentStorage;
 
-    public ImageQueryService(ImageGalleryDbContext dbContext, IPersistentStorage persistentStorage)
+    public ImageQueryService(ImageGalleryDbContext dbContext, ITemporaryStorage temporaryStorage, IPersistentStorage persistentStorage)
     {
         _dbContext = dbContext;
+        _temporaryStorage = temporaryStorage;
         _persistentStorage = persistentStorage;
     }
 
@@ -42,7 +43,7 @@ public class ImageQueryService
         };
     }
 
-    public async Task<(Stream, string)> GetImageByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<(Stream, string)> OpenStreamAsync(Guid id, CancellationToken cancellationToken)
     {
         var image = await _dbContext.Images.AsNoTracking()
             .Where(image => image.Id == id)
@@ -57,11 +58,11 @@ public class ImageQueryService
 
         if (!image.IsSynced)
         {
-            stream = new FileStream(image.TempFileName, FileMode.Open);
+            stream = await _temporaryStorage.ReadAsync(image.TemporaryEntryId, cancellationToken);
         }
         else
         {
-            stream = await _persistentStorage.GetImageByIdAsync(image.Id, cancellationToken);
+            stream = await _persistentStorage.ReadAsync(image.Id, cancellationToken);
         }
 
         return (stream, image.ContentType);

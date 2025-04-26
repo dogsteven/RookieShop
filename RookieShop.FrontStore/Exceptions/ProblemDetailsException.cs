@@ -12,6 +12,11 @@ public class ProblemDetailsException : Exception
     }
 }
 
+public class UnexpectedException : Exception
+{
+    public UnexpectedException() : base("An unexpected error has occurred.") {}
+}
+
 internal static class ProblemDetailsExceptionExtensions
 {
     internal static async Task<T> ReadFromJsonAsync<T>(this HttpResponseMessage response, CancellationToken cancellationToken) where T : class
@@ -33,6 +38,8 @@ internal static class ProblemDetailsExceptionExtensions
             {
                 throw new ProblemDetailsException(problemDetails);
             }
+            
+            throw new UnexpectedException();
         }
     }
 }

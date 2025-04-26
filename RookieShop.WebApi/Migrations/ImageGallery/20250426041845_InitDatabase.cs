@@ -20,10 +20,10 @@ namespace RookieShop.WebApi.Migrations.ImageGallery
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsUploaded = table.Column<bool>(type: "boolean", nullable: false),
+                    IsSynced = table.Column<bool>(type: "boolean", nullable: false),
                     ContentType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TempFileName = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false)
+                    TemporaryEntryId = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false)
                 },
                 constraints: table =>
                 {

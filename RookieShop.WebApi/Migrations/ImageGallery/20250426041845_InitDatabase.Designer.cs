@@ -12,8 +12,8 @@ using RookieShop.ImageGallery.Infrastructure.Persistence;
 namespace RookieShop.WebApi.Migrations.ImageGallery
 {
     [DbContext(typeof(ImageGalleryDbContextImpl))]
-    [Migration("20250422020753_RenameImageEntity")]
-    partial class RenameImageEntity
+    [Migration("20250426041845_InitDatabase")]
+    partial class InitDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace RookieShop.WebApi.Migrations.ImageGallery
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("RookieShop.ImageGallery.Entities.Image", b =>
+            modelBuilder.Entity("RookieShop.ImageGallery.Application.Entities.Image", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,11 +46,11 @@ namespace RookieShop.WebApi.Migrations.ImageGallery
                         .HasColumnType("boolean")
                         .HasColumnName("IsSynced");
 
-                    b.Property<string>("TempFileName")
+                    b.Property<string>("TemporaryEntryId")
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)")
-                        .HasColumnName("TempFileName");
+                        .HasColumnName("TemporaryEntryId");
 
                     b.HasKey("Id");
 

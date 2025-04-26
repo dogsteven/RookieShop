@@ -1,20 +1,20 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using RookieShop.ImageGallery.Abstractions;
+using RookieShop.ImageGallery.Application.Abstractions;
 
-namespace RookieShop.ImageGallery.Events;
+namespace RookieShop.ImageGallery.Application.Events;
 
 public class ImageSynced
 {
     public Guid Id { get; set; }
 }
 
-public class DeleteTemporaryImageOnSyncConsumer : IConsumer<ImageSynced>
+public class CleanUpTemporaryStorageOnSyncedConsumer : IConsumer<ImageSynced>
 {
     private readonly ImageGalleryDbContext _dbContext;
     private readonly ITemporaryStorage _temporaryStorage;
 
-    public DeleteTemporaryImageOnSyncConsumer(ImageGalleryDbContext dbContext, ITemporaryStorage temporaryStorage)
+    public CleanUpTemporaryStorageOnSyncedConsumer(ImageGalleryDbContext dbContext, ITemporaryStorage temporaryStorage)
     {
         _dbContext = dbContext;
         _temporaryStorage = temporaryStorage;
@@ -34,6 +34,6 @@ public class DeleteTemporaryImageOnSyncConsumer : IConsumer<ImageSynced>
             return;
         }
         
-        await _temporaryStorage.DeleteAsync(image.TempFileName, cancellationToken);
+        await _temporaryStorage.DeleteAsync(image.TemporaryEntryId, cancellationToken);
     }
 }

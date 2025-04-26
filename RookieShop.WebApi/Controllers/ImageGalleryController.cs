@@ -1,9 +1,9 @@
 using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RookieShop.ImageGallery.Commands;
-using RookieShop.ImageGallery.Models;
-using RookieShop.ImageGallery.Queries;
+using RookieShop.ImageGallery.Application.Commands;
+using RookieShop.ImageGallery.Application.Models;
+using RookieShop.ImageGallery.Application.Queries;
 using RookieShop.Shared.Models;
 
 namespace RookieShop.WebApi.Controllers;
@@ -37,7 +37,7 @@ public class ImageGalleryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetImageByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var (stream, contentType) = await _imageQueryService.GetImageByIdAsync(id, cancellationToken);
+        var (stream, contentType) = await _imageQueryService.OpenStreamAsync(id, cancellationToken);
         
         Response.Headers.Append("Cache-Control", "public, max-age=1800");
 
@@ -60,6 +60,7 @@ public class ImageGalleryController : ControllerBase
 
         await _scopedMediator.Send(new UploadImage
         {
+            Id = Guid.NewGuid(),
             ContentType = form.File.ContentType,
             Stream = stream
         }, cancellationToken);

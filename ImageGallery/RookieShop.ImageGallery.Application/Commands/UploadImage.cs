@@ -1,9 +1,9 @@
 using MassTransit;
-using RookieShop.ImageGallery.Abstractions;
-using RookieShop.ImageGallery.Entities;
-using RookieShop.ImageGallery.Events;
+using RookieShop.ImageGallery.Application.Abstractions;
+using RookieShop.ImageGallery.Application.Entities;
+using RookieShop.ImageGallery.Application.Events;
 
-namespace RookieShop.ImageGallery.Commands;
+namespace RookieShop.ImageGallery.Application.Commands;
 
 public class UploadImage
 {
@@ -35,9 +35,9 @@ public class UploadImageConsumer : IConsumer<UploadImage>
         
         var cancellationToken = context.CancellationToken;
 
-        var tempFileName = await _temporaryStorage.SaveStreamAsync(stream, cancellationToken);
+        var temporaryEntryId = await _temporaryStorage.SaveAsync(stream, cancellationToken);
         
-        var image = new Image(id, contentType, tempFileName);
+        var image = new Image(id, contentType, temporaryEntryId);
         
         _dbContext.Images.Add(image);
         

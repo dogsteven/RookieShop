@@ -1,18 +1,18 @@
 using MassTransit;
-using RookieShop.ImageGallery.Abstractions;
+using RookieShop.ImageGallery.Application.Abstractions;
 
-namespace RookieShop.ImageGallery.Events;
+namespace RookieShop.ImageGallery.Application.Events;
 
 public class ImageDeleted
 {
     public Guid Id { get; set; }
 }
 
-public class DeleteImageFromStorageConsumer : IConsumer<ImageDeleted>
+public class CleanUpPersistentStorageOnDeletedConsumer : IConsumer<ImageDeleted>
 {
     private readonly IPersistentStorage _persistentStorage;
 
-    public DeleteImageFromStorageConsumer(IPersistentStorage persistentStorage)
+    public CleanUpPersistentStorageOnDeletedConsumer(IPersistentStorage persistentStorage)
     {
         _persistentStorage = persistentStorage;
     }
@@ -23,6 +23,6 @@ public class DeleteImageFromStorageConsumer : IConsumer<ImageDeleted>
         
         var cancellationToken = context.CancellationToken;
 
-        await _persistentStorage.DeleteImageAsync(id, cancellationToken);
+        await _persistentStorage.DeleteAsync(id, cancellationToken);
     }
 }
