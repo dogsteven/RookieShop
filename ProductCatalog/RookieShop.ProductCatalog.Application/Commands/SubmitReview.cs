@@ -47,6 +47,14 @@ public class SubmitReviewConsumer : IConsumer<SubmitReview>
         var hasWritten = await _dbContext.Reviews
             .AnyAsync(review => review.ProductSku == productSku && review.WriterId == writerId, cancellationToken);
 
+        var productExists = await _dbContext.Products
+            .AnyAsync(product => product.Sku == productSku, cancellationToken);
+
+        if (!productExists)
+        {
+            throw new ProductNotFoundException(productSku);
+        }
+        
         if (hasWritten)
         {
             throw new CustomerHasAlreadyWrittenReviewException(writerId, productSku);
@@ -57,14 +65,6 @@ public class SubmitReviewConsumer : IConsumer<SubmitReview>
         if (hasProfanity)
         {
             throw new ProfaneCommentException();
-        }
-        
-        var productExists = await _dbContext.Products
-            .AnyAsync(product => product.Sku == productSku, cancellationToken);
-
-        if (!productExists)
-        {
-            throw new ProductNotFoundException(productSku);
         }
 
         var rating = new Review
