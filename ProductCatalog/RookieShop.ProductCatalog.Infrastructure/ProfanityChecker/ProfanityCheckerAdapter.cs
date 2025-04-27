@@ -14,6 +14,6 @@ public class ProfanityCheckerAdapter : IProfanityChecker
 
     public ValueTask<bool> CheckProfanityAsync(string text, CancellationToken cancellationToken)
     {
-        return ValueTask.FromResult(_profanityFilter.IsProfanity(text));
+        return ValueTask.FromResult(_profanityFilter.DetectAllProfanities(text).Count > 0);
     }
 }

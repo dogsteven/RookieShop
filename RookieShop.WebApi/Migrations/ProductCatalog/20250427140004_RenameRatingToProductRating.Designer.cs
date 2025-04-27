@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RookieShop.ProductCatalog.Infrastructure.Persistence;
@@ -12,9 +13,11 @@ using RookieShop.ProductCatalog.Infrastructure.Persistence;
 namespace RookieShop.WebApi.Migrations.ProductCatalog
 {
     [DbContext(typeof(ProductCatalogDbContextImpl))]
-    partial class ProductCatalogDbContextImplModelSnapshot : ModelSnapshot
+    [Migration("20250427140004_RenameRatingToProductRating")]
+    partial class RenameRatingToProductRating
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,7 +148,34 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
 
                     b.HasKey("ProductSku");
 
-                    b.ToTable("ProductRatings", "ProductCatalog");
+                    b.ToTable("Ratings", "ProductCatalog");
+                });
+
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Reaction", b =>
+                {
+                    b.Property<Guid>("ReactorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ReactorId");
+
+                    b.Property<Guid>("WriterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("WriterId");
+
+                    b.Property<string>("ProductSku")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("ProductSku");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Type");
+
+                    b.HasKey("ReactorId", "WriterId", "ProductSku");
+
+                    b.HasIndex("WriterId", "ProductSku");
+
+                    b.ToTable("Reactions", "ProductCatalog");
                 });
 
             modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Review", b =>
@@ -184,33 +214,6 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                     b.ToTable("Reviews", "ProductCatalog");
                 });
 
-            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.ReviewReaction", b =>
-                {
-                    b.Property<string>("Type")
-                        .HasColumnType("text")
-                        .HasColumnName("Type");
-
-                    b.Property<string>("ProductSku")
-                        .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
-                        .HasColumnName("ProductSku");
-
-                    b.Property<Guid>("ReactorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("ReactorId");
-
-                    b.Property<Guid>("WriterId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("WriterId");
-
-                    b.HasKey("Type");
-
-                    b.HasIndex("WriterId", "ProductSku");
-
-                    b.ToTable("ReviewReactions", "ProductCatalog");
-                });
-
             modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Product", b =>
                 {
                     b.HasOne("RookieShop.ProductCatalog.Application.Entities.Category", "Category")
@@ -231,7 +234,7 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.ReviewReaction", b =>
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Reaction", b =>
                 {
                     b.HasOne("RookieShop.ProductCatalog.Application.Entities.Review", null)
                         .WithMany("Reactions")

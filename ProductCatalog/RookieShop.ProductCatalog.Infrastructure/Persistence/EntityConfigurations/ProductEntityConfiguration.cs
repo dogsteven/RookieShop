@@ -62,34 +62,9 @@ public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasOne(product => product.Rating)
             .WithOne()
-            .HasForeignKey<Rating>(rating => rating.ProductSku)
+            .HasForeignKey<ProductRating>(rating => rating.ProductSku)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasIndex("CategoryId");
     }
-}
-
-public class GuidSetAndStringValueConverter : ValueConverter<ISet<Guid>, string>
-{
-    private static ISet<Guid> ConvertStringToGuidSet(string stringValue)
-    {
-        var guidSet = new HashSet<Guid>();
-
-        foreach (var text in stringValue.Split(','))
-        {
-            if (Guid.TryParse(text, out var result))
-            {
-                guidSet.Add(result);
-            }
-        }
-
-        return guidSet;
-    }
-
-    private static string ConvertGuidSetToString(ISet<Guid> guidSet)
-    {
-        return string.Join(',', guidSet);
-    }
-    
-    public GuidSetAndStringValueConverter() : base((guidSet) => ConvertGuidSetToString(guidSet), (stringValue) => ConvertStringToGuidSet(stringValue)) {}
 }

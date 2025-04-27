@@ -14,14 +14,14 @@ public class Review
     
     public DateTime CreatedDate { get; set; }
     
-    public ICollection<Reaction> Reactions { get; set; }
+    public ICollection<ReviewReaction> Reactions { get; set; }
         
 #pragma warning disable CS8618, CS9264
     public Review() {}
 #pragma warning restore CS8618, CS9264
 }
 
-public class Reaction
+public class ReviewReaction
 {
     public Guid ReactorId { get; set; }
     
@@ -29,14 +29,14 @@ public class Reaction
     
     public string ProductSku { get; set; }
     
-    public ReactionType Type { get; set; }
+    public ReviewReactionType Type { get; set; }
     
 #pragma warning disable CS8618, CS9264
-    public Reaction() {}
+    public ReviewReaction() {}
 #pragma warning restore CS8618, CS9264
 }
 
-public enum ReactionType
+public enum ReviewReactionType
 {
     Like, Dislike
 }

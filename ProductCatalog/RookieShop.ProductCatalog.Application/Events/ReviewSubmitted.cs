@@ -28,15 +28,15 @@ public class ApplyScoreConsumer : IConsumer<ReviewSubmitted>
 
         var cancellationToken = context.CancellationToken;
 
-        var rating = await _dbContext.Ratings
-            .FirstOrDefaultAsync(rating => rating.ProductSku == sku, cancellationToken);
+        var productRating = await _dbContext.ProductRatings
+            .FirstOrDefaultAsync(productRating => productRating.ProductSku == sku, cancellationToken);
 
-        if (rating == null)
+        if (productRating == null)
         {
             return;
         }
 
-        rating.ApplyScore(score);
+        productRating.ApplyScore(score);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

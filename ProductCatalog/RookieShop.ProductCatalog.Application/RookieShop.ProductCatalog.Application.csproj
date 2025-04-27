@@ -15,4 +15,8 @@
       <ProjectReference Include="..\..\RookieShop.Shared\RookieShop.Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Events\ProductUpdated.cs" />
+    </ItemGroup>
+
 </Project>

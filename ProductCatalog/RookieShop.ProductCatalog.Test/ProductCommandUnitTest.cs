@@ -1,8 +1,10 @@
 using MassTransit.Mediator;
+using MassTransit.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Commands;
+using RookieShop.ProductCatalog.Application.Events;
 using RookieShop.ProductCatalog.Application.Exceptions;
 using RookieShop.ProductCatalog.Test.Utilities;
 
@@ -93,6 +95,8 @@ public class ProductCommandUnitTest
         await seeder.SeedAsync();
         
         using var scope = provider.CreateScope();
+
+        var harness = scope.ServiceProvider.GetRequiredService<ITestHarness>();
         
         var scopedMediator = scope.ServiceProvider.GetRequiredService<IScopedMediator>();
         
@@ -107,16 +111,27 @@ public class ProductCommandUnitTest
             SupportingImageIds = new HashSet<Guid>(),
             IsFeatured = true
         };
-        
-        // Act
-        await scopedMediator.Send(createProduct);
-        
-        // Assert
-        var context = scope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
-        
-        var product = await context.Products.FirstOrDefaultAsync(product => product.Sku == "TestSku");
-        
-        Assert.NotNull(product);
+
+        try
+        {
+            await harness.Start();
+            
+            // Act
+            await scopedMediator.Send(createProduct);
+
+            // Assert
+            var context = scope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
+
+            var product = await context.Products.FirstOrDefaultAsync(product => product.Sku == "TestSku");
+
+            Assert.NotNull(product);
+            
+            Assert.True(await harness.Published.Any<ProductCreatedOrUpdated>());
+        }
+        finally
+        {
+            await harness.Stop();
+        }
     }
 
     [Fact]
@@ -203,6 +218,8 @@ public class ProductCommandUnitTest
         
         using var scope = provider.CreateScope();
         
+        var harness = scope.ServiceProvider.GetRequiredService<ITestHarness>();
+        
         var scopedMediator = scope.ServiceProvider.GetRequiredService<IScopedMediator>();
         
         var updateProduct = new UpdateProduct
@@ -216,22 +233,33 @@ public class ProductCommandUnitTest
             SupportingImageIds = new HashSet<Guid>(),
             IsFeatured = true
         };
+
+        try
+        {
+            await harness.Start();
+            
+            // Act
+            await scopedMediator.Send(updateProduct);
         
-        // Act
-        await scopedMediator.Send(updateProduct);
+            // Assert
+            var context = scope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
         
-        // Assert
-        var context = scope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
+            var product = await context.Products.Include(product => product.Category)
+                .FirstOrDefaultAsync(product => product.Sku == "ASKAR160APO");
         
-        var product = await context.Products.Include(product => product.Category)
-            .FirstOrDefaultAsync(product => product.Sku == "ASKAR160APO");
-        
-        Assert.NotNull(product);
-        Assert.Equal("Test Name", product.Name);
-        Assert.Equal("Test Description", product.Description);
-        Assert.Equal(1000, product.Price);
-        Assert.Equal(1, product.Category.Id);
-        Assert.True(product.IsFeatured);
+            Assert.NotNull(product);
+            Assert.Equal("Test Name", product.Name);
+            Assert.Equal("Test Description", product.Description);
+            Assert.Equal(1000, product.Price);
+            Assert.Equal(1, product.Category.Id);
+            Assert.True(product.IsFeatured);
+            
+            Assert.True(await harness.Published.Any<ProductCreatedOrUpdated>());
+        }
+        finally
+        {
+            await harness.Stop();
+        }
     }
 
     [Fact]

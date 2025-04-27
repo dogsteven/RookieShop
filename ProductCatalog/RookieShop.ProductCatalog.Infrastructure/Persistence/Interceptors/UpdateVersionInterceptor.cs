@@ -16,7 +16,7 @@ public class UpdateVersionInterceptor : SaveChangesInterceptor
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
         
-        var entries = context.ChangeTracker.Entries<Rating>()
+        var entries = context.ChangeTracker.Entries<ProductRating>()
             .Where(entry => entry.State is EntityState.Added or EntityState.Modified);
 
         foreach (var entry in entries)

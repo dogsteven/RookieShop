@@ -4,40 +4,40 @@ using RookieShop.ProductCatalog.Application.Entities;
 
 namespace RookieShop.ProductCatalog.Infrastructure.Persistence.EntityConfigurations;
 
-public class RatingEntityConfiguration : IEntityTypeConfiguration<Rating>
+public class ProductRatingEntityConfiguration : IEntityTypeConfiguration<ProductRating>
 {
-    public void Configure(EntityTypeBuilder<Rating> builder)
+    public void Configure(EntityTypeBuilder<ProductRating> builder)
     {
-        builder.ToTable("Ratings", schema: "ProductCatalog");
+        builder.ToTable("ProductRatings", schema: "ProductCatalog");
 
-        builder.HasKey(rating => rating.ProductSku);
+        builder.HasKey(productRating => productRating.ProductSku);
         
-        builder.Property(rating => rating.ProductSku)
+        builder.Property(productRating => productRating.ProductSku)
             .IsRequired()
             .HasMaxLength(16)
             .HasColumnName("Sku");
         
-        builder.Property(rating => rating.Score)
+        builder.Property(productRating => productRating.Score)
             .IsRequired()
             .HasColumnName("Score");
         
-        builder.Property(rating => rating.OneCount)
+        builder.Property(productRating => productRating.OneCount)
             .IsRequired()
             .HasColumnName("OneCount");
         
-        builder.Property(rating => rating.TwoCount)
+        builder.Property(productRating => productRating.TwoCount)
             .IsRequired()
             .HasColumnName("TwoCount");
         
-        builder.Property(rating => rating.ThreeCount)
+        builder.Property(productRating => productRating.ThreeCount)
             .IsRequired()
             .HasColumnName("ThreeCount");
         
-        builder.Property(rating => rating.FourCount)
+        builder.Property(productRating => productRating.FourCount)
             .IsRequired()
             .HasColumnName("FourCount");
         
-        builder.Property(rating => rating.FiveCount)
+        builder.Property(productRating => productRating.FiveCount)
             .IsRequired()
             .HasColumnName("FiveCount");
 

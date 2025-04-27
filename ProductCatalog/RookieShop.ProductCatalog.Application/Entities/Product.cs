@@ -22,14 +22,14 @@ public class Product
     
     public DateTime UpdatedDate { get; set; }
     
-    public Rating Rating { get; set; }
+    public ProductRating Rating { get; set; }
     
 #pragma warning disable CS8618, CS9264
     public Product() {}
 #pragma warning restore CS8618, CS9264
 }
 
-public class Rating
+public class ProductRating
 {
     public string ProductSku { get; init; }
     
@@ -48,10 +48,10 @@ public class Rating
     private int Count => OneCount + TwoCount + ThreeCount + FourCount + FiveCount;
 
 #pragma warning disable CS8618, CS9264
-    public Rating() {}
+    public ProductRating() {}
 #pragma warning restore CS8618, CS9264
     
-    public Rating(string productSku)
+    public ProductRating(string productSku)
     {
         ProductSku = productSku;
         Score = 0.0;

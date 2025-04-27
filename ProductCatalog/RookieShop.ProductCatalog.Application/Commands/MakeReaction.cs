@@ -14,7 +14,7 @@ public class MakeReaction
 
     public string ProductSku { get; set; } = null!;
     
-    public ReactionType ReactionType { get; set; }
+    public ReviewReactionType Type { get; set; }
 }
 
 public class MakeReactionConsumer : IConsumer<MakeReaction>
@@ -32,7 +32,7 @@ public class MakeReactionConsumer : IConsumer<MakeReaction>
         var reactorId = message.ReactorId;
         var writerId = message.WriterId;
         var productSku = message.ProductSku;
-        var reactionType = message.ReactionType;
+        var type = message.Type;
         
         var cancellationToken = context.CancellationToken;
         
@@ -49,24 +49,24 @@ public class MakeReactionConsumer : IConsumer<MakeReaction>
             throw new MakeReactionToOwnReviewException();
         }
 
-        var existingReaction = await _dbContext.Reactions
-            .FirstOrDefaultAsync(reaction => reaction.ReactorId == reactorId && reaction.WriterId == writerId && reaction.ProductSku == productSku, cancellationToken);
+        var existingReviewReaction = await _dbContext.ReviewReactions
+            .FirstOrDefaultAsync(reviewReaction => reviewReaction.ReactorId == reactorId && reviewReaction.WriterId == writerId && reviewReaction.ProductSku == productSku, cancellationToken);
 
-        if (existingReaction != null)
+        if (existingReviewReaction != null)
         {
-            existingReaction.Type = reactionType;
+            existingReviewReaction.Type = type;
         }
         else
         {
-            var reaction = new Reaction
+            var reviewReaction = new ReviewReaction
             {
                 ReactorId = reactorId,
                 WriterId = writerId,
                 ProductSku = productSku,
-                Type = reactionType
+                Type = type
             };
             
-            _dbContext.Reactions.Add(reaction);
+            _dbContext.ReviewReactions.Add(reviewReaction);
         }
         
         await _dbContext.SaveChangesAsync(cancellationToken);

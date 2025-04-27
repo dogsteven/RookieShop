@@ -29,8 +29,8 @@ public class ReviewQueryService
                 Score = review.Score,
                 Comment = review.Comment,
                 CreatedDate = review.CreatedDate,
-                NumberOfLikes = review.Reactions.Count(reaction => reaction.Type == ReactionType.Like),
-                NumberOfDislikes = review.Reactions.Count(reaction => reaction.Type == ReactionType.Dislike)
+                NumberOfLikes = review.Reactions.Count(reviewReaction => reviewReaction.Type == ReviewReactionType.Like),
+                NumberOfDislikes = review.Reactions.Count(reviewReaction => reviewReaction.Type == ReviewReactionType.Dislike)
             })
             .AsNoTracking();
 

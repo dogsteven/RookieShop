@@ -15,10 +15,10 @@ public class ProductCatalogDbContextImpl : ProductCatalogDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new ProductEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new RatingEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductRatingEntityConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new ReactionEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new ReviewReactionEntityConfiguration());
     }
 }
 

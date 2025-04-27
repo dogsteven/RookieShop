@@ -31,7 +31,7 @@ public class ProductQueryService
             IsFeatured = product.IsFeatured,
             CreatedDate = product.CreatedDate,
             UpdatedDate = product.UpdatedDate,
-            Rating = new RatingDto
+            Rating = new ProductRatingDto
             {
                 Score = product.Rating.Score,
                 OneCount = product.Rating.OneCount,

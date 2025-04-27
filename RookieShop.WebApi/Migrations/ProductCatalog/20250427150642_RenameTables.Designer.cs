@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RookieShop.ProductCatalog.Infrastructure.Persistence;
@@ -12,9 +13,11 @@ using RookieShop.ProductCatalog.Infrastructure.Persistence;
 namespace RookieShop.WebApi.Migrations.ProductCatalog
 {
     [DbContext(typeof(ProductCatalogDbContextImpl))]
-    partial class ProductCatalogDbContextImplModelSnapshot : ModelSnapshot
+    [Migration("20250427150642_RenameTables")]
+    partial class RenameTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,16 +189,6 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
 
             modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.ReviewReaction", b =>
                 {
-                    b.Property<string>("Type")
-                        .HasColumnType("text")
-                        .HasColumnName("Type");
-
-                    b.Property<string>("ProductSku")
-                        .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
-                        .HasColumnName("ProductSku");
-
                     b.Property<Guid>("ReactorId")
                         .HasColumnType("uuid")
                         .HasColumnName("ReactorId");
@@ -204,7 +197,17 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                         .HasColumnType("uuid")
                         .HasColumnName("WriterId");
 
-                    b.HasKey("Type");
+                    b.Property<string>("ProductSku")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("ProductSku");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Type");
+
+                    b.HasKey("ReactorId", "WriterId", "ProductSku");
 
                     b.HasIndex("WriterId", "ProductSku");
 

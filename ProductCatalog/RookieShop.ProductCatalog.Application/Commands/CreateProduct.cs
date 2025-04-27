@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Entities;
+using RookieShop.ProductCatalog.Application.Events;
 using RookieShop.ProductCatalog.Application.Exceptions;
 
 namespace RookieShop.ProductCatalog.Application.Commands;
@@ -28,10 +29,12 @@ public class CreateProduct
 public class CreateProductConsumer : IConsumer<CreateProduct>
 {
     private readonly ProductCatalogDbContext _dbContext;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public CreateProductConsumer(ProductCatalogDbContext dbContext)
+    public CreateProductConsumer(ProductCatalogDbContext dbContext, IPublishEndpoint publishEndpoint)
     {
         _dbContext = dbContext;
+        _publishEndpoint = publishEndpoint;
     }
     
     public async Task Consume(ConsumeContext<CreateProduct> context)
@@ -65,8 +68,6 @@ public class CreateProductConsumer : IConsumer<CreateProduct>
 
         var now = DateTime.UtcNow;
 
-        var productRating = new Rating(sku);
-
         var product = new Product
         {
             Sku = sku,
@@ -79,11 +80,18 @@ public class CreateProductConsumer : IConsumer<CreateProduct>
             IsFeatured = isFeatured,
             CreatedDate = now,
             UpdatedDate = now,
-            Rating = productRating
+            Rating = new ProductRating(sku)
         };
         
         _dbContext.Products.Add(product);
         
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        await _publishEndpoint.Publish(new ProductCreatedOrUpdated
+        {
+            Sku = sku,
+            Name = name,
+            Description = description,
+        }, cancellationToken);
     }
 }

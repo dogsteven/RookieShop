@@ -1,6 +1,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Abstractions;
+using RookieShop.ProductCatalog.Application.Events;
 using RookieShop.ProductCatalog.Application.Exceptions;
 
 namespace RookieShop.ProductCatalog.Application.Commands;
@@ -27,10 +28,12 @@ public class UpdateProduct
 public class UpdateProductConsumer : IConsumer<UpdateProduct>
 {
     private readonly ProductCatalogDbContext _dbContext;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public UpdateProductConsumer(ProductCatalogDbContext dbContext)
+    public UpdateProductConsumer(ProductCatalogDbContext dbContext, IPublishEndpoint publishEndpoint)
     {
         _dbContext = dbContext;
+        _publishEndpoint = publishEndpoint;
     }
     
     public async Task Consume(ConsumeContext<UpdateProduct> context)
@@ -78,5 +81,12 @@ public class UpdateProductConsumer : IConsumer<UpdateProduct>
         }
         
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        await _publishEndpoint.Publish(new ProductCreatedOrUpdated
+        {
+            Sku = sku,
+            Name = name,
+            Description = description
+        }, cancellationToken);
     }
 }

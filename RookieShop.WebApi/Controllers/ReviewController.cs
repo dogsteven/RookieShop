@@ -81,7 +81,7 @@ public class ReviewController : ControllerBase
     public class MakeReactionBody
     {
         [Required]
-        public ReactionType Type { get; set; }
+        public ReviewReactionType Type { get; set; }
     }
 
     [HttpPost("{sku}/{writerId:guid}")]
@@ -102,7 +102,7 @@ public class ReviewController : ControllerBase
             ReactorId = customerId,
             WriterId = writerId,
             ProductSku = sku,
-            ReactionType = body.Type,
+            Type = body.Type,
         };
         
         await _scopedMediator.Send(makeReaction, cancellationToken);

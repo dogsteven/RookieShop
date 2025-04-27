@@ -40,7 +40,7 @@ public class ReviewCommandUnitTest
         var submitReview = new SubmitReview
         {
             WriterId = seeder.CustomerId,
-            ProductSku = "NonExisttingSku",
+            ProductSku = "NonExistingSku",
             WriterName = "Khoa",
             Score = 5,
             Comment = "This is fucking bad"
@@ -242,9 +242,9 @@ public class ReviewCommandUnitTest
             // Assert score has been applied 
             var context = scope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
             
-            var rating = await context.Ratings.FirstAsync(rating => rating.ProductSku == productSku);
+            var productRating = await context.ProductRatings.FirstAsync(productRating => productRating.ProductSku == productSku);
             
-            Assert.Equal(expectedAppliedScore, rating.Score);
+            Assert.Equal(expectedAppliedScore, productRating.Score);
         }
         finally
         {

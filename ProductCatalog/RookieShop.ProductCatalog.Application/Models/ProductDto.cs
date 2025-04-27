@@ -26,14 +26,14 @@ public class ProductDto
     
     public DateTime UpdatedDate { get; init; }
 
-    public RatingDto Rating { get; init; }
+    public ProductRatingDto Rating { get; init; }
     
 #pragma warning disable CS8618, CS9264
     public ProductDto() {}
 #pragma warning restore CS8618, CS9264
 }
 
-public class RatingDto
+public class ProductRatingDto
 {
     public double Score { get; init; }
     
