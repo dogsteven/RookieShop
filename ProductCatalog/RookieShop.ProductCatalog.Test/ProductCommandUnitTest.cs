@@ -113,6 +113,7 @@ public class ProductCommandUnitTest
         
         // Assert
         var context = scope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
+        
         var product = await context.Products.FirstOrDefaultAsync(product => product.Sku == "TestSku");
         
         Assert.NotNull(product);

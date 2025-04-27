@@ -19,20 +19,15 @@ public class ReviewCommandUnitTest
         // Arrange
         var services = new ProductCatalogServiceCollection();
         
-        services.Replace<Mock<IProfanityChecker>>(provider =>
-        {
-            var mock = new Mock<IProfanityChecker>();
-
-            mock.Setup(checker => checker.CheckProfanityAsync("This is fucking bad", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-            
-            mock.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
-            
-            return mock;
-        });
-        
         var provider = services.BuildServiceProvider();
+        
+        var mockProfanityChecker = provider.GetRequiredService<Mock<IProfanityChecker>>();
+        
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync("This is fucking bad", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+            
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
 
         var seeder = new ProductCatalogDatabaseSeeder(provider);
 
@@ -64,24 +59,19 @@ public class ReviewCommandUnitTest
         // Arrange
         var services = new ProductCatalogServiceCollection();
         
-        services.Replace<Mock<IProfanityChecker>>(provider =>
-        {
-            var mock = new Mock<IProfanityChecker>();
-
-            mock.Setup(checker => checker.CheckProfanityAsync("This is fucking bad", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-            
-            mock.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
-            
-            return mock;
-        });
-        
         var provider = services.BuildServiceProvider();
 
         var seeder = new ProductCatalogDatabaseSeeder(provider);
 
         await seeder.SeedAsync();
+        
+        var mockProfanityChecker = provider.GetRequiredService<Mock<IProfanityChecker>>();
+        
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync("This is fucking bad", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+            
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
         
         using var scope = provider.CreateScope();
         
@@ -109,24 +99,19 @@ public class ReviewCommandUnitTest
         // Arrange
         var services = new ProductCatalogServiceCollection();
         
-        services.Replace<Mock<IProfanityChecker>>(provider =>
-        {
-            var mock = new Mock<IProfanityChecker>();
-
-            mock.Setup(checker => checker.CheckProfanityAsync("This is fucking bad", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-            
-            mock.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
-            
-            return mock;
-        });
-        
         var provider = services.BuildServiceProvider();
 
         var seeder = new ProductCatalogDatabaseSeeder(provider);
 
         await seeder.SeedAsync();
+        
+        var mockProfanityChecker = provider.GetRequiredService<Mock<IProfanityChecker>>();
+        
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync("This is fucking bad", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+            
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
         
         using var scope = provider.CreateScope();
         
@@ -154,24 +139,19 @@ public class ReviewCommandUnitTest
         // Arrange
         var services = new ProductCatalogServiceCollection();
         
-        services.Replace<Mock<IProfanityChecker>>(provider =>
-        {
-            var mock = new Mock<IProfanityChecker>();
-
-            mock.Setup(checker => checker.CheckProfanityAsync("This is fucking bad", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-            
-            mock.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
-            
-            return mock;
-        });
-        
         var provider = services.BuildServiceProvider();
 
         var seeder = new ProductCatalogDatabaseSeeder(provider);
 
         await seeder.SeedAsync();
+        
+        var mockProfanityChecker = provider.GetRequiredService<Mock<IProfanityChecker>>();
+        
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync("This is fucking bad", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+            
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
         
         using var scope = provider.CreateScope();
 
@@ -196,6 +176,8 @@ public class ReviewCommandUnitTest
             await scopedMediator.Send(submitReview);
         
             // Assert
+            
+            // Assert review has been persisted
             var context = scope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
             
             var review = await context.Reviews
@@ -203,6 +185,7 @@ public class ReviewCommandUnitTest
             
             Assert.NotNull(review);
             
+            // Assert ReviewSubmitted event has been published
             Assert.True(await harness.Published.Any<ReviewSubmitted>());
         }
         finally
@@ -250,10 +233,13 @@ public class ReviewCommandUnitTest
             });
         
             // Assert
+            
+            // Assert ReviewSubmitted event has been consumed by the right consumer
             var applyScoreConsumer = harness.GetConsumerHarness<ApplyScoreConsumer>();
             
             Assert.True(await applyScoreConsumer.Consumed.Any<ReviewSubmitted>());
             
+            // Assert score has been applied 
             var context = scope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
             
             var rating = await context.Ratings.FirstAsync(rating => rating.ProductSku == productSku);

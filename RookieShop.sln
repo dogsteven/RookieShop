@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.ImageGallery.Inf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.ProductCatalog.Test", "ProductCatalog\RookieShop.ProductCatalog.Test\RookieShop.ProductCatalog.Test.csproj", "{836AD094-2709-4E0A-8D65-C126F7CDE802}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.ImageGallery.Test", "ImageGallery\RookieShop.ImageGallery.Test\RookieShop.ImageGallery.Test.csproj", "{3B76AF61-E9CD-4462-8C14-F72E043A3E95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{836AD094-2709-4E0A-8D65-C126F7CDE802}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{836AD094-2709-4E0A-8D65-C126F7CDE802}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{836AD094-2709-4E0A-8D65-C126F7CDE802}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B76AF61-E9CD-4462-8C14-F72E043A3E95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B76AF61-E9CD-4462-8C14-F72E043A3E95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B76AF61-E9CD-4462-8C14-F72E043A3E95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B76AF61-E9CD-4462-8C14-F72E043A3E95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{91F24BBA-CC04-4F71-A05A-DBA034349EF3} = {F67F5420-EA42-4801-BFA1-45A0C62B52EC}
@@ -65,5 +71,6 @@ Global
 		{35633E38-0558-4AB8-896C-2AA80FF707EE} = {36481EF8-A800-4708-A20B-2216B2547086}
 		{34BA9466-3D5E-4293-BD3A-EB3FAB8EE152} = {36481EF8-A800-4708-A20B-2216B2547086}
 		{836AD094-2709-4E0A-8D65-C126F7CDE802} = {F67F5420-EA42-4801-BFA1-45A0C62B52EC}
+		{3B76AF61-E9CD-4462-8C14-F72E043A3E95} = {36481EF8-A800-4708-A20B-2216B2547086}
 	EndGlobalSection
 EndGlobal

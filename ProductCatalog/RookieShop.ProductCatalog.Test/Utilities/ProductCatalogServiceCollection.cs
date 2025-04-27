@@ -51,10 +51,4 @@ public class ProductCatalogServiceCollection : ServiceCollection
         this.AddScoped<CategoryQueryService>();
         this.AddScoped<ReviewQueryService>();
     }
-
-    public void Replace<TService>(Func<IServiceProvider, TService> serviceFactory,
-        ServiceLifetime lifetime = ServiceLifetime.Singleton) where TService : class
-    {
-        this.Replace(new ServiceDescriptor(typeof(TService), serviceFactory, lifetime));
-    }
 }
