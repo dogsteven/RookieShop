@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 using RookieShop.ProductCatalog.Application.Commands;
 using RookieShop.ProductCatalog.Application.Models;
 using RookieShop.ProductCatalog.Application.Queries;

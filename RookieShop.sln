@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.ProductCatalog.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.ImageGallery.Test", "ImageGallery\RookieShop.ImageGallery.Test\RookieShop.ImageGallery.Test.csproj", "{3B76AF61-E9CD-4462-8C14-F72E043A3E95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RookieShop.WebApi.Test", "RookieShop.WebApi.Test\RookieShop.WebApi.Test.csproj", "{EF6AF4BD-D0EE-4690-B670-60EE253E45F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{3B76AF61-E9CD-4462-8C14-F72E043A3E95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B76AF61-E9CD-4462-8C14-F72E043A3E95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B76AF61-E9CD-4462-8C14-F72E043A3E95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF6AF4BD-D0EE-4690-B670-60EE253E45F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF6AF4BD-D0EE-4690-B670-60EE253E45F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF6AF4BD-D0EE-4690-B670-60EE253E45F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF6AF4BD-D0EE-4690-B670-60EE253E45F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{91F24BBA-CC04-4F71-A05A-DBA034349EF3} = {F67F5420-EA42-4801-BFA1-45A0C62B52EC}

@@ -15,7 +15,7 @@ public class ReviewQueryService
         _dbContext = dbContext;
     }
 
-    public async Task<Pagination<ReviewDto>> GetReviewsByProductSku(string productSku, int pageNumber, int pageSize,
+    public virtual async Task<Pagination<ReviewDto>> GetReviewsByProductSku(string productSku, int pageNumber, int pageSize,
         CancellationToken cancellationToken)
     {
         var query = _dbContext.Reviews

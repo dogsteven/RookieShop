@@ -119,7 +119,7 @@ public class ProductQueryUnitTest
         var productDtos = (await productQueryService.GetFeaturedProductsAsync(maxCount, default)).ToList();
         
         // Assert
-        Assert.Equal(expectedCount, productDtos.Count());
+        Assert.Equal(expectedCount, productDtos.Count);
         
         Assert.All(productDtos, productDto => Assert.True(productDto.IsFeatured));
     }

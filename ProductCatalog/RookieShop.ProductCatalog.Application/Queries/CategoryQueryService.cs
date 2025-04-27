@@ -14,7 +14,7 @@ public class CategoryQueryService
         _dbContext = dbContext;
     }
 
-    public async Task<CategoryDto> GetCategoryByIdAsync(int id, CancellationToken cancellationToken)
+    public virtual async Task<CategoryDto> GetCategoryByIdAsync(int id, CancellationToken cancellationToken)
     {
         var query = (from category in _dbContext.Categories
             join product in _dbContext.Products on category.Id equals product.Category.Id into products
@@ -34,7 +34,7 @@ public class CategoryQueryService
         return categoryDto;
     }
 
-    public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync(CancellationToken cancellationToken)
+    public virtual async Task<IEnumerable<CategoryDto>> GetCategoriesAsync(CancellationToken cancellationToken)
     {
         var query = (from category in _dbContext.Categories
             join product in _dbContext.Products on category.Id equals product.Category.Id into products

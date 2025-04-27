@@ -120,17 +120,6 @@ public class ImageCommandUnitTest
             
             Assert.True(await syncTemporaryEntryToPersistentStorageConsumer.Consumed.Any<ImageUploaded>());
             
-            // Assert ImageSynced has been published
-            Assert.True(await harness.Published.Any<ImageSynced>());
-            
-            // Assert image has been marked as synced
-            var context = scope.ServiceProvider.GetRequiredService<ImageGalleryDbContext>();
-            
-            var image = await context.Images.FirstOrDefaultAsync(image => image.Id == id);
-            
-            Assert.NotNull(image);
-            Assert.True(image.IsSynced);
-            
             // Assert temporary storage has called Read(temporaryEntryId) once 
             var mockTemporaryStorage = scope.ServiceProvider.GetRequiredService<Mock<ITemporaryStorage>>();
             
@@ -140,6 +129,17 @@ public class ImageCommandUnitTest
             var mockPersistentStorage = scope.ServiceProvider.GetRequiredService<Mock<IPersistentStorage>>();
             
             mockPersistentStorage.Verify(persistentStorage => persistentStorage.SaveAsync(id, It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Once);
+            
+            // Assert image has been marked as synced
+            var context = scope.ServiceProvider.GetRequiredService<ImageGalleryDbContext>();
+            
+            var image = await context.Images.FirstOrDefaultAsync(image => image.Id == id);
+            
+            Assert.NotNull(image);
+            Assert.True(image.IsSynced);
+            
+            // Assert ImageSynced has been published
+            Assert.True(await harness.Published.Any<ImageSynced>());
         }
         finally
         {

@@ -43,7 +43,7 @@ public class ProductQueryService
         };
     }
     
-    public async Task<ProductDto> GetProductBySkuAsync(string sku, CancellationToken cancellationToken)
+    public virtual async Task<ProductDto> GetProductBySkuAsync(string sku, CancellationToken cancellationToken)
     {
         var query = _dbContext.Products
             .Include(product => product.Category)
@@ -62,7 +62,7 @@ public class ProductQueryService
         return productDto;
     }
 
-    public async Task<Pagination<ProductDto>> GetProductsAsync(int pageNumber, int pageSize,
+    public virtual async Task<Pagination<ProductDto>> GetProductsAsync(int pageNumber, int pageSize,
         CancellationToken cancellationToken)
     {
         var query = _dbContext.Products
@@ -88,7 +88,7 @@ public class ProductQueryService
         };
     }
 
-    public async Task<IEnumerable<ProductDto>> GetFeaturedProductsAsync(int maxCount,
+    public virtual async Task<IEnumerable<ProductDto>> GetFeaturedProductsAsync(int maxCount,
         CancellationToken cancellationToken)
     {
         var query = _dbContext.Products
@@ -106,7 +106,7 @@ public class ProductQueryService
         return productDtos;
     }
 
-    public async Task<Pagination<ProductDto>> GetProductsByCategoryAsync(int categoryId, int pageNumber, int pageSize,
+    public virtual async Task<Pagination<ProductDto>> GetProductsByCategoryAsync(int categoryId, int pageNumber, int pageSize,
         CancellationToken cancellationToken)
     {
         var query = _dbContext.Products

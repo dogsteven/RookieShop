@@ -1,0 +1,49 @@
+using MassTransit.Mediator;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using RookieShop.ProductCatalog.Application.Abstractions;
+using RookieShop.ProductCatalog.Application.Queries;
+using RookieShop.WebApi.Controllers;
+
+namespace RookieShop.WebApi.Test.Utilities;
+
+public class ProductCatalogServiceCollection : ServiceCollection
+{
+    public ProductCatalogServiceCollection()
+    {
+        this.AddScoped<Mock<ProductCatalogDbContext>>(_ => new Mock<ProductCatalogDbContext>(new DbContextOptionsBuilder().Options));
+        this.AddScoped<ProductCatalogDbContext>(provider => provider.GetRequiredService<Mock<ProductCatalogDbContext>>().Object);
+        
+        this.AddScoped<Mock<IScopedMediator>>(_ => new Mock<IScopedMediator>());
+        this.AddScoped<IScopedMediator>(provider => provider.GetRequiredService<Mock<IScopedMediator>>().Object);
+
+        this.AddScoped<Mock<ProductQueryService>>(provider =>
+        {
+            var productCatalogDbContext = provider.GetRequiredService<ProductCatalogDbContext>();
+            
+            return new Mock<ProductQueryService>(productCatalogDbContext);
+        });
+        this.AddScoped<ProductQueryService>(provider => provider.GetRequiredService<Mock<ProductQueryService>>().Object);
+
+        this.AddScoped<Mock<CategoryQueryService>>(provider =>
+        {
+            var productCatalogDbContext = provider.GetRequiredService<ProductCatalogDbContext>();
+            
+            return new Mock<CategoryQueryService>(productCatalogDbContext);
+        });
+        this.AddScoped<CategoryQueryService>(provider => provider.GetRequiredService<Mock<CategoryQueryService>>().Object);
+        
+        this.AddScoped<Mock<ReviewQueryService>>(provider =>
+        {
+            var productCatalogDbContext = provider.GetRequiredService<ProductCatalogDbContext>();
+            
+            return new Mock<ReviewQueryService>(productCatalogDbContext);
+        });
+        this.AddScoped<ReviewQueryService>(provider => provider.GetRequiredService<Mock<ReviewQueryService>>().Object);
+
+        this.AddScoped<ProductController>();
+        this.AddScoped<CategoryController>();
+        this.AddScoped<ReviewController>();
+    }
+}
