@@ -14,6 +14,11 @@ public static class ProductCatalogMassTransitExtensions
             consumer.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(250)));
         });
 
+        bus.AddConsumer<UpdateSemanticVectorConsumer>((_, consumer) =>
+        {
+            consumer.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(500)));
+        });
+
         return bus;
     }
 

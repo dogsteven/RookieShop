@@ -1,3 +1,5 @@
+using Pgvector;
+
 namespace RookieShop.ProductCatalog.Application.Entities;
 
 public class Product
@@ -23,6 +25,8 @@ public class Product
     public DateTime UpdatedDate { get; set; }
     
     public ProductRating Rating { get; set; }
+    
+    public ProductSemanticVector SemanticVector { get; set; }
     
 #pragma warning disable CS8618, CS9264
     public Product() {}
@@ -86,5 +90,27 @@ public class ProductRating
             default:
                 return;
         }
+    }
+}
+
+public class ProductSemanticVector
+{
+    public string ProductSku { get; init; }
+    
+    public Vector SemanticVector { get; private set; }
+    
+#pragma warning disable CS8618, CS9264
+    public ProductSemanticVector() {}
+#pragma warning restore CS8618, CS9264
+
+    public ProductSemanticVector(string productSku)
+    {
+        ProductSku = productSku;
+        SemanticVector = new Vector(new float[384]);
+    }
+
+    public void SetSemanticVector(Vector semanticVector)
+    {
+        SemanticVector = semanticVector;
     }
 }

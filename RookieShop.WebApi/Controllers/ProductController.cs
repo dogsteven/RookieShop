@@ -61,6 +61,17 @@ public class ProductController : ControllerBase
         return Ok(await _productQueryService.GetProductsByCategoryAsync(categoryId, pageNumber ?? 1, pageSize ?? 20, cancellationToken));
     }
 
+    [HttpGet("semantic")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Pagination<ProductDto>))]
+    public async Task<ActionResult<Pagination<ProductDto>>> GetSemanticallyOrderedProductsAsync(
+        [FromQuery] string? semantic,
+        [FromQuery] int? pageNumber,
+        [FromQuery] int? pageSize,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await _productQueryService.GetSemanticallyOrderedProductsAsync(semantic ?? "Nothing", pageNumber ?? 1, pageSize ?? 20, cancellationToken));
+    }
+
     public class CreateProductBody
     {
         [Required, MinLength(1), MaxLength(16)]

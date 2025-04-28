@@ -62,7 +62,12 @@ public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasOne(product => product.Rating)
             .WithOne()
-            .HasForeignKey<ProductRating>(rating => rating.ProductSku)
+            .HasForeignKey<ProductRating>(productRating => productRating.ProductSku)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne(product => product.SemanticVector)
+            .WithOne()
+            .HasForeignKey<ProductSemanticVector>(productSemanticVector => productSemanticVector.ProductSku)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasIndex("CategoryId");

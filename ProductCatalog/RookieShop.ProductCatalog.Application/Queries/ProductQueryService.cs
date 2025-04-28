@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Pgvector;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Entities;
 using RookieShop.ProductCatalog.Application.Exceptions;
@@ -10,10 +11,12 @@ namespace RookieShop.ProductCatalog.Application.Queries;
 public class ProductQueryService
 {
     private readonly ProductCatalogDbContext _dbContext;
+    private readonly ISemanticEncoder _semanticEncoder;
 
-    public ProductQueryService(ProductCatalogDbContext dbContext)
+    public ProductQueryService(ProductCatalogDbContext dbContext, ISemanticEncoder semanticEncoder)
     {
         _dbContext = dbContext;
+        _semanticEncoder = semanticEncoder;
     }
 
     private static ProductDto Map(Product product)
@@ -130,6 +133,24 @@ public class ProductQueryService
             PageNumber = pageNumber,
             PageSize = pageSize,
             Items = productDtos
+        };
+    }
+
+    public virtual async Task<Pagination<ProductDto>> GetSemanticallyOrderedProductsAsync(string semantic,
+        int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var semanticVector = new Vector(await _semanticEncoder.EncodeAsync(semantic, cancellationToken));
+
+        var products = await _dbContext.GetSemanticallyOrderedProductsAsync(semanticVector, (pageNumber - 1) * pageSize, pageSize, cancellationToken);
+        
+        var count = await _dbContext.Products.LongCountAsync(cancellationToken);
+
+        return new Pagination<ProductDto>
+        {
+            Count = count,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            Items = products.Select(Map)
         };
     }
 }

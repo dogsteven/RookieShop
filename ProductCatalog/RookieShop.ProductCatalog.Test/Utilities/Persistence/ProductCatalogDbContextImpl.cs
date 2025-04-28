@@ -1,17 +1,13 @@
-using MassTransit.UsageTelemetry;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Npgsql;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pgvector;
-using Pgvector.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Entities;
 using RookieShop.ProductCatalog.Infrastructure.Persistence.EntityConfigurations;
 using RookieShop.ProductCatalog.Infrastructure.Persistence.Interceptors;
-using RookieShop.Shared.Models;
 
-namespace RookieShop.ProductCatalog.Infrastructure.Persistence;
+namespace RookieShop.ProductCatalog.Test.Utilities.Persistence;
 
 public class ProductCatalogDbContextImpl : ProductCatalogDbContext
 {
@@ -22,7 +18,7 @@ public class ProductCatalogDbContextImpl : ProductCatalogDbContext
     {
         modelBuilder.ApplyConfiguration(new ProductEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ProductRatingEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new ProductSemanticVectorEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new UnitTestProductSemanticVectorEntityConfiguration());
                     
         modelBuilder.ApplyConfiguration(new CategoryEntityConfiguration());
         
@@ -30,16 +26,30 @@ public class ProductCatalogDbContextImpl : ProductCatalogDbContext
         modelBuilder.ApplyConfiguration(new ReviewReactionEntityConfiguration());
     }
 
-    public override async Task<List<Product>> GetSemanticallyOrderedProductsAsync(Vector semanticVector, int offset, int limit, CancellationToken cancellationToken)
+    public override Task<List<Product>> GetSemanticallyOrderedProductsAsync(Vector semanticVector, int offset, int limit,
+        CancellationToken cancellationToken)
     {
-        return await Products
-            .Include(product => product.Category)
-            .Include(product => product.Rating)
-            .OrderBy(product => semanticVector.L2Distance(product.SemanticVector.SemanticVector))
-            .Skip(offset)
-            .Take(limit)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+        return Task.FromResult(new List<Product>());
+    }
+}
+
+public class UnitTestProductSemanticVectorEntityConfiguration : IEntityTypeConfiguration<ProductSemanticVector>
+{
+    public void Configure(EntityTypeBuilder<ProductSemanticVector> builder)
+    {
+        builder.ToTable("ProductSemanticVectors", schema: "ProductCatalog");
+
+        builder.HasKey(productSemanticVector => productSemanticVector.ProductSku);
+        
+        builder.Property(productSemanticVector => productSemanticVector.ProductSku)
+            .IsRequired()
+            .HasMaxLength(16)
+            .HasColumnName("ProductSku");
+
+        builder.Property(productSemanticVector => productSemanticVector.SemanticVector)
+            .IsRequired()
+            .HasConversion<string>(vector => "", column => new Vector(Array.Empty<float>()))
+            .HasColumnName("SemanticVector");
     }
 }
 

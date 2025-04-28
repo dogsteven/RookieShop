@@ -5,25 +5,39 @@ using Moq;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Queries;
 using RookieShop.WebApi.Controllers;
+using RookieShop.WebApi.Test.Utilities.Persistence;
 
 namespace RookieShop.WebApi.Test.Utilities;
 
 public class ProductCatalogServiceCollection : ServiceCollection
 {
+    private readonly Guid Id;
+    
     public ProductCatalogServiceCollection()
     {
-        this.AddScoped<Mock<ProductCatalogDbContext>>(_ => new Mock<ProductCatalogDbContext>(new DbContextOptionsBuilder().Options));
-        this.AddScoped<ProductCatalogDbContext>(provider => provider.GetRequiredService<Mock<ProductCatalogDbContext>>().Object);
+        Id = Guid.NewGuid();
+        
+        this.AddDbContext<ProductCatalogDbContextImpl>((options) =>
+        {
+            options.UseInMemoryDatabase(Id.ToString());
+        });
+
+        this.AddScoped<ProductCatalogDbContext, ProductCatalogDbContextImpl>();
         
         this.AddScoped<Mock<IScopedMediator>>(_ => new Mock<IScopedMediator>());
         this.AddScoped<IScopedMediator>(provider => provider.GetRequiredService<Mock<IScopedMediator>>().Object);
 
+        this.AddScoped<Mock<ISemanticEncoder>>(_ => new Mock<ISemanticEncoder>());
+        this.AddScoped<ISemanticEncoder>(provider => provider.GetRequiredService<Mock<ISemanticEncoder>>().Object);
+        
         this.AddScoped<Mock<ProductQueryService>>(provider =>
         {
             var productCatalogDbContext = provider.GetRequiredService<ProductCatalogDbContext>();
+            var semanticEncoder = provider.GetRequiredService<ISemanticEncoder>();
             
-            return new Mock<ProductQueryService>(productCatalogDbContext);
+            return new Mock<ProductQueryService>(productCatalogDbContext, semanticEncoder);
         });
+        
         this.AddScoped<ProductQueryService>(provider => provider.GetRequiredService<Mock<ProductQueryService>>().Object);
 
         this.AddScoped<Mock<CategoryQueryService>>(provider =>
@@ -40,6 +54,7 @@ public class ProductCatalogServiceCollection : ServiceCollection
             
             return new Mock<ReviewQueryService>(productCatalogDbContext);
         });
+        
         this.AddScoped<ReviewQueryService>(provider => provider.GetRequiredService<Mock<ReviewQueryService>>().Object);
 
         this.AddScoped<ProductController>();

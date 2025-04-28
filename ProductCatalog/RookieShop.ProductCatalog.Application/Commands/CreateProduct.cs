@@ -80,7 +80,8 @@ public class CreateProductConsumer : IConsumer<CreateProduct>
             IsFeatured = isFeatured,
             CreatedDate = now,
             UpdatedDate = now,
-            Rating = new ProductRating(sku)
+            Rating = new ProductRating(sku),
+            SemanticVector = new ProductSemanticVector(sku)
         };
         
         _dbContext.Products.Add(product);

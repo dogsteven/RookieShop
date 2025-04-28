@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using RookieShop.ProductCatalog.Application.Entities;
-using RookieShop.ProductCatalog.Infrastructure.Persistence;
+using RookieShop.ProductCatalog.Test.Utilities.Persistence;
 
 namespace RookieShop.ProductCatalog.Test.Utilities;
 

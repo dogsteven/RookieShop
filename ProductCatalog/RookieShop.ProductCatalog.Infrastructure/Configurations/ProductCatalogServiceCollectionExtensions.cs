@@ -5,6 +5,7 @@ using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Queries;
 using RookieShop.ProductCatalog.Infrastructure.Persistence;
 using RookieShop.ProductCatalog.Infrastructure.ProfanityChecker;
+using RookieShop.ProductCatalog.Infrastructure.SemanticEncoder;
 
 namespace RookieShop.ProductCatalog.Infrastructure.Configurations;
 
@@ -59,6 +60,8 @@ public class ProductCatalogConfigurator
                 {
                     npgsql.MigrationsAssembly(_migrationAssembly);
                 }
+
+                npgsql.UseVector();
             });
         });
 
@@ -74,6 +77,8 @@ public class ProductCatalogConfigurator
         services.AddScoped<ProductQueryService>();
         services.AddScoped<CategoryQueryService>();
         services.AddScoped<ReviewQueryService>();
+
+        services.AddSingleton<ISemanticEncoder, LocalSemanticEncoder>();
         
         return services;
     }

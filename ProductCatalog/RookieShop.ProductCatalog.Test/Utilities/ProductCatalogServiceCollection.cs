@@ -1,12 +1,12 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Queries;
 using RookieShop.ProductCatalog.Infrastructure.Configurations;
-using RookieShop.ProductCatalog.Infrastructure.Persistence;
+using RookieShop.ProductCatalog.Infrastructure.SemanticEncoder;
+using RookieShop.ProductCatalog.Test.Utilities.Persistence;
 
 namespace RookieShop.ProductCatalog.Test.Utilities;
 
@@ -46,6 +46,8 @@ public class ProductCatalogServiceCollection : ServiceCollection
         });
 
         this.AddScoped<ProductCatalogDbContext, ProductCatalogDbContextImpl>();
+
+        this.AddSingleton<ISemanticEncoder, LocalSemanticEncoder>();
 
         this.AddScoped<ProductQueryService>();
         this.AddScoped<CategoryQueryService>();

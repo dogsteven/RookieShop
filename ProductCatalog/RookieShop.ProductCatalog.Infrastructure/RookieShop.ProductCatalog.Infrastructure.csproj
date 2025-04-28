@@ -11,8 +11,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="AllMiniLmL6V2Sharp" Version="0.0.3" />
       <PackageReference Include="MassTransit" Version="8.4.0" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+      <PackageReference Include="Pgvector.EntityFrameworkCore" Version="0.2.2" />
       <PackageReference Include="Profanity.Detector" Version="0.1.8" />
     </ItemGroup>
 

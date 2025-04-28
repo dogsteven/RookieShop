@@ -1,8 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using MassTransit;
 using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Commands;
+using RookieShop.ProductCatalog.Application.Events;
+using RookieShop.ProductCatalog.Infrastructure.Persistence;
 
 namespace RookieShop.WebApi.Controllers;
 
@@ -13,10 +17,14 @@ namespace RookieShop.WebApi.Controllers;
 public class SeedController : ControllerBase
 {
     private readonly IScopedMediator _scopedMediator;
+    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ProductCatalogDbContextImpl _dbContext;
 
-    public SeedController(IScopedMediator scopedMediator)
+    public SeedController(IScopedMediator scopedMediator, IPublishEndpoint publishEndpoint, ProductCatalogDbContextImpl dbContext)
     {
         _scopedMediator = scopedMediator;
+        _publishEndpoint = publishEndpoint;
+        _dbContext = dbContext;
     }
     
     public class SeedBody
@@ -90,6 +98,24 @@ public class SeedController : ControllerBase
                 CategoryId = product.CategoryId,
                 PrimaryImageId = product.PrimaryImageId,
                 IsFeatured = product.IsFeatured
+            }, cancellationToken);
+        }
+    }
+
+    [HttpGet("seed-semantic-vectors")]
+    public async Task SeedSemanticVectorsAsync(CancellationToken cancellationToken)
+    {
+        var products = await _dbContext.Products.AsNoTracking()
+            .Select(product => new { Sku = product.Sku, Name = product.Name, Description = product.Description })
+            .ToListAsync(cancellationToken);
+
+        foreach (var product in products)
+        {
+            await _publishEndpoint.Publish(new ProductCreatedOrUpdated
+            {
+                Sku = product.Sku,
+                Name = product.Name,
+                Description = product.Description,
             }, cancellationToken);
         }
     }
