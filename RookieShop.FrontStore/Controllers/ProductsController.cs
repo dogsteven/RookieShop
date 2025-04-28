@@ -68,6 +68,19 @@ public class ProductsController : Controller
         });
     }
 
+    public async Task<IActionResult> ProductsSemantic(string? semantic, int? pageNumber, int? pageSize,
+        CancellationToken cancellationToken)
+    {
+        semantic ??= "";
+        var productPage = await _productService.GetProductsSemanticAsync(semantic, pageNumber ?? 1, pageSize ?? 12, cancellationToken);
+
+        return View(new ProductsSemanticViewModel
+        {
+            Semantic = semantic,
+            ProductPage = productPage
+        });
+    }
+
     public class SubmitReviewModel
     {
         [Required, Range(1, 5)]

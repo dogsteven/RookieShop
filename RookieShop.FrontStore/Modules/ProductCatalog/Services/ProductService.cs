@@ -70,4 +70,21 @@ public class ProductService : IProductService
 
         return await response.ReadFromJsonAsync<Pagination<Product>>(cancellationToken);
     }
+
+    public async Task<Pagination<Product>> GetProductsSemanticAsync(string semantic, int pageNumber, int pageSize,
+        CancellationToken cancellationToken)
+    {
+        var queries = HttpUtility.ParseQueryString(string.Empty);
+        queries["semantic"] = semantic;
+        queries["pageNumber"] = $"{pageNumber}";
+        queries["pageSize"] = $"{pageSize}";
+        
+        var queryString = queries.ToString();
+        
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/semantic?{queryString}");
+        
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        return await response.ReadFromJsonAsync<Pagination<Product>>(cancellationToken);
+    }
 }
