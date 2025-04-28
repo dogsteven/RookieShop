@@ -54,7 +54,7 @@ public class ReviewCommandUnitTest
     }
     
     [Fact]
-    public async Task Should_SubmitReview_FailedWithConflictingReview()
+    public async Task Should_SubmitReview_FailedWithHasAlreadyWrittenReview()
     {
         // Arrange
         var services = new ProductCatalogServiceCollection();

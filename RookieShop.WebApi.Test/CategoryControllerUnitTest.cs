@@ -147,7 +147,7 @@ public class CategoryControllerUnitTest
         var mockRequestClient = new Mock<IRequestClient<CreateCategory>>();
         
         mockRequestClient.Setup(requestClient => requestClient.GetResponse<CategoryCreatedResponse>(It.Is<CreateCategory>(command => command.Name == "Test Name"), It.IsAny<CancellationToken>(), It.IsAny<RequestTimeout>()))
-            .ThrowsAsync(new RequestException("Request exception", new CategoryAlreadyExistsException("Test Name")));
+            .ThrowsAsync(new RequestException("Request exception", new CategoryNameHasAlreadyBeenTakenException("Test Name")));
         
         var mockScopedMediator = scope.ServiceProvider.GetRequiredService<Mock<IScopedMediator>>();
 
@@ -168,7 +168,7 @@ public class CategoryControllerUnitTest
         // Assert
         var exception = await Assert.ThrowsAsync<RequestException>(createCategoryAsyncAction);
 
-        Assert.IsType<CategoryAlreadyExistsException>(exception.InnerException);
+        Assert.IsType<CategoryNameHasAlreadyBeenTakenException>(exception.InnerException);
     }
 
     [Fact]

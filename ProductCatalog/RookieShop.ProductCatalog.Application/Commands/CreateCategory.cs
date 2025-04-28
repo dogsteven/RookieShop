@@ -35,11 +35,11 @@ public class CreateCategoryConsumer : IConsumer<CreateCategory>
         
         var cancellationToken = context.CancellationToken;
         
-        var alreadyExists = await _dbContext.Categories.AnyAsync(category => category.Name == name, cancellationToken);
+        var nameAlreadyBeenTaken = await _dbContext.Categories.AnyAsync(category => category.Name == name, cancellationToken);
 
-        if (alreadyExists)
+        if (nameAlreadyBeenTaken)
         {
-            throw new CategoryAlreadyExistsException(name);
+            throw new CategoryNameHasAlreadyBeenTakenException(name);
         }
         
         var category = new Category

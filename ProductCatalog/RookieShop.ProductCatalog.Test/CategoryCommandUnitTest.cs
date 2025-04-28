@@ -11,7 +11,7 @@ namespace RookieShop.ProductCatalog.Test;
 public class CategoryCommandUnitTest
 {
     [Fact]
-    public async Task Should_CreateCategory_FailedWithConflictingName()
+    public async Task Should_CreateCategory_FailedWithTakenName()
     {
         // Arrange
         var services = new ProductCatalogServiceCollection();
@@ -36,7 +36,7 @@ public class CategoryCommandUnitTest
         var createCategoryAction = async () => await scopedMediator.Send(createCategory);
         
         // Assert
-        await Assert.ThrowsAsync<CategoryAlreadyExistsException>(createCategoryAction);
+        await Assert.ThrowsAsync<CategoryNameHasAlreadyBeenTakenException>(createCategoryAction);
     }
 
     [Fact]
@@ -101,6 +101,36 @@ public class CategoryCommandUnitTest
         
         // Assert
         await Assert.ThrowsAsync<CategoryNotFoundException>(updateCategoryAction);
+    }
+
+    [Fact]
+    public async Task Should_UpdateCategory_FailedWithTakenName()
+    {
+        // Arrange
+        var services = new ProductCatalogServiceCollection();
+        
+        var provider = services.BuildServiceProvider();
+
+        var seeder = new ProductCatalogDatabaseSeeder(provider);
+
+        await seeder.SeedAsync();
+        
+        using var scope = provider.CreateScope();
+        
+        var scopedMediator = scope.ServiceProvider.GetRequiredService<IScopedMediator>();
+
+        var updateCategory = new UpdateCategory
+        {
+            Id = 2,
+            Name = "Reflecting Telescopes",
+            Description = "Reflecting Telescopes Description"
+        };
+        
+        // Act
+        var updateCategoryAction = async () => await scopedMediator.Send(updateCategory);
+        
+        // Assert
+        await Assert.ThrowsAsync<CategoryNameHasAlreadyBeenTakenException>(updateCategoryAction);
     }
 
     [Fact]

@@ -29,13 +29,13 @@ public class ReviewController : ControllerBase
     [HttpGet("{sku}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Pagination<ReviewDto>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Pagination<ReviewDto>>> GetRatings(
+    public async Task<ActionResult<Pagination<ReviewDto>>> GetReviewsByProductSkuAsync(
         [FromRoute] string sku,
         [FromQuery] int? pageNumber,
         [FromQuery] int? pageSize,
         CancellationToken cancellationToken = default)
     {
-        return Ok(await _reviewQueryService.GetReviewsByProductSku(sku, pageNumber ?? 1, pageSize ?? 5, cancellationToken));
+        return Ok(await _reviewQueryService.GetReviewsByProductSkuAsync(sku, pageNumber ?? 1, pageSize ?? 5, cancellationToken));
     }
     
     public class SubmitReviewBody
@@ -75,7 +75,7 @@ public class ReviewController : ControllerBase
         
         await _scopedMediator.Send(submitReview, cancellationToken);
 
-        return NoContent();
+        return Created();
     }
 
     public class MakeReactionBody

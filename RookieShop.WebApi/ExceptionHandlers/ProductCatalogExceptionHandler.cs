@@ -38,11 +38,11 @@ public class ProductCatalogExceptionHandler : IExceptionHandler
                 };
                 break;
             
-            case ProductAlreadyExistsException productAlreadyExistsException:
+            case ProductSkuHasAlreadyBeenTakenException productAlreadyExistsException:
                 problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status409Conflict,
-                    Title = "Product already exists",
+                    Title = "Product sku has already been taken",
                     Detail = exception.Message,
                     Extensions = new Dictionary<string, object?>
                     {
@@ -64,11 +64,11 @@ public class ProductCatalogExceptionHandler : IExceptionHandler
                 };
                 break;
             
-            case CategoryAlreadyExistsException categoryAlreadyExistsException:
+            case CategoryNameHasAlreadyBeenTakenException categoryAlreadyExistsException:
                 problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status409Conflict,
-                    Title = "Category already exists",
+                    Title = "Category name has already been taken",
                     Detail = exception.Message,
                     Extensions = new Dictionary<string, object?>
                     {

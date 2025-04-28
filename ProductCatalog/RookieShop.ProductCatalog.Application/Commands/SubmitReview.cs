@@ -43,9 +43,6 @@ public class SubmitReviewConsumer : IConsumer<SubmitReview>
         var comment = message.Comment;
         
         var cancellationToken = context.CancellationToken;
-        
-        var hasWritten = await _dbContext.Reviews
-            .AnyAsync(review => review.ProductSku == productSku && review.WriterId == writerId, cancellationToken);
 
         var productExists = await _dbContext.Products
             .AnyAsync(product => product.Sku == productSku, cancellationToken);
@@ -54,6 +51,9 @@ public class SubmitReviewConsumer : IConsumer<SubmitReview>
         {
             throw new ProductNotFoundException(productSku);
         }
+        
+        var hasWritten = await _dbContext.Reviews
+            .AnyAsync(review => review.ProductSku == productSku && review.WriterId == writerId, cancellationToken);
         
         if (hasWritten)
         {

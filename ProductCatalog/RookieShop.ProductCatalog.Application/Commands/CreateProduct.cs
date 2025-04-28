@@ -51,11 +51,11 @@ public class CreateProductConsumer : IConsumer<CreateProduct>
         
         var cancellationToken = context.CancellationToken;
         
-        var alreadyExists = await _dbContext.Products.AnyAsync(product => product.Sku == sku, cancellationToken);
+        var skuAlreadyBeenTaken = await _dbContext.Products.AnyAsync(product => product.Sku == sku, cancellationToken);
 
-        if (alreadyExists)
+        if (skuAlreadyBeenTaken)
         {
-            throw new ProductAlreadyExistsException(sku);
+            throw new ProductSkuHasAlreadyBeenTakenException(sku);
         }
         
         var category = await _dbContext.Categories

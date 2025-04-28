@@ -28,7 +28,7 @@ public class ReviewQueryUnitTest
         var reviewQueryService = scope.ServiceProvider.GetRequiredService<ReviewQueryService>();
         
         // Act
-        var pagination = await reviewQueryService.GetReviewsByProductSku(productSku, pageNumber, pageSize, default);
+        var pagination = await reviewQueryService.GetReviewsByProductSkuAsync(productSku, pageNumber, pageSize, default);
         
         // Assert
         Assert.Equal(expectedCount, pagination.Count);

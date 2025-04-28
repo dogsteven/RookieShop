@@ -13,7 +13,7 @@ namespace RookieShop.ProductCatalog.Test;
 public class ProductCommandUnitTest
 {
     [Fact]
-    public async Task Should_CreateProduct_FailedWithConflictingSku()
+    public async Task Should_CreateProduct_FailedWithTakenSku()
     {
         // Arrange
         var services = new ProductCatalogServiceCollection();
@@ -44,7 +44,7 @@ public class ProductCommandUnitTest
         var createProductAction = async () => await scopedMediator.Send(createProduct);
         
         // Assert
-        await Assert.ThrowsAsync<ProductAlreadyExistsException>(createProductAction);
+        await Assert.ThrowsAsync<ProductSkuHasAlreadyBeenTakenException>(createProductAction);
     }
 
     [Fact]
