@@ -42,7 +42,8 @@ public class ProductQueryService
                 ThreeCount = product.Rating.ThreeCount,
                 FourCount = product.Rating.FourCount,
                 FiveCount = product.Rating.FiveCount
-            }
+            },
+            AvailableQuantity = product.StockLevel.AvailableQuantity
         };
     }
     
@@ -51,6 +52,7 @@ public class ProductQueryService
         var query = _dbContext.Products
             .Include(product => product.Category)
             .Include(product => product.Rating)
+            .Include(product => product.StockLevel)
             .Where(p => p.Sku == sku)
             .Select(product => Map(product))
             .AsNoTracking();
@@ -71,6 +73,7 @@ public class ProductQueryService
         var query = _dbContext.Products
             .Include(product => product.Category)
             .Include(product => product.Rating)
+            .Include(product => product.StockLevel)
             .OrderByDescending(product => product.UpdatedDate)
             .Select(product => Map(product))
             .AsNoTracking();
@@ -97,6 +100,7 @@ public class ProductQueryService
         var query = _dbContext.Products
             .Include(product => product.Category)
             .Include(product => product.Rating)
+            .Include(product => product.StockLevel)
             .Where(product => product.IsFeatured)
             .OrderByDescending(product => product.UpdatedDate)
             .Select(product => Map(product))
@@ -115,6 +119,7 @@ public class ProductQueryService
         var query = _dbContext.Products
             .Include(product => product.Category)
             .Include(product => product.Rating)
+            .Include(product => product.StockLevel)
             .Where(product => product.Category.Id == categoryId)
             .OrderByDescending(product => product.UpdatedDate)
             .Select(product => Map(product))

@@ -1,0 +1,10 @@
+using RookieShop.Shopping.Domain;
+
+namespace RookieShop.Shopping.Application.Abstractions;
+
+public interface IStockItemRepository
+{
+    public Task<StockItem?> GetBySkuAsync(string sku, CancellationToken cancellationToken = default);
+    public void Save(StockItem stockItem);
+    public void Remove(StockItem stockItem);
+}

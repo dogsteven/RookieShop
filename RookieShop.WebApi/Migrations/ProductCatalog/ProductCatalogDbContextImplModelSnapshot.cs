@@ -161,9 +161,33 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                         .HasColumnType("vector")
                         .HasColumnName("SemanticVector");
 
+                    b.Property<DateTime>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("ProductSku");
 
                     b.ToTable("ProductSemanticVectors", "ProductCatalog");
+                });
+
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.ProductStockLevel", b =>
+                {
+                    b.Property<string>("ProductSku")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("ProductSku");
+
+                    b.Property<int>("AvailableQuantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("AvailableQuantity");
+
+                    b.Property<DateTime>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ProductSku");
+
+                    b.ToTable("ProductStockLevels", "ProductCatalog");
                 });
 
             modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Review", b =>
@@ -258,6 +282,15 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.ProductStockLevel", b =>
+                {
+                    b.HasOne("RookieShop.ProductCatalog.Application.Entities.Product", null)
+                        .WithOne("StockLevel")
+                        .HasForeignKey("RookieShop.ProductCatalog.Application.Entities.ProductStockLevel", "ProductSku")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.ReviewReaction", b =>
                 {
                     b.HasOne("RookieShop.ProductCatalog.Application.Entities.Review", null)
@@ -273,6 +306,9 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                         .IsRequired();
 
                     b.Navigation("SemanticVector")
+                        .IsRequired();
+
+                    b.Navigation("StockLevel")
                         .IsRequired();
                 });
 

@@ -22,6 +22,7 @@ public class ProductCatalogDbContextImpl : ProductCatalogDbContext
     {
         modelBuilder.ApplyConfiguration(new ProductEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ProductRatingEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductStockLevelEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ProductSemanticVectorEntityConfiguration());
                     
         modelBuilder.ApplyConfiguration(new CategoryEntityConfiguration());
@@ -35,6 +36,7 @@ public class ProductCatalogDbContextImpl : ProductCatalogDbContext
         return await Products
             .Include(product => product.Category)
             .Include(product => product.Rating)
+            .Include(product => product.StockLevel)
             .OrderBy(product => semanticVector.L2Distance(product.SemanticVector.SemanticVector))
             .Skip(offset)
             .Take(limit)

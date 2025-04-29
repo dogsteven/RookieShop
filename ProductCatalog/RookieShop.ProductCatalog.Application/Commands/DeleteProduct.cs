@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Exceptions;
+using RookieShop.ProductCatalog.Contracts.Events;
 
 namespace RookieShop.ProductCatalog.Application.Commands;
 
@@ -13,10 +14,12 @@ public class DeleteProduct
 public class DeleteProductConsumer : IConsumer<DeleteProduct>
 {
     private readonly ProductCatalogDbContext _dbContext;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public DeleteProductConsumer(ProductCatalogDbContext dbContext)
+    public DeleteProductConsumer(ProductCatalogDbContext dbContext, IPublishEndpoint publishEndpoint)
     {
         _dbContext = dbContext;
+        _publishEndpoint = publishEndpoint;
     }
     
     public async Task Consume(ConsumeContext<DeleteProduct> context)
@@ -36,5 +39,10 @@ public class DeleteProductConsumer : IConsumer<DeleteProduct>
         _dbContext.Products.Remove(product);
         
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        await _publishEndpoint.Publish(new ProductDeleted
+        {
+            Sku = sku,
+        }, cancellationToken);
     }
 }

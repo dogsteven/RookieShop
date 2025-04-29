@@ -45,7 +45,7 @@ public class ProductCatalogServiceCollection : ServiceCollection
             options.UseInMemoryDatabase(Id.ToString());
         });
 
-        this.AddScoped<ProductCatalogDbContext, ProductCatalogDbContextImpl>();
+        this.AddScoped<ProductCatalogDbContext>(provider => provider.GetRequiredService<ProductCatalogDbContextImpl>());
 
         this.AddSingleton<ISemanticEncoder, LocalSemanticEncoder>();
 

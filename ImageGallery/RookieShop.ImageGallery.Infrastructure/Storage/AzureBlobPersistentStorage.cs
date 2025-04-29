@@ -7,9 +7,9 @@ public class AzureBlobPersistentStorage : IPersistentStorage
 {
     private readonly BlobContainerClient _blobContainerClient;
 
-    public AzureBlobPersistentStorage(BlobServiceClient blobServiceClient)
+    public AzureBlobPersistentStorage(BlobContainerClient blobContainerClient)
     {
-        _blobContainerClient = blobServiceClient.GetBlobContainerClient("rookie-shop-images");
+        _blobContainerClient = blobContainerClient;
     }
 
     public async Task<Stream> ReadAsync(Guid id, CancellationToken cancellationToken)

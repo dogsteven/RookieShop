@@ -8,11 +8,15 @@ namespace RookieShop.ProductCatalog.Application.Events;
 
 public class ProductCreatedOrUpdated
 {
-    public string Sku { get; set; } = null!;
-
-    public string Name { get; set; } = null!;
-
-    public string Description { get; set; } = null!;
+    public string Sku { get; init; } = null!;
+    
+    public string Name { get; init; } = null!;
+    
+    public string Description { get; init; } = null!;
+    
+    public decimal Price { get; init; }
+    
+    public Guid PrimaryImageId { get; init; }
 }
 
 public class UpdateSemanticVectorConsumer : IConsumer<ProductCreatedOrUpdated>
@@ -51,5 +55,24 @@ public class UpdateSemanticVectorConsumer : IConsumer<ProductCreatedOrUpdated>
         productSemanticVector.SetSemanticVector(semanticVector);
         
         await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+}
+
+public class PublishProductCreatedOrUpdatedIntegrationEventConsumer : IConsumer<ProductCreatedOrUpdated>
+{
+    public async Task Consume(ConsumeContext<ProductCreatedOrUpdated> context)
+    {
+        var cancellationToken = context.CancellationToken;
+        
+        var integrationEvent = new Contracts.Events.ProductCreatedOrUpdated
+        {
+            Sku = context.Message.Sku,
+            Name = context.Message.Name,
+            Description = context.Message.Description,
+            Price = context.Message.Price,
+            PrimaryImageId = context.Message.PrimaryImageId,
+        };
+        
+        await context.Publish(integrationEvent, cancellationToken);
     }
 }

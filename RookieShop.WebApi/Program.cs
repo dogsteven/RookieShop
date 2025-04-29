@@ -5,11 +5,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using RookieShop.Customers.Infrastructure;
 using RookieShop.ImageGallery.Infrastructure.Configurations;
 using RookieShop.ProductCatalog.Infrastructure.Configurations;
-using RookieShop.WebApi.ExceptionHandlers;
+using RookieShop.Shopping.Infrastructure.Configurations;
 using RookieShop.WebApi.HostedServices;
-using RookieShop.WebApi.Modules.Customers;
+using RookieShop.WebApi.ImageGallery.ExceptionHandlers;
+using RookieShop.WebApi.ProductCatalog.ExceptionHandlers;
+using RookieShop.WebApi.Shopping.ExceptionHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +38,7 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddExceptionHandler<ProductCatalogExceptionHandler>();
 builder.Services.AddExceptionHandler<ImageGalleryExceptionHandler>();
+builder.Services.AddExceptionHandler<ShoppingExceptionHandler>();
 
 builder.Services.AddCors(cors =>
 {
@@ -72,14 +76,22 @@ builder.Services
         };
     });
 
-builder.Services.ConfigureOptions<CustomerServiceOptionsSetup>();
+builder.Services.AddHostedService<AzureBlobCreateContainerHostedService>();
 
-builder.Services.AddSingleton<ICustomerService, CustomerService>();
+builder.Services.AddSingleton<BlobServiceClient>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+
+    var connectionString = configuration.GetConnectionString("Azurite")!;
+
+    return new BlobServiceClient(connectionString);
+});
 
 builder.Services.AddMassTransit(bus =>
 {
     bus.AddProductCatalogConsumers();
     bus.AddImageGalleryConsumers();
+    bus.AddShoppingConsumers();
 
     bus.AddMediator(mediator =>
     {
@@ -111,15 +123,16 @@ builder.Services.AddProductCatalog(productCatalog =>
     productCatalog.SetMigrationAssembly("RookieShop.WebApi");
 });
 
-builder.Services.AddHostedService<AzureBlobCreateContainerHostedService>();
-
-builder.Services.AddSingleton<BlobServiceClient>(provider =>
+builder.Services.AddShopping(shopping =>
 {
-    var configuration = provider.GetRequiredService<IConfiguration>();
+    shopping.SetDatabaseConnectionString(provider =>
+    {
+        var configuration = provider.GetRequiredService<IConfiguration>();
 
-    var connectionString = configuration.GetConnectionString("Azurite")!;
-
-    return new BlobServiceClient(connectionString);
+        return configuration.GetConnectionString("Postgresql")!;
+    });
+    
+    shopping.SetMigrationAssembly("RookieShop.WebApi");
 });
 
 builder.Services.AddImageGallery(imageGallery =>
@@ -132,6 +145,37 @@ builder.Services.AddImageGallery(imageGallery =>
     });
     
     imageGallery.SetMigrationAssembly("RookieShop.WebApi");
+
+    imageGallery.SetBlobContainerClient(provider =>
+    {
+        var blobServiceClient = provider.GetRequiredService<BlobServiceClient>();
+
+        return blobServiceClient.GetBlobContainerClient("rookie-shop-images");
+    });
+});
+
+builder.Services.AddCustomers(customers =>
+{
+    customers.SetKeycloakOptions(provider =>
+    {
+        var configuration = provider.GetRequiredService<IConfiguration>();
+
+        return new KeycloakCustomerServiceOptions
+        {
+            Address = configuration["Keycloak:AuthSettings:Address"]!,
+            Realm = configuration["Keycloak:AuthSettings:Realm"]!,
+            ClientId = configuration["Keycloak:ServiceAccount:ClientId"]!,
+            ClientSecret = configuration["Keycloak:ServiceAccount:ClientSecret"]!,
+            CustomersGroupId = configuration["Keycloak:Customers:GroupId"]!
+        };
+    });
+    
+    customers.SetHttpClient(provider =>
+    {
+        var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+        
+        return httpClientFactory.CreateClient();
+    });
 });
 
 builder.Services.AddHttpClient();

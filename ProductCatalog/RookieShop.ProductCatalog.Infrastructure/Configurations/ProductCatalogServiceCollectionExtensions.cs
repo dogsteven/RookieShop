@@ -34,7 +34,8 @@ public class ProductCatalogConfigurator
 
     public ProductCatalogConfigurator SetDatabaseConnectionString(Func<IServiceProvider, string>? databaseConnectionString)
     {
-        _databaseConnectionString = databaseConnectionString; return this;
+        _databaseConnectionString = databaseConnectionString;
+        return this;
     }
 
     public ProductCatalogConfigurator SetMigrationAssembly(string? migrationAssembly)
@@ -65,7 +66,7 @@ public class ProductCatalogConfigurator
             });
         });
 
-        services.AddScoped<ProductCatalogDbContext, ProductCatalogDbContextImpl>();
+        services.AddScoped<ProductCatalogDbContext>(provider => provider.GetRequiredService<ProductCatalogDbContextImpl>());
 
         services.AddSingleton<IProfanityChecker>(_ =>
         {

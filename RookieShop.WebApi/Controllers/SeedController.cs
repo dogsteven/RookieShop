@@ -13,7 +13,6 @@ namespace RookieShop.WebApi.Controllers;
 [ApiController]
 [Route("/api/[controller]")]
 [Produces("application/problem+json")]
-[Authorize(Roles = "admin")]
 public class SeedController : ControllerBase
 {
     private readonly IScopedMediator _scopedMediator;
@@ -102,11 +101,11 @@ public class SeedController : ControllerBase
         }
     }
 
-    [HttpGet("seed-semantic-vectors")]
+    [HttpGet("seed-products")]
     public async Task SeedSemanticVectorsAsync(CancellationToken cancellationToken)
     {
         var products = await _dbContext.Products.AsNoTracking()
-            .Select(product => new { Sku = product.Sku, Name = product.Name, Description = product.Description })
+            .Select(product => new { Sku = product.Sku, Name = product.Name, Description = product.Description, Price = product.Price, PrimaryImageId = product.PrimaryImageId })
             .ToListAsync(cancellationToken);
 
         foreach (var product in products)
@@ -116,6 +115,8 @@ public class SeedController : ControllerBase
                 Sku = product.Sku,
                 Name = product.Name,
                 Description = product.Description,
+                Price = product.Price,
+                PrimaryImageId = product.PrimaryImageId,
             }, cancellationToken);
         }
     }

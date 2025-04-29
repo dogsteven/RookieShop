@@ -7,7 +7,7 @@ using RookieShop.ProductCatalog.Application.Exceptions;
 using RookieShop.ProductCatalog.Application.Models;
 using RookieShop.ProductCatalog.Application.Queries;
 using RookieShop.Shared.Models;
-using RookieShop.WebApi.Controllers;
+using RookieShop.WebApi.ProductCatalog.Controllers;
 using RookieShop.WebApi.Test.Utilities;
 using IScopedMediator = MassTransit.Mediator.IScopedMediator;
 
@@ -32,7 +32,7 @@ public class ProductControllerUnitTest
         mockProductQueryService.Setup(productQueryService => productQueryService.GetProductBySkuAsync(sku, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ProductNotFoundException(sku));
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
         
         // Act
         var getProductBySkuAsyncAction = async () => await productController.GetProductBySkuAsync(sku, default);
@@ -72,7 +72,7 @@ public class ProductControllerUnitTest
                 IsFeatured = true,
             });
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
         
         // Act
         var actionResult = await productController.GetProductBySkuAsync(sku, default);
@@ -131,7 +131,7 @@ public class ProductControllerUnitTest
                 ]
             });
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
         
         // Act
         var actionResult = await productController.GetProductsAsync(1, 100, default);
@@ -182,7 +182,7 @@ public class ProductControllerUnitTest
                 }
             ]);
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
         
         // Act
         var actionResult = await productController.GetFeaturedProductsAsync(20, default);
@@ -239,7 +239,7 @@ public class ProductControllerUnitTest
                 ]
             });
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
         
         // Act
         var actionResult = await productController.GetProductsByCategoryAsync(1, 1, 100, default);
@@ -275,9 +275,9 @@ public class ProductControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<CreateProduct>(command => command.Sku == "ABC123"), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ProductSkuHasAlreadyBeenTakenException("ABC123"));
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
 
-        var createProductBody = new ProductController.CreateProductBody
+        var createProductBody = new ProductsController.CreateProductBody
         {
             Sku = "ABC123",
             Name = "ABC123",
@@ -305,9 +305,9 @@ public class ProductControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<CreateProduct>(command => command.CategoryId == 2), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new CategoryNotFoundException(2));
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
 
-        var createProductBody = new ProductController.CreateProductBody
+        var createProductBody = new ProductsController.CreateProductBody
         {
             Sku = "ABC123",
             CategoryId = 2
@@ -335,9 +335,9 @@ public class ProductControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.IsAny<CreateProduct>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
 
-        var createProductBody = new ProductController.CreateProductBody
+        var createProductBody = new ProductsController.CreateProductBody
         {
             Sku = "ABC123"
         };
@@ -364,9 +364,9 @@ public class ProductControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<UpdateProduct>(command => command.Sku == "ABC123"), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ProductNotFoundException("ABC123"));
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
 
-        var updateProductBody = new ProductController.UpdateProductBody
+        var updateProductBody = new ProductsController.UpdateProductBody
         {
 
         };
@@ -393,9 +393,9 @@ public class ProductControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<UpdateProduct>(command => command.CategoryId == 1), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new CategoryNotFoundException(1));
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
 
-        var updateProductBody = new ProductController.UpdateProductBody
+        var updateProductBody = new ProductsController.UpdateProductBody
         {
             CategoryId = 1
         };
@@ -422,9 +422,9 @@ public class ProductControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.IsAny<UpdateProduct>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
 
-        var updateProductBody = new ProductController.UpdateProductBody
+        var updateProductBody = new ProductsController.UpdateProductBody
         {
         };
 
@@ -450,7 +450,7 @@ public class ProductControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<DeleteProduct>(command => command.Sku == "ABC123"), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ProductNotFoundException("ABC123"));
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
 
         // Act
         var deleteProductAsyncAction = async () => await productController.DeleteProductAsync("ABC123", default);
@@ -474,7 +474,7 @@ public class ProductControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.IsAny<DeleteProduct>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         
-        var productController = scope.ServiceProvider.GetRequiredService<ProductController>();
+        var productController = scope.ServiceProvider.GetRequiredService<ProductsController>();
 
         // Act
         var actionResult = await productController.DeleteProductAsync("ABC123", default);

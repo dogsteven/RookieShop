@@ -47,7 +47,7 @@ public class ImageGalleryServiceCollection : ServiceCollection
             options.UseInMemoryDatabase(Id.ToString());
         });
 
-        this.AddScoped<ImageGalleryDbContext, ImageGalleryDbContextImpl>();
+        this.AddScoped<ImageGalleryDbContext>(provider => provider.GetRequiredService<ImageGalleryDbContextImpl>());
 
         this.AddScoped<ImageQueryService>();
     }

@@ -20,5 +20,9 @@ public class ProductSemanticVectorEntityConfiguration : IEntityTypeConfiguration
         builder.Property(productSemanticVector => productSemanticVector.SemanticVector)
             .IsRequired()
             .HasColumnName("SemanticVector");
+
+        builder.Property<DateTime>("Version")
+            .IsRequired()
+            .IsConcurrencyToken();
     }
 }

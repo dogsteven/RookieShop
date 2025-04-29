@@ -7,7 +7,7 @@ using RookieShop.ProductCatalog.Application.Commands;
 using RookieShop.ProductCatalog.Application.Exceptions;
 using RookieShop.ProductCatalog.Application.Models;
 using RookieShop.ProductCatalog.Application.Queries;
-using RookieShop.WebApi.Controllers;
+using RookieShop.WebApi.ProductCatalog.Controllers;
 using RookieShop.WebApi.Test.Utilities;
 using Xunit.Abstractions;
 
@@ -39,7 +39,7 @@ public class CategoryControllerUnitTest
         mockCategoryQueryService.Setup(categoryQueryService => categoryQueryService.GetCategoryByIdAsync(id, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new CategoryNotFoundException(id));
         
-        var categoryController = scope.ServiceProvider.GetRequiredService<CategoryController>();
+        var categoryController = scope.ServiceProvider.GetRequiredService<CategoriesController>();
         
         // Act
         var getCategoryByIdAction = async () => await categoryController.GetCategoryByIdAsync(id, default);
@@ -68,7 +68,7 @@ public class CategoryControllerUnitTest
                 Description = "Test Description"
             });
         
-        var categoryController = scope.ServiceProvider.GetRequiredService<CategoryController>();
+        var categoryController = scope.ServiceProvider.GetRequiredService<CategoriesController>();
         
         // Act
         var actionResult = await categoryController.GetCategoryByIdAsync(1, default);
@@ -115,7 +115,7 @@ public class CategoryControllerUnitTest
                 }
             ]);
         
-        var categoryController = scope.ServiceProvider.GetRequiredService<CategoryController>();
+        var categoryController = scope.ServiceProvider.GetRequiredService<CategoriesController>();
         
         // Act
         var actionResult = await categoryController.GetCategoriesAsync(default);
@@ -154,9 +154,9 @@ public class CategoryControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.CreateRequestClient<CreateCategory>(It.IsAny<RequestTimeout>()))
             .Returns(() => mockRequestClient.Object);
         
-        var controller = scope.ServiceProvider.GetRequiredService<CategoryController>();
+        var controller = scope.ServiceProvider.GetRequiredService<CategoriesController>();
 
-        var createCategoryBody = new CategoryController.CreateCategoryBody
+        var createCategoryBody = new CategoriesController.CreateCategoryBody
         {
             Name = "Test Name",
             Description = "Test Description"
@@ -196,9 +196,9 @@ public class CategoryControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.CreateRequestClient<CreateCategory>(It.IsAny<RequestTimeout>()))
             .Returns(() => mockRequestClient.Object);
         
-        var controller = scope.ServiceProvider.GetRequiredService<CategoryController>();
+        var controller = scope.ServiceProvider.GetRequiredService<CategoriesController>();
         
-        var createCategoryBody = new CategoryController.CreateCategoryBody
+        var createCategoryBody = new CategoriesController.CreateCategoryBody
         {
             Name = "Test Name",
             Description = "Test Description"
@@ -226,9 +226,9 @@ public class CategoryControllerUnitTest
         mockedScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<UpdateCategory>(command => command.Id == 1), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new CategoryNotFoundException(1));
         
-        var controller = scope.ServiceProvider.GetRequiredService<CategoryController>();
+        var controller = scope.ServiceProvider.GetRequiredService<CategoriesController>();
 
-        var updateCategoryBody = new CategoryController.UpdateCategoryBody
+        var updateCategoryBody = new CategoriesController.UpdateCategoryBody
         {
             Name = "Test Name",
             Description = "Test Description"
@@ -256,9 +256,9 @@ public class CategoryControllerUnitTest
         mockedScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.IsAny<UpdateCategory>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         
-        var controller = scope.ServiceProvider.GetRequiredService<CategoryController>();
+        var controller = scope.ServiceProvider.GetRequiredService<CategoriesController>();
 
-        var updateCategoryBody = new CategoryController.UpdateCategoryBody
+        var updateCategoryBody = new CategoriesController.UpdateCategoryBody
         {
             Name = "Test Name",
             Description = "Test Description"
@@ -286,7 +286,7 @@ public class CategoryControllerUnitTest
         mockedScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<DeleteCategory>(command => command.Id == 1), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new CategoryNotFoundException(1));
         
-        var controller = scope.ServiceProvider.GetRequiredService<CategoryController>();
+        var controller = scope.ServiceProvider.GetRequiredService<CategoriesController>();
         
         // Act
         var deleteCategoryAsyncAction = async () => await controller.DeleteCategoryAsync(1, default);
@@ -310,7 +310,7 @@ public class CategoryControllerUnitTest
         mockedScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.IsAny<DeleteCategory>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         
-        var controller = scope.ServiceProvider.GetRequiredService<CategoryController>();
+        var controller = scope.ServiceProvider.GetRequiredService<CategoriesController>();
         
         // Act
         var actionResult = await controller.DeleteCategoryAsync(1, default);

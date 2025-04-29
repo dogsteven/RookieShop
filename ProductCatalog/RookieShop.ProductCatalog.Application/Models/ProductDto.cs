@@ -28,6 +28,8 @@ public class ProductDto
 
     public ProductRatingDto Rating { get; init; }
     
+    public int AvailableQuantity { get; init; }
+    
 #pragma warning disable CS8618, CS9264
     public ProductDto() {}
 #pragma warning restore CS8618, CS9264

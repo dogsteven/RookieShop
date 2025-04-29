@@ -86,7 +86,9 @@ public class UpdateProductConsumer : IConsumer<UpdateProduct>
         {
             Sku = sku,
             Name = name,
-            Description = description
+            Description = description,
+            Price = price,
+            PrimaryImageId = primaryImageId,
         }, cancellationToken);
     }
 }

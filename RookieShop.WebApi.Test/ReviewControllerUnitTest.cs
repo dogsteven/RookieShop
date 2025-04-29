@@ -9,7 +9,7 @@ using RookieShop.ProductCatalog.Application.Exceptions;
 using RookieShop.ProductCatalog.Application.Models;
 using RookieShop.ProductCatalog.Application.Queries;
 using RookieShop.Shared.Models;
-using RookieShop.WebApi.Controllers;
+using RookieShop.WebApi.ProductCatalog.Controllers;
 using RookieShop.WebApi.Test.Utilities;
 
 namespace RookieShop.WebApi.Test;
@@ -62,7 +62,7 @@ public class ReviewControllerUnitTest
                 ]
             });
         
-        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewController>();
+        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewsController>();
         
         // Act
         var actionResult = await reviewController.GetReviewsByProductSkuAsync("ABC123", 1, 100);
@@ -115,11 +115,11 @@ public class ReviewControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<SubmitReview>(command => command.ProductSku == "ABC123"), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ProductNotFoundException("ABC123"));
 
-        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewController>();
+        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewsController>();
         
         reviewController.ControllerContext = controllerContext;
 
-        var submitReviewBody = new ReviewController.SubmitReviewBody
+        var submitReviewBody = new ReviewsController.SubmitReviewBody
         {
 
         };
@@ -164,11 +164,11 @@ public class ReviewControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<SubmitReview>(command => command.WriterId == userId && command.ProductSku == "ABC123"), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new CustomerHasAlreadyWrittenReviewException(userId, "ABC123"));
         
-        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewController>();
+        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewsController>();
         
         reviewController.ControllerContext = controllerContext;
 
-        var submitReviewBody = new ReviewController.SubmitReviewBody
+        var submitReviewBody = new ReviewsController.SubmitReviewBody
         {
             
         };
@@ -213,11 +213,11 @@ public class ReviewControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.Is<SubmitReview>(command => command.Comment == "This is fucking bad"), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ProfaneCommentException());
         
-        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewController>();
+        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewsController>();
         
         reviewController.ControllerContext = controllerContext;
 
-        var submitReviewBody = new ReviewController.SubmitReviewBody
+        var submitReviewBody = new ReviewsController.SubmitReviewBody
         {
             Comment = "This is fucking bad"
         };
@@ -262,11 +262,11 @@ public class ReviewControllerUnitTest
         mockScopedMediator.Setup(scopedMediator => scopedMediator.Send(It.IsAny<SubmitReview>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         
-        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewController>();
+        var reviewController = scope.ServiceProvider.GetRequiredService<ReviewsController>();
         
         reviewController.ControllerContext = controllerContext;
 
-        var submitReviewBody = new ReviewController.SubmitReviewBody
+        var submitReviewBody = new ReviewsController.SubmitReviewBody
         {
             
         };

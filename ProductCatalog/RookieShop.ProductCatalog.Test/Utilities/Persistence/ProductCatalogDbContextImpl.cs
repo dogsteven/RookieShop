@@ -18,6 +18,7 @@ public class ProductCatalogDbContextImpl : ProductCatalogDbContext
     {
         modelBuilder.ApplyConfiguration(new ProductEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ProductRatingEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductStockLevelEntityConfiguration());
         modelBuilder.ApplyConfiguration(new UnitTestProductSemanticVectorEntityConfiguration());
                     
         modelBuilder.ApplyConfiguration(new CategoryEntityConfiguration());

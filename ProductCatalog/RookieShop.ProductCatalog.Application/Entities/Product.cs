@@ -26,6 +26,8 @@ public class Product
     
     public ProductRating Rating { get; set; }
     
+    public ProductStockLevel StockLevel { get; set; }
+    
     public ProductSemanticVector SemanticVector { get; set; }
     
 #pragma warning disable CS8618, CS9264
@@ -90,6 +92,28 @@ public class ProductRating
             default:
                 return;
         }
+    }
+}
+
+public class ProductStockLevel
+{
+    public string ProductSku { get; init; }
+    
+    public int AvailableQuantity { get; private set; }
+    
+#pragma warning disable CS8618, CS9264
+    public ProductStockLevel() {}
+#pragma warning restore CS8618, CS9264
+
+    public ProductStockLevel(string productSku)
+    {
+        ProductSku = productSku;
+        AvailableQuantity = 0;
+    }
+
+    public void SetAvailableQuantity(int availableQuantity)
+    {
+        AvailableQuantity = availableQuantity;
     }
 }
 

@@ -81,6 +81,7 @@ public class CreateProductConsumer : IConsumer<CreateProduct>
             CreatedDate = now,
             UpdatedDate = now,
             Rating = new ProductRating(sku),
+            StockLevel = new ProductStockLevel(sku),
             SemanticVector = new ProductSemanticVector(sku)
         };
         
@@ -93,6 +94,8 @@ public class CreateProductConsumer : IConsumer<CreateProduct>
             Sku = sku,
             Name = name,
             Description = description,
+            Price = price,
+            PrimaryImageId = primaryImageId,
         }, cancellationToken);
     }
 }

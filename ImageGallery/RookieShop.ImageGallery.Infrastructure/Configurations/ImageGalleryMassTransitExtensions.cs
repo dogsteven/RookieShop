@@ -8,20 +8,9 @@ public static class ImageGalleryMassTransitExtensions
 {
     public static IBusRegistrationConfigurator AddImageGalleryConsumers(this IBusRegistrationConfigurator bus)
     {
-        bus.AddConsumer<SyncTemporaryEntryToPersistentStorageConsumer>((_, consumer) =>
-        {
-            consumer.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(1000)));
-        });
-        
-        bus.AddConsumer<CleanUpTemporaryStorageOnSyncedConsumer>((_, consumer) =>
-        {
-            consumer.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(1000)));
-        });
-        
-        bus.AddConsumer<CleanUpPersistentStorageOnDeletedConsumer>((_, consumer) =>
-        {
-            consumer.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(1000)));
-        });
+        bus.AddConsumer<SyncTemporaryEntryToPersistentStorageConsumer, SyncTemporaryEntryToPersistentStorageConsumerDefinition>();
+        bus.AddConsumer<CleanUpTemporaryStorageOnSyncedConsumer, CleanUpTemporaryStorageOnSyncedConsumerDefinition>();
+        bus.AddConsumer<CleanUpPersistentStorageOnDeletedConsumer, CleanUpPersistentStorageOnDeletedConsumerDefinition>();
 
         return bus;
     }
@@ -33,5 +22,54 @@ public static class ImageGalleryMassTransitExtensions
         mediator.AddConsumer<DeleteImageConsumer>();
         
         return mediator;
+    }
+}
+
+internal class
+    SyncTemporaryEntryToPersistentStorageConsumerDefinition : ConsumerDefinition<
+    SyncTemporaryEntryToPersistentStorageConsumer>
+{
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<SyncTemporaryEntryToPersistentStorageConsumer> consumerConfigurator,
+        IRegistrationContext context)
+    {
+        consumerConfigurator.UseMessageRetry(retry => retry.Interval(20, TimeSpan.FromMilliseconds(1000)));
+        
+        endpointConfigurator.UseKillSwitch(killSwitch =>
+        {
+            killSwitch
+                .SetActivationThreshold(10)
+                .SetTripThreshold(0.15)
+                .SetRestartTimeout(m: 1)
+                .SetTrackingPeriod(m: 1);
+        });
+    }
+}
+
+internal class
+    CleanUpTemporaryStorageOnSyncedConsumerDefinition : ConsumerDefinition<CleanUpTemporaryStorageOnSyncedConsumer>
+{
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<CleanUpTemporaryStorageOnSyncedConsumer> consumerConfigurator,
+        IRegistrationContext context)
+    {
+        consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(1000)));
+    }
+}
+
+internal class
+    CleanUpPersistentStorageOnDeletedConsumerDefinition : ConsumerDefinition<CleanUpPersistentStorageOnDeletedConsumer>
+{
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<CleanUpPersistentStorageOnDeletedConsumer> consumerConfigurator,
+        IRegistrationContext context)
+    {
+        consumerConfigurator.UseMessageRetry(retry => retry.Interval(20, TimeSpan.FromMilliseconds(1000)));
+        
+        endpointConfigurator.UseKillSwitch(killSwitch =>
+        {
+            killSwitch
+                .SetActivationThreshold(10)
+                .SetTripThreshold(0.15)
+                .SetRestartTimeout(m: 1)
+                .SetTrackingPeriod(m: 1);
+        });
     }
 }

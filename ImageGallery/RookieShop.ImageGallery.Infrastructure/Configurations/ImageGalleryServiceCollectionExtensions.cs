@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RookieShop.ImageGallery.Application.Abstractions;
@@ -23,16 +24,21 @@ public class ImageGalleryConfigurator
 {
     private Func<IServiceProvider, string>? _databaseConnectionString;
     private string? _migrationAssembly;
+    
+    private Func<IServiceProvider, BlobContainerClient>? _blobContainerClientFactory; 
 
     internal ImageGalleryConfigurator()
     {
         _databaseConnectionString = null;
         _migrationAssembly = null;
+        
+        _blobContainerClientFactory = null;
     }
 
     public ImageGalleryConfigurator SetDatabaseConnectionString(Func<IServiceProvider, string>? databaseConnectionString)
     {
-        _databaseConnectionString = databaseConnectionString; return this;
+        _databaseConnectionString = databaseConnectionString;
+        return this;
     }
 
     public ImageGalleryConfigurator SetMigrationAssembly(string? migrationAssembly)
@@ -41,9 +47,15 @@ public class ImageGalleryConfigurator
         return this;
     }
 
+    public ImageGalleryConfigurator SetBlobContainerClient(Func<IServiceProvider, BlobContainerClient>? blobContainerClientFactory)
+    {
+        _blobContainerClientFactory = blobContainerClientFactory;
+        return this;
+    }
+
     internal IServiceCollection ConfigureServices(IServiceCollection services)
     {
-        if (_databaseConnectionString == null)
+        if (_databaseConnectionString == null || _blobContainerClientFactory == null)
         {
             return services;
         }
@@ -61,10 +73,15 @@ public class ImageGalleryConfigurator
             });
         });
 
-        services.AddScoped<ImageGalleryDbContext, ImageGalleryDbContextImpl>();
+        services.AddScoped<ImageGalleryDbContext>(provider => provider.GetRequiredService<ImageGalleryDbContextImpl>());
         
         services.AddSingleton<ITemporaryStorage, OperatingSystemTemporaryStorage>();
-        services.AddSingleton<IPersistentStorage, AzureBlobPersistentStorage>();
+        services.AddSingleton<IPersistentStorage>(provider =>
+        {
+            var blobContainerClient = _blobContainerClientFactory(provider);
+            
+            return new AzureBlobPersistentStorage(blobContainerClient);
+        });
 
         services.AddScoped<ImageQueryService>();
         

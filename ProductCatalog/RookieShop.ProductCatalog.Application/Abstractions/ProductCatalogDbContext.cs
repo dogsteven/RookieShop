@@ -9,6 +9,7 @@ public abstract class ProductCatalogDbContext : DbContext
 {
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductRating> ProductRatings { get; set; }
+    public DbSet<ProductStockLevel> ProductStockLevels { get; set; }
     public DbSet<ProductSemanticVector> ProductSemanticVectors { get; set; }
     
     public DbSet<Category> Categories { get; set; }

@@ -5,6 +5,7 @@ using Moq;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Queries;
 using RookieShop.WebApi.Controllers;
+using RookieShop.WebApi.ProductCatalog.Controllers;
 using RookieShop.WebApi.Test.Utilities.Persistence;
 
 namespace RookieShop.WebApi.Test.Utilities;
@@ -22,7 +23,7 @@ public class ProductCatalogServiceCollection : ServiceCollection
             options.UseInMemoryDatabase(Id.ToString());
         });
 
-        this.AddScoped<ProductCatalogDbContext, ProductCatalogDbContextImpl>();
+        this.AddScoped<ProductCatalogDbContext>(provider => provider.GetRequiredService<ProductCatalogDbContextImpl>());
         
         this.AddScoped<Mock<IScopedMediator>>(_ => new Mock<IScopedMediator>());
         this.AddScoped<IScopedMediator>(provider => provider.GetRequiredService<Mock<IScopedMediator>>().Object);
@@ -57,8 +58,8 @@ public class ProductCatalogServiceCollection : ServiceCollection
         
         this.AddScoped<ReviewQueryService>(provider => provider.GetRequiredService<Mock<ReviewQueryService>>().Object);
 
-        this.AddScoped<ProductController>();
-        this.AddScoped<CategoryController>();
-        this.AddScoped<ReviewController>();
+        this.AddScoped<ProductsController>();
+        this.AddScoped<CategoriesController>();
+        this.AddScoped<ReviewsController>();
     }
 }
