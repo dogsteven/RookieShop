@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RookieShop.Shopping.Application.Commands;
-using RookieShop.Shopping.Infrastructure.MessageDispatcher;
+using RookieShop.Shopping.Infrastructure.Messages;
 
 namespace RookieShop.WebApi.Shopping.Controllers;
 
@@ -11,9 +11,9 @@ namespace RookieShop.WebApi.Shopping.Controllers;
 [Produces("application/problem+json")]
 public class StockItemsController : ControllerBase
 {
-    private readonly OptimisticScopedMessageDispatcher _dispatcher;
+    private readonly TransactionalMessageDispatcher _dispatcher;
 
-    public StockItemsController(OptimisticScopedMessageDispatcher dispatcher)
+    public StockItemsController(TransactionalMessageDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
     }

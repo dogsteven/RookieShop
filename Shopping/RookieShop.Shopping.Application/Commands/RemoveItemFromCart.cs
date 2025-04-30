@@ -1,4 +1,5 @@
-using RookieShop.Shopping.Application.Abstractions;
+using RookieShop.Shopping.Application.Abstractions.Messages;
+using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Utilities;
 
 namespace RookieShop.Shopping.Application.Commands;
@@ -19,6 +20,7 @@ public class RemoveItemFromCartConsumer : IMessageConsumer<RemoveItemFromCart>
         IDomainEventPublisher domainEventPublisher)
     {
         _cartRepositoryHelper = cartRepositoryHelper;
+        _cartRepository = cartRepository;
         _domainEventPublisher = domainEventPublisher;
     }
     

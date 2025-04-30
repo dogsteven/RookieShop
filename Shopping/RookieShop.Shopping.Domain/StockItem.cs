@@ -1,6 +1,9 @@
+using RookieShop.Shared.Domain;
+using RookieShop.Shopping.Domain.Events;
+
 namespace RookieShop.Shopping.Domain;
 
-public class StockItem
+public class StockItem : DomainEventSource
 {
     public readonly string Sku;
     public string Name { get; private set; }
@@ -34,22 +37,29 @@ public class StockItem
     public void AddUnits(int quantity)
     {
         AvailableQuantity += quantity;
-    }
-
-    public bool CanReserve(int quantity)
-    {
-        return AvailableQuantity >= quantity;
+        
+        AddDomainEvent(new StockLevelChanged
+        {
+            Sku = Sku,
+            ChangedQuantity = quantity
+        });
     }
 
     public void Reserve(int quantity)
     {
-        if (!CanReserve(quantity))
+        if (AvailableQuantity < quantity)
         {
             throw new NotEnoughUnitsToReserveException(Sku, quantity);
         }
         
         AvailableQuantity -= quantity;
         ReservedQuantity += quantity;
+        
+        AddDomainEvent(new StockLevelChanged
+        {
+            Sku = Sku,
+            ChangedQuantity = -quantity
+        });
     }
 
     public void ConfirmReservation(int quantity)
@@ -71,6 +81,12 @@ public class StockItem
         
         AvailableQuantity += quantity;
         ReservedQuantity -= quantity;
+        
+        AddDomainEvent(new StockLevelChanged
+        {
+            Sku = Sku,
+            ChangedQuantity = quantity
+        });
     }
 }
 

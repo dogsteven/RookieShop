@@ -1,6 +1,7 @@
 using MassTransit;
 using RookieShop.ProductCatalog.Contracts.Events;
 using RookieShop.Shopping.Application.Abstractions;
+using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Domain;
 
 namespace RookieShop.Shopping.Application.Events.IntegrationEventConsumers;

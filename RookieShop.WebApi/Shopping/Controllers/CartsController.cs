@@ -5,19 +5,19 @@ using Microsoft.AspNetCore.Mvc;
 using RookieShop.Shopping.Application.Commands;
 using RookieShop.Shopping.Application.Models;
 using RookieShop.Shopping.Application.Queries;
-using RookieShop.Shopping.Infrastructure.MessageDispatcher;
+using RookieShop.Shopping.Infrastructure.Messages;
 
 namespace RookieShop.WebApi.Shopping.Controllers;
 
 [ApiController]
-[Route("/shopping/api/cart")]
+[Route("/shopping/api/carts")]
 [Produces("application/problem+json")]
 public class CartsController : ControllerBase
 {
-    private readonly OptimisticScopedMessageDispatcher _dispatcher;
+    private readonly TransactionalMessageDispatcher _dispatcher;
     private readonly ShoppingQueryService _shoppingQueryService;
 
-    public CartsController(OptimisticScopedMessageDispatcher dispatcher, ShoppingQueryService shoppingQueryService)
+    public CartsController(TransactionalMessageDispatcher dispatcher, ShoppingQueryService shoppingQueryService)
     {
         _dispatcher = dispatcher;
         _shoppingQueryService = shoppingQueryService;
@@ -30,7 +30,7 @@ public class CartsController : ControllerBase
     {
         var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         
-        return await _shoppingQueryService.GetCartByIdAsync(customerId, cancellationToken);
+        return Ok(await _shoppingQueryService.GetCartByIdAsync(customerId, cancellationToken));
     }
 
     public class AddItemToCartBody

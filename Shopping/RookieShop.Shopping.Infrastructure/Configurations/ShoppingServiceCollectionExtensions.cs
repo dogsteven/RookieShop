@@ -1,12 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RookieShop.Shopping.Application.Abstractions;
+using RookieShop.Shopping.Application.Abstractions.Messages;
+using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Commands;
 using RookieShop.Shopping.Application.Events.DomainEventConsumers;
 using RookieShop.Shopping.Application.Queries;
 using RookieShop.Shopping.Application.Utilities;
 using RookieShop.Shopping.Domain.Events;
-using RookieShop.Shopping.Infrastructure.MessageDispatcher;
+using RookieShop.Shopping.Infrastructure.Messages;
 using RookieShop.Shopping.Infrastructure.Persistence;
 using RookieShop.Shopping.Infrastructure.UnitOfWork;
 
@@ -67,28 +69,26 @@ public class ShoppingConfigurator
             });
         });
         
-        services.AddScoped<ICartRepository>(provider => provider.GetRequiredService<ShoppingDbContext>());
-        services.AddScoped<IStockItemRepository>(provider => provider.GetRequiredService<ShoppingDbContext>());
+        services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<IStockItemRepository, StockItemRepository>();
         
         services.AddScoped<IUnitOfWork, EntityFrameworkCoreUnitOfWork>();
         
         services.AddScoped<IntegrationEventPublisher>();
         services.AddScoped<IIntegrationEventPublisher>(provider => provider.GetRequiredService<IntegrationEventPublisher>());
 
-        services.AddScoped<ScopedMessageDispatcher>();
-        services.AddScoped<OptimisticScopedMessageDispatcher>();
-        services.AddScoped<PessimisticScopedMessageDispatcher>();
-        services.AddScoped<IDomainEventPublisher>(provider => provider.GetRequiredService<ScopedMessageDispatcher>());
+        services.AddScoped<MessageDispatcher>();
+        services.AddScoped<TransactionalMessageDispatcher>();
+        services.AddScoped<IDomainEventPublisher>(provider => provider.GetRequiredService<MessageDispatcher>());
 
+        services.AddScoped<IMessageConsumer<AddUnitsToStockItem>, AddUnitsToStockItemConsumer>();
         services.AddScoped<IMessageConsumer<AddItemToCart>, AddItemToCartConsumer>();
         services.AddScoped<IMessageConsumer<AdjustItemQuantity>, AdjustItemQuantityConsumer>();
         services.AddScoped<IMessageConsumer<RemoveItemFromCart>, RemoveItemFromCartConsumer>();
-
         services.AddScoped<IMessageConsumer<ItemAddedToCart>, ItemAddedToCartConsumer>();
         services.AddScoped<IMessageConsumer<ItemQuantityAdjusted>, ItemQuantityAdjustedConsumer>();
         services.AddScoped<IMessageConsumer<ItemRemovedFromCart>, ItemRemovedFromCartConsumer>();
-
-        services.AddScoped<IMessageConsumer<AddUnitsToStockItem>, AddUnitsToStockItemConsumer>();
+        services.AddScoped<IMessageConsumer<StockLevelChanged>, StockLevelChangedConsumer>();
         
         services.AddScoped<CartRepositoryHelper>();
 

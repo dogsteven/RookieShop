@@ -5,7 +5,7 @@ using RookieShop.Shopping.Contracts.Events;
 
 namespace RookieShop.ProductCatalog.Application.Events.IntegrationEventConsumers;
 
-public class UpdateStockLevelConsumer : IConsumer<StockLevelUpdated>
+public class UpdateStockLevelConsumer : IConsumer<StockLevelChanged>
 {
     private readonly ProductCatalogDbContext _dbContext;
 
@@ -14,11 +14,11 @@ public class UpdateStockLevelConsumer : IConsumer<StockLevelUpdated>
         _dbContext = dbContext;
     }
     
-    public async Task Consume(ConsumeContext<StockLevelUpdated> context)
+    public async Task Consume(ConsumeContext<StockLevelChanged> context)
     {
         var message = context.Message;
         var sku = message.Sku;
-        var availableQuantity = message.AvailableQuantity;
+        var changedQuantity = message.ChangedQuantity;
         
         var cancellationToken = context.CancellationToken;
         
@@ -30,7 +30,7 @@ public class UpdateStockLevelConsumer : IConsumer<StockLevelUpdated>
             return;
         }
         
-        productStockLevel.SetAvailableQuantity(availableQuantity);
+        productStockLevel.SetAvailableQuantity(productStockLevel.AvailableQuantity + changedQuantity);
         
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

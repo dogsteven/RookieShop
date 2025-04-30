@@ -1,4 +1,4 @@
-namespace RookieShop.Shopping.Application.Abstractions;
+namespace RookieShop.Shopping.Application.Abstractions.Messages;
 
 public interface IMessageConsumer<in TMessage>
 {

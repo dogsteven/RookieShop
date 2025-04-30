@@ -1,6 +1,6 @@
 using RookieShop.Shared.Domain;
 
-namespace RookieShop.Shopping.Application.Abstractions;
+namespace RookieShop.Shopping.Application.Abstractions.Messages;
 
 public interface IDomainEventPublisher
 {

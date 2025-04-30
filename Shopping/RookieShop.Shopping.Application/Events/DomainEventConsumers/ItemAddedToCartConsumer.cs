@@ -1,6 +1,6 @@
-using RookieShop.Shopping.Application.Abstractions;
+using RookieShop.Shopping.Application.Abstractions.Messages;
+using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
-using RookieShop.Shopping.Contracts.Events;
 using RookieShop.Shopping.Domain.Events;
 
 namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
@@ -8,12 +8,12 @@ namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
 public class ItemAddedToCartConsumer : IMessageConsumer<ItemAddedToCart>
 {
     private readonly IStockItemRepository _stockItemRepository;
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
+    private readonly IDomainEventPublisher _domainEventPublisher;
 
-    public ItemAddedToCartConsumer(IStockItemRepository stockItemRepository, IIntegrationEventPublisher integrationEventPublisher)
+    public ItemAddedToCartConsumer(IStockItemRepository stockItemRepository, IDomainEventPublisher domainEventPublisher)
     {
         _stockItemRepository = stockItemRepository;
-        _integrationEventPublisher = integrationEventPublisher;
+        _domainEventPublisher = domainEventPublisher;
     }
     
     public async Task ConsumeAsync(ItemAddedToCart message, CancellationToken cancellationToken = default)
@@ -28,11 +28,7 @@ public class ItemAddedToCartConsumer : IMessageConsumer<ItemAddedToCart>
         stockItem.Reserve(message.Quantity);
         
         _stockItemRepository.Save(stockItem);
-
-        _integrationEventPublisher.Enqueue(new StockLevelUpdated
-        {
-            Sku = stockItem.Sku,
-            AvailableQuantity = stockItem.AvailableQuantity
-        });
+        
+        await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
     }
 }

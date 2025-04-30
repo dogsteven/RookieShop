@@ -1,4 +1,5 @@
-using RookieShop.Shopping.Application.Abstractions;
+using RookieShop.Shopping.Application.Abstractions.Messages;
+using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
 
 namespace RookieShop.Shopping.Application.Commands;
@@ -13,10 +14,12 @@ public class AddUnitsToStockItem
 public class AddUnitsToStockItemConsumer : IMessageConsumer<AddUnitsToStockItem>
 {
     private readonly IStockItemRepository _stockItemRepository;
+    private readonly IDomainEventPublisher _domainEventPublisher;
 
-    public AddUnitsToStockItemConsumer(IStockItemRepository stockItemRepository)
+    public AddUnitsToStockItemConsumer(IStockItemRepository stockItemRepository, IDomainEventPublisher domainEventPublisher)
     {
         _stockItemRepository = stockItemRepository;
+        _domainEventPublisher = domainEventPublisher;
     }
         
     public async Task ConsumeAsync(AddUnitsToStockItem message, CancellationToken cancellationToken = default)
@@ -29,5 +32,7 @@ public class AddUnitsToStockItemConsumer : IMessageConsumer<AddUnitsToStockItem>
         }
         
         stockItem.AddUnits(message.Quantity);
+        
+        await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
     }
 }

@@ -51,7 +51,7 @@ public class Cart : DomainEventSource
             throw new CartItemNotFoundException(Id, sku);
         }
 
-        if (item.Quantity != newQuantity)
+        if (item.Quantity == newQuantity)
         {
             return;
         }

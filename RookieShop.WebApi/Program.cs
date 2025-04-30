@@ -3,6 +3,7 @@ using MassTransit;
 using MassTransit.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using RookieShop.Customers.Infrastructure;
@@ -18,7 +19,42 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(swaggerGen =>
+{
+    swaggerGen.AddSecurityDefinition("oidc", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OpenIdConnect,
+        OpenIdConnectUrl = new Uri("http://localhost:8080/realms/rookie-shop/.well-known/openid-configuration"),
+        Flows = new OpenApiOAuthFlows
+        {
+            AuthorizationCode = new OpenApiOAuthFlow
+            {
+                AuthorizationUrl = new Uri("http://localhost:8080/realms/rookie-shop/protocol/openid-connect/auth"),
+                TokenUrl = new Uri("http://localhost:8080/realms/rookie-shop/protocol/openid-connect/token"),
+                Scopes = new Dictionary<string, string>
+                {
+                    { "openid", "OpenID Connect" },
+                    { "profile", "User profile" }
+                }
+            }
+        }
+    });
+    
+    swaggerGen.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "oidc"
+                }
+            },
+            ["openid", "profile"]
+        }
+    });
+});
 
 builder.Services.AddControllers();
 
@@ -185,7 +221,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    
+    app.UseSwaggerUI(swaggerUi =>
+    {
+        swaggerUi.OAuthClientId("rookie-shop-web-api");
+        swaggerUi.OAuthClientSecret("WdK1ICYLbzChpYuutps2X82yeFg6MtXx");
+        swaggerUi.OAuthRealm("rookie-shop");
+    });
 }
 
 app.UseCors("rookie-shop-back-office-cors");

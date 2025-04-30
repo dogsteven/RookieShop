@@ -1,7 +1,7 @@
 using MassTransit;
-using RookieShop.Shopping.Application.Abstractions;
+using RookieShop.Shopping.Application.Abstractions.Messages;
 
-namespace RookieShop.Shopping.Infrastructure.MessageDispatcher;
+namespace RookieShop.Shopping.Infrastructure.Messages;
 
 public class IntegrationEventPublisher : IIntegrationEventPublisher
 {
@@ -19,7 +19,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         _integrationEvents.Add(integrationEvent);
     }
 
-    public async Task PublishAllAsync(CancellationToken cancellationToken = default)
+    public async Task PublishAsync(CancellationToken cancellationToken = default)
     {
         foreach (var integrationEvent in _integrationEvents)
         {

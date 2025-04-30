@@ -1,6 +1,6 @@
 using RookieShop.Shopping.Domain;
 
-namespace RookieShop.Shopping.Application.Abstractions;
+namespace RookieShop.Shopping.Application.Abstractions.Repositories;
 
 public interface IStockItemRepository
 {

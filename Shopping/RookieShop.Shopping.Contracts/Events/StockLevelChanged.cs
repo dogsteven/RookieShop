@@ -1,8 +1,8 @@
 namespace RookieShop.Shopping.Contracts.Events;
 
-public class StockLevelUpdated
+public class StockLevelChanged
 {
     public string Sku { get; init; } = null!;
     
-    public int AvailableQuantity { get; init; }
+    public int ChangedQuantity { get; init; }
 }
