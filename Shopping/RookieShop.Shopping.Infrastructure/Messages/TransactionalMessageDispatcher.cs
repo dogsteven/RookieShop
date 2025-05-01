@@ -13,9 +13,9 @@ public class TransactionalMessageDispatcher
         _unitOfWork = unitOfWork;
     }
 
-    public async Task DispatchAsync(object message, CancellationToken cancellationToken = default)
+    public async Task SendAsync(object message, CancellationToken cancellationToken = default)
     {
-        await _dispatcher.DispatchAsync(message, cancellationToken);
+        await _dispatcher.SendAsync(message, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);
     }
 }

@@ -3,11 +3,11 @@ using RookieShop.Shopping.Domain.Events;
 
 namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
 
-public class StockLevelChangedConsumer : IMessageConsumer<StockLevelChanged>
+public class PublishIntegrationEventOnStockLevelChangedConsumer : IEventConsumer<StockLevelChanged>
 {
     private readonly IIntegrationEventPublisher _integrationEventPublisher;
 
-    public StockLevelChangedConsumer(IIntegrationEventPublisher integrationEventPublisher)
+    public PublishIntegrationEventOnStockLevelChangedConsumer(IIntegrationEventPublisher integrationEventPublisher)
     {
         _integrationEventPublisher = integrationEventPublisher;
     }

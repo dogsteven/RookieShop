@@ -14,7 +14,7 @@ public class AddItemToCart
     public int Quantity { get; init; }
 }
 
-public class AddItemToCartConsumer : IMessageConsumer<AddItemToCart>
+public class AddItemToCartConsumer : ICommandConsumer<AddItemToCart>
 {
     private readonly CartRepositoryHelper _cartRepositoryHelper;
     private readonly ICartRepository _cartRepository;

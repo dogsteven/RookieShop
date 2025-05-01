@@ -18,7 +18,7 @@ public class AdjustItemQuantity
     }
 }
 
-public class AdjustItemQuantityConsumer : IMessageConsumer<AdjustItemQuantity>
+public class AdjustItemQuantityConsumer : ICommandConsumer<AdjustItemQuantity>
 {
     private readonly CartRepositoryHelper _cartRepositoryHelper;
     private readonly ICartRepository _cartRepository;

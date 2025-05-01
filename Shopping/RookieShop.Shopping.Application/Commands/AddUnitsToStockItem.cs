@@ -11,7 +11,7 @@ public class AddUnitsToStockItem
     public int Quantity { get; init; }
 }
 
-public class AddUnitsToStockItemConsumer : IMessageConsumer<AddUnitsToStockItem>
+public class AddUnitsToStockItemConsumer : ICommandConsumer<AddUnitsToStockItem>
 {
     private readonly IStockItemRepository _stockItemRepository;
     private readonly IDomainEventPublisher _domainEventPublisher;

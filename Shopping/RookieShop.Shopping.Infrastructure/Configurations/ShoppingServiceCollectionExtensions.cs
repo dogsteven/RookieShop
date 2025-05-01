@@ -81,14 +81,15 @@ public class ShoppingConfigurator
         services.AddScoped<TransactionalMessageDispatcher>();
         services.AddScoped<IDomainEventPublisher>(provider => provider.GetRequiredService<MessageDispatcher>());
 
-        services.AddScoped<IMessageConsumer<AddUnitsToStockItem>, AddUnitsToStockItemConsumer>();
-        services.AddScoped<IMessageConsumer<AddItemToCart>, AddItemToCartConsumer>();
-        services.AddScoped<IMessageConsumer<AdjustItemQuantity>, AdjustItemQuantityConsumer>();
-        services.AddScoped<IMessageConsumer<RemoveItemFromCart>, RemoveItemFromCartConsumer>();
-        services.AddScoped<IMessageConsumer<ItemAddedToCart>, ItemAddedToCartConsumer>();
-        services.AddScoped<IMessageConsumer<ItemQuantityAdjusted>, ItemQuantityAdjustedConsumer>();
-        services.AddScoped<IMessageConsumer<ItemRemovedFromCart>, ItemRemovedFromCartConsumer>();
-        services.AddScoped<IMessageConsumer<StockLevelChanged>, StockLevelChangedConsumer>();
+        services.AddScoped<ICommandConsumer<AddUnitsToStockItem>, AddUnitsToStockItemConsumer>();
+        services.AddScoped<ICommandConsumer<AddItemToCart>, AddItemToCartConsumer>();
+        services.AddScoped<ICommandConsumer<AdjustItemQuantity>, AdjustItemQuantityConsumer>();
+        services.AddScoped<ICommandConsumer<RemoveItemFromCart>, RemoveItemFromCartConsumer>();
+        
+        services.AddScoped<IEventConsumer<ItemAddedToCart>, HandleStockReservationOnItemAddedConsumer>();
+        services.AddScoped<IEventConsumer<ItemQuantityAdjusted>, HandleStockReservationOnQuantityAdjustedConsumer>();
+        services.AddScoped<IEventConsumer<ItemRemovedFromCart>, HandleStockReservationOnItemDeletedConsumer>();
+        services.AddScoped<IEventConsumer<StockLevelChanged>, PublishIntegrationEventOnStockLevelChangedConsumer>();
         
         services.AddScoped<CartRepositoryHelper>();
 

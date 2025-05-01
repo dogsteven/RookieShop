@@ -10,7 +10,7 @@ public class RemoveItemFromCart
     public string Sku { get; init; } = null!;
 }
 
-public class RemoveItemFromCartConsumer : IMessageConsumer<RemoveItemFromCart>
+public class RemoveItemFromCartConsumer : ICommandConsumer<RemoveItemFromCart>
 {
     private readonly CartRepositoryHelper _cartRepositoryHelper;
     private readonly ICartRepository _cartRepository;

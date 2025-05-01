@@ -5,18 +5,18 @@ using RookieShop.Shopping.Domain.Events;
 
 namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
 
-public class ItemAddedToCartConsumer : IMessageConsumer<ItemAddedToCart>
+public class HandleStockReservationOnQuantityAdjustedConsumer : IEventConsumer<ItemQuantityAdjusted>
 {
     private readonly IStockItemRepository _stockItemRepository;
     private readonly IDomainEventPublisher _domainEventPublisher;
 
-    public ItemAddedToCartConsumer(IStockItemRepository stockItemRepository, IDomainEventPublisher domainEventPublisher)
+    public HandleStockReservationOnQuantityAdjustedConsumer(IStockItemRepository stockItemRepository, IDomainEventPublisher domainEventPublisher)
     {
         _stockItemRepository = stockItemRepository;
         _domainEventPublisher = domainEventPublisher;
     }
     
-    public async Task ConsumeAsync(ItemAddedToCart message, CancellationToken cancellationToken = default)
+    public async Task ConsumeAsync(ItemQuantityAdjusted message, CancellationToken cancellationToken = default)
     {
         var stockItem = await _stockItemRepository.GetBySkuAsync(message.Sku, cancellationToken);
 
@@ -24,8 +24,9 @@ public class ItemAddedToCartConsumer : IMessageConsumer<ItemAddedToCart>
         {
             throw new StockItemNotFoundException(message.Sku);
         }
-        
-        stockItem.Reserve(message.Quantity);
+
+        stockItem.ReleaseReservation(message.OldQuantity);
+        stockItem.Reserve(message.NewQuantity);
         
         _stockItemRepository.Save(stockItem);
         

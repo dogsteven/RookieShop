@@ -36,7 +36,7 @@ public class StockItemsController : ControllerBase
         [FromBody] AddUnitsToStockItemBody body,
         CancellationToken cancellationToken)
     {
-        await _dispatcher.DispatchAsync(new AddUnitsToStockItem
+        await _dispatcher.SendAsync(new AddUnitsToStockItem
         {
             Sku = sku,
             Quantity = body.Quantity

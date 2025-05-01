@@ -55,7 +55,7 @@ public class CartsController : ControllerBase
     {
         var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        await _dispatcher.DispatchAsync(new AddItemToCart
+        await _dispatcher.SendAsync(new AddItemToCart
         {
             Id = customerId,
             Sku = body.Sku,
@@ -97,7 +97,7 @@ public class CartsController : ControllerBase
     {
         var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        await _dispatcher.DispatchAsync(new AdjustItemQuantity
+        await _dispatcher.SendAsync(new AdjustItemQuantity
         {
             Id = customerId,
             Adjustments = body.Adjustments.Select(adjustment => new AdjustItemQuantity.Adjustment
@@ -130,7 +130,7 @@ public class CartsController : ControllerBase
     {
         var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        await _dispatcher.DispatchAsync(new RemoveItemFromCart
+        await _dispatcher.SendAsync(new RemoveItemFromCart
         {
             Id = customerId,
             Sku = body.Sku,
