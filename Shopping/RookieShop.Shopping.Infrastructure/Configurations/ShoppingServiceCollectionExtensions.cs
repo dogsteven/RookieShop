@@ -94,6 +94,22 @@ public class ShoppingConfigurator
         services.AddScoped<CartRepositoryHelper>();
 
         services.AddScoped<ShoppingQueryService>();
+
+        services.AddSingleton<MessageDispatcher.ConsumeMethodRegistry>(_ =>
+        {
+            var consumeMethodRegistry = new MessageDispatcher.ConsumeMethodRegistry();
+            consumeMethodRegistry.AddCommandConsumer<AddUnitsToStockItem>();
+            consumeMethodRegistry.AddCommandConsumer<AddItemToCart>();
+            consumeMethodRegistry.AddCommandConsumer<AdjustItemQuantity>();
+            consumeMethodRegistry.AddCommandConsumer<RemoveItemFromCart>();
+        
+            consumeMethodRegistry.AddEventConsumer<ItemAddedToCart>();
+            consumeMethodRegistry.AddEventConsumer<ItemQuantityAdjusted>();
+            consumeMethodRegistry.AddEventConsumer<ItemRemovedFromCart>();
+            consumeMethodRegistry.AddEventConsumer<StockLevelChanged>();
+            
+            return consumeMethodRegistry;
+        });
         
         return services;
     }
