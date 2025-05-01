@@ -2,6 +2,7 @@ using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using RookieShop.FrontStore.Exceptions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Models;
+using RookieShop.FrontStore.Modules.Shared;
 using RookieShop.Shared.Models;
 using IProductService = RookieShop.FrontStore.Modules.ProductCatalog.Abstractions.IProductService;
 
@@ -9,18 +10,16 @@ namespace RookieShop.FrontStore.Modules.ProductCatalog.Services;
 
 public class ProductService : IProductService
 {
-    private readonly HttpClient _httpClient;
-    private readonly string _imageGalleryBasePath;
+    private readonly RookieShopHttpClient _httpClient;
 
-    public ProductService(IHttpClientFactory httpClientFactory, string imageGalleryBasePath)
+    public ProductService(RookieShopHttpClient httpClient)
     {
-        _httpClient = httpClientFactory.CreateClient("RookieShop.WebApi");
-        _imageGalleryBasePath = imageGalleryBasePath;
+        _httpClient = httpClient;
     }
     
     public async Task<Product> GetProductBySkuAsync(string sku, CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/{sku}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/product-catalog/api/products/{sku}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         
@@ -35,7 +34,7 @@ public class ProductService : IProductService
         
         var queryString = queries.ToString();
 
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/all?{queryString}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/product-catalog/api/products/all?{queryString}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
@@ -49,7 +48,7 @@ public class ProductService : IProductService
         
         var queryString = queries.ToString();
         
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/featured?{queryString}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/product-catalog/api/products/featured?{queryString}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
@@ -64,7 +63,7 @@ public class ProductService : IProductService
         
         var queryString = queries.ToString();
         
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/by-category/{categoryId}?{queryString}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/product-catalog/api/products/by-category/{categoryId}?{queryString}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
@@ -81,7 +80,7 @@ public class ProductService : IProductService
         
         var queryString = queries.ToString();
         
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/Product/semantic?{queryString}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/product-catalog/api/products/semantic?{queryString}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 

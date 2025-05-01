@@ -123,6 +123,8 @@ builder.Services.AddSingleton<BlobServiceClient>(provider =>
     return new BlobServiceClient(connectionString);
 });
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddMassTransit(bus =>
 {
     bus.AddProductCatalogConsumers();

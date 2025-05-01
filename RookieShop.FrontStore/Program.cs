@@ -1,17 +1,23 @@
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using RookieShop.FrontStore.ExceptionFilters;
+using Microsoft.IdentityModel.Tokens;
+using RookieShop.FrontStore.Middlewares;
 using RookieShop.FrontStore.Modules.ImageGallery;
 using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Services;
+using RookieShop.FrontStore.Modules.Shared;
+using RookieShop.FrontStore.Modules.Shopping.Abstractions;
+using RookieShop.FrontStore.Modules.Shopping.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<GlobalExceptionFilter>();
+    options.Filters.Add<QueryCartActionFilter>();
 });
 
 builder.Services.AddRazorPages();
@@ -22,14 +28,15 @@ builder.Services.AddAuthentication(options =>
     options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
-.AddCookie(options =>
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
 
     options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(29);
 })
-.AddOpenIdConnect(options =>
+.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {
     var address = builder.Configuration["Keycloak:AuthSettings:Address"];
     var realm = builder.Configuration["Keycloak:AuthSettings:Realm"];
@@ -46,7 +53,6 @@ builder.Services.AddAuthentication(options =>
 
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.ResponseType = OpenIdConnectResponseType.Code;
-    options.UseTokenLifetime = true;
     options.SaveTokens = true;
     options.GetClaimsFromUserInfoEndpoint = true;
     options.RequireHttpsMetadata = false;
@@ -57,6 +63,7 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Clear();
     options.Scope.Add("openid");
     options.Scope.Add("profile");
+    options.Scope.Add("roles");
 });
 
 builder.Services.AddAuthorization();
@@ -69,15 +76,12 @@ builder.Services.AddHttpClient("RookieShop.WebApi", client =>
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddSingleton<IProductService>(provider =>
-{
-    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
-    var imageGalleryBasePath = builder.Configuration["RookieShop:WebApi:Address"]!;
-    
-    return new ProductService(httpClientFactory, imageGalleryBasePath);
-});
+builder.Services.AddSingleton<RookieShopHttpClient>();
+
+builder.Services.AddSingleton<IProductService, ProductService>();
 builder.Services.AddSingleton<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<IReviewService, ReviewService>();
+builder.Services.AddSingleton<ICartService, CartService>();
 
 builder.Services.AddSingleton<ImageGalleryUrlResolver>();
 

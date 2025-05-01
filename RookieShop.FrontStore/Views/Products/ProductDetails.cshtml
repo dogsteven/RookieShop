@@ -42,13 +42,12 @@
             </div>
 
             <div class="mt-6 sm:mt-8 lg:mt-0">
-                <h1
-                    class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
-                    @Model.Product.Name
+                <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
+                    @Model.Product.Name (@Model.Product.AvailableQuantity units available)
                 </h1>
+                
                 <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
-                    <p
-                        class="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white">
+                    <p class="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white">
                         $@Model.Product.Price.ToString("F2")
                     </p>
 
@@ -58,16 +57,14 @@
                         <p class="text-sm font-medium leading-none text-gray-500 dark:text-gray-400">
                             (@Model.Product.Rating.Score)
                         </p>
-                        <a
-                            href="#"
-                            class="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white">
+                        <a class="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white">
                             @Model.Product.Rating.Count Reviews
                         </a>
                     </div>
                 </div>
 
                 <div class="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
-                    @await Component.InvokeAsync("AddToCartButton", new { redirectUrl = $"/Products/ProductDetails/{Model.Product.Sku}" })
+                    @await Component.InvokeAsync("AddToCartButton", new { product = Model.Product, redirectUrl = $"/Products/ProductDetails/{Model.Product.Sku}" })
                 </div>
 
                 <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800"/>
@@ -263,8 +260,9 @@
                         <span class="sr-only">Close modal</span>
                     </button>
                 </div>
-                <form asp-action="SubmitReview" asp-route-id="@Model.Product.Sku" method="post" class="p-4 md:p-5">
-                    <input id="review-score" type="hidden" asp-for="Score"/>
+                <form asp-controller="Reviews" asp-action="SubmitReview" method="post" class="p-4 md:p-5">
+                    <input type="hidden" name="Sku" value="@Model.Product.Sku" />
+                    <input id="review-score" type="hidden" name="Score" value="5" />
                     <div class="mb-4 grid grid-cols-2 gap-4">
                         <div class="col-span-2">
                             <div class="flex items-center">
@@ -288,7 +286,7 @@
                         </div>
                         <div class="col-span-2">
                             <label for="review-comment" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Comment</label>
-                            <textarea asp-for="Comment" id="review-comment" rows="6" class="mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" required=""></textarea>
+                            <textarea name="Comment" id="review-comment" rows="6" class="mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" required=""></textarea>
                         </div>
                     </div>
                     <div class="border-t border-gray-200 pt-4 dark:border-gray-700 md:pt-5">

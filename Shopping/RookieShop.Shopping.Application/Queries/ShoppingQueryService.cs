@@ -27,8 +27,10 @@ public class ShoppingQueryService
                 Name = item.Name,
                 Price = item.Price,
                 ImageId = item.ImageId,
-                Quantity = item.Quantity
-            })
+                Quantity = item.Quantity,
+                Subtotal = item.Subtotal
+            }),
+            Total = cart.Total
         };
     }
 

@@ -6,10 +6,11 @@ namespace RookieShop.FrontStore.Components;
 [ViewComponent(Name = "Header")]
 public class HeaderViewComponent : ViewComponent
 {
-    public async Task<IViewComponentResult> InvokeAsync(CancellationToken cancellationToken)
+    public IViewComponentResult Invoke()
     {
         return View(new HeaderViewModel
         {
+            Cart = ViewBag.Cart
         });
     }
 }

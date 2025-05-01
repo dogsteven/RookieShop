@@ -19,6 +19,8 @@ public class Cart : DomainEventSource
         Id = id;
         _items = [];
     }
+    
+    public decimal Total => Items.Sum(item => item.Subtotal);
 
     public void AddItem(string sku, string name, decimal price, Guid imageId, int quantity)
     {
@@ -58,6 +60,11 @@ public class Cart : DomainEventSource
         
         var oldQuantity = item.Quantity;
         item.Quantity = newQuantity;
+
+        if (newQuantity == 0)
+        {
+            _items.Remove(item);
+        }
         
         AddDomainEvent(new ItemQuantityAdjusted
         {
@@ -108,6 +115,8 @@ public class CartItem
         ImageId = imageId;
         Quantity = quantity;
     }
+    
+    public decimal Subtotal => Price * Quantity;
 }
 
 public class CartItemNotFoundException : Exception

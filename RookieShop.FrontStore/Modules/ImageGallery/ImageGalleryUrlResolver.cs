@@ -11,6 +11,6 @@ public class ImageGalleryUrlResolver
     
     public string ResolveImageUrl(Guid id)
     {
-        return $"{_baseAddress}/api/ImageGallery/{id}";
+        return $"{_baseAddress}/image-gallery/api/{id}";
     }
 }

@@ -25,6 +25,8 @@ public class Product
     public DateTime UpdatedDate { get; init; }
 
     public Rating Rating { get; init; } = null!;
+    
+    public int AvailableQuantity { get; init; }
 }
 
 public class Rating

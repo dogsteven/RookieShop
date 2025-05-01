@@ -7,8 +7,15 @@ namespace RookieShop.Shopping.Application.Commands;
 public class AdjustItemQuantity
 {
     public Guid Id { get; init; }
-    public string Sku { get; init; } = null!;
-    public int NewQuantity { get; init; }
+
+    public IEnumerable<Adjustment> Adjustments { get; init; } = null!;
+
+    public class Adjustment
+    {
+        public string Sku { get; init; } = null!;
+        
+        public int NewQuantity { get; init; }
+    }
 }
 
 public class AdjustItemQuantityConsumer : IMessageConsumer<AdjustItemQuantity>
@@ -28,8 +35,11 @@ public class AdjustItemQuantityConsumer : IMessageConsumer<AdjustItemQuantity>
     public async Task ConsumeAsync(AdjustItemQuantity message, CancellationToken cancellationToken = default)
     {
         var cart = await _cartRepositoryHelper.GetOrCreateCartAsync(message.Id, cancellationToken);
-        
-        cart.AdjustItemQuantity(message.Sku, message.NewQuantity);
+
+        foreach (var adjustment in message.Adjustments)
+        {
+            cart.AdjustItemQuantity(adjustment.Sku, adjustment.NewQuantity);
+        }
         
         _cartRepository.Save(cart);
 

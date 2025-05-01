@@ -67,11 +67,20 @@ public class CartsController : ControllerBase
 
     public class AdjustItemQuantityBody
     {
-        [Required, MinLength(1), MaxLength(16)]
-        public string Sku { get; set; }
-        
-        [Required, Range(1, int.MaxValue)]
-        public int NewQuantity { get; set; }
+        public IEnumerable<Adjustment> Adjustments { get; set; }
+
+        public class Adjustment
+        {
+            [Required, MinLength(1), MaxLength(16)]
+            public string Sku { get; set; }
+            
+            [Required, Range(0, int.MaxValue)]
+            public int NewQuantity { get; set; }
+            
+#pragma warning disable CS8618, CS9264
+            public Adjustment() {}
+#pragma warning restore CS8618, CS9264
+        }
         
 #pragma warning disable CS8618, CS9264
         public AdjustItemQuantityBody() {}
@@ -91,8 +100,11 @@ public class CartsController : ControllerBase
         await _dispatcher.DispatchAsync(new AdjustItemQuantity
         {
             Id = customerId,
-            Sku = body.Sku,
-            NewQuantity = body.NewQuantity,
+            Adjustments = body.Adjustments.Select(adjustment => new AdjustItemQuantity.Adjustment
+            {
+                Sku = adjustment.Sku,
+                NewQuantity = adjustment.NewQuantity
+            })
         }, cancellationToken);
         
         return NoContent();

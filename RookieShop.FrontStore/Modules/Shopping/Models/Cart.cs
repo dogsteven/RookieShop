@@ -1,15 +1,15 @@
-namespace RookieShop.Shopping.Application.Models;
+namespace RookieShop.FrontStore.Modules.Shopping.Models;
 
-public class CartDto
+public class Cart
 {
     public Guid Id { get; init; }
 
-    public IEnumerable<CartItemDto> Items { get; init; } = null!;
+    public IEnumerable<CartItem> Items { get; init; } = null!;
     
     public decimal Total { get; init; }
 }
 
-public class CartItemDto
+public class CartItem
 {
     public string Sku { get; init; } = null!;
     

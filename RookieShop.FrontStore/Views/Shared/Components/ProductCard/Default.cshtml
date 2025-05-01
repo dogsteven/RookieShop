@@ -20,6 +20,11 @@
         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">(@Model.Product.Rating.Count)</p>
       </div>
 
+      <div class="mt-2 flex items-center gap-2">
+        <p class="text-sm font-medium text-gray-900 dark:text-white">Availability:</p>
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">@Model.Product.AvailableQuantity units</p>
+      </div>
+
       @if (Model.Product.IsFeatured && Model.ShowFeaturedTag)
       {
         <ul class="mt-2 flex items-center gap-4">
@@ -42,6 +47,6 @@
   <div class="mt-6 flex items-center justify-between gap-4">
     <p class="text-lg font-extrabold leading-tight text-gray-900 dark:text-white">$@Model.Product.Price.ToString("F2")</p>
 
-    @await Component.InvokeAsync("AddToCartButton")
+    @await Component.InvokeAsync("AddToCartButton", new { product = Model.Product, redirectUrl = $"/Products/ProductDetails/{Model.Product.Sku}" })
   </div>
 </div>

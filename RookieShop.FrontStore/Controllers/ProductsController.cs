@@ -52,7 +52,7 @@ public class ProductsController : Controller
         CancellationToken cancellationToken)
     {
         var productTask = _productService.GetProductBySkuAsync(id, cancellationToken);
-        var reviewPageTask = _reviewService.GetRatingsBySkuAsync(id, int.Max(pageNumber ?? 1, 1), 10, cancellationToken);
+        var reviewPageTask = _reviewService.GetReviewsBySkuAsync(id, int.Max(pageNumber ?? 1, 1), 10, cancellationToken);
         
         await Task.WhenAll(productTask, reviewPageTask);
         
@@ -62,9 +62,7 @@ public class ProductsController : Controller
         return View(new ProductDetailsViewModel
         {
             Product = product,
-            ReviewPage = reviewPage,
-            Score = 1,
-            Comment = "" 
+            ReviewPage = reviewPage
         });
     }
 
@@ -79,42 +77,5 @@ public class ProductsController : Controller
             Semantic = semantic,
             ProductPage = productPage
         });
-    }
-
-    public class SubmitReviewModel
-    {
-        [Required, Range(1, 5)]
-        public int Score { get; set; }
-    
-        [Required, MinLength(1), MaxLength(250)]
-        public string Comment { get; set; } = string.Empty;
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> SubmitReview(string id, [FromForm] SubmitReviewModel model,
-        CancellationToken cancellationToken)
-    {
-        if (!ModelState.IsValid)
-        {
-            var productTask = _productService.GetProductBySkuAsync(id, cancellationToken);
-            var reviewPageTask = _reviewService.GetRatingsBySkuAsync(id, 1, 10, cancellationToken);
-        
-            await Task.WhenAll(productTask, reviewPageTask);
-        
-            var product = productTask.Result;
-            var reviewPage = reviewPageTask.Result;
-
-            return View("ProductDetails", new ProductDetailsViewModel
-            {
-                Product = product,
-                ReviewPage = reviewPage,
-                Score = model.Score,
-                Comment = model.Comment,
-            });
-        }
-        
-        await _reviewService.SubmitReviewAsync(id, model.Score, model.Comment, cancellationToken);
-        
-        return RedirectToAction("ProductDetails", new { id = id });
     }
 }
