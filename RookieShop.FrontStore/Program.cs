@@ -17,7 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<GlobalExceptionFilter>();
-    options.Filters.Add<QueryCartActionFilter>();
 });
 
 builder.Services.AddRazorPages();

@@ -1,4 +1,6 @@
 using Azure.Storage.Blobs;
+using Hangfire;
+using Hangfire.PostgreSql;
 using MassTransit;
 using MassTransit.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -125,8 +127,26 @@ builder.Services.AddSingleton<BlobServiceClient>(provider =>
 
 builder.Services.AddMemoryCache();
 
+builder.Services.AddHangfire(hangfire =>
+{
+    hangfire.UseRecommendedSerializerSettings();
+    hangfire.UsePostgreSqlStorage(postgresql =>
+    {
+        postgresql.UseNpgsqlConnection(builder.Configuration.GetConnectionString("Postgresql")!);
+    }, new PostgreSqlStorageOptions
+    {
+        SchemaName = "Hangfire",
+        QueuePollInterval = TimeSpan.FromMinutes(1),
+    });
+});
+
+builder.Services.AddHangfireServer();
+
 builder.Services.AddMassTransit(bus =>
 {
+    bus.AddPublishMessageScheduler();
+    bus.AddHangfireConsumers();
+    
     bus.AddProductCatalogConsumers();
     bus.AddImageGalleryConsumers();
     bus.AddShoppingConsumers();
@@ -144,6 +164,8 @@ builder.Services.AddMassTransit(bus =>
             host.Username(builder.Configuration["Messaging:RabbitMq:Username"]!);
             host.Password(builder.Configuration["Messaging:RabbitMq:Password"]!);
         });
+
+        rabbitMq.UsePublishMessageScheduler();
         
         rabbitMq.ConfigureEndpoints(context);
     });
@@ -231,6 +253,8 @@ if (app.Environment.IsDevelopment())
         swaggerUi.OAuthRealm("rookie-shop");
     });
 }
+
+app.UseHangfireDashboard();
 
 app.UseCors("rookie-shop-back-office-cors");
 

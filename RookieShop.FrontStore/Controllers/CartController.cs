@@ -8,6 +8,7 @@ using RookieShop.FrontStore.Modules.Shopping.Abstractions;
 
 namespace RookieShop.FrontStore.Controllers;
 
+[TypeFilter(typeof(QueryCartActionFilter))]
 public class CartController : Controller
 {
     private readonly ICartService _cartService;

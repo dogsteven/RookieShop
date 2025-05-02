@@ -2,6 +2,7 @@ using RookieShop.Shopping.Application.Abstractions;
 using RookieShop.Shopping.Application.Models;
 using RookieShop.Shopping.Application.Utilities;
 using RookieShop.Shopping.Domain;
+using RookieShop.Shopping.Domain.Carts;
 
 namespace RookieShop.Shopping.Application.Queries;
 

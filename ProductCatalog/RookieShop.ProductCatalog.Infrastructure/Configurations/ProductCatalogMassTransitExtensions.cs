@@ -36,7 +36,7 @@ public static class ProductCatalogMassTransitExtensions
     }
 }
 
-internal class ApplyScoreConsumerDefinition : ConsumerDefinition<ApplyScoreConsumer>
+public class ApplyScoreConsumerDefinition : ConsumerDefinition<ApplyScoreConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ApplyScoreConsumer> consumerConfigurator,
         IRegistrationContext context)
@@ -45,7 +45,7 @@ internal class ApplyScoreConsumerDefinition : ConsumerDefinition<ApplyScoreConsu
     }
 }
 
-internal class UpdateSemanticVectorConsumerDefinition : ConsumerDefinition<UpdateSemanticVectorConsumer>
+public class UpdateSemanticVectorConsumerDefinition : ConsumerDefinition<UpdateSemanticVectorConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<UpdateSemanticVectorConsumer> consumerConfigurator,
         IRegistrationContext context)
@@ -63,7 +63,7 @@ internal class UpdateSemanticVectorConsumerDefinition : ConsumerDefinition<Updat
     }
 }
 
-internal class
+public class
     PublishProductCreatedOrUpdatedIntegrationEventConsumerDefinition : ConsumerDefinition<
     PublishProductCreatedOrUpdatedIntegrationEventConsumer>
 {
@@ -74,7 +74,7 @@ internal class
     }
 }
 
-internal class UpdateStockLevelConsumerDefinition : ConsumerDefinition<UpdateStockLevelConsumer>
+public class UpdateStockLevelConsumerDefinition : ConsumerDefinition<UpdateStockLevelConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<UpdateStockLevelConsumer> consumerConfigurator,
         IRegistrationContext context)

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RookieShop.Shopping.Domain;
+using RookieShop.Shopping.Domain.Carts;
 
 namespace RookieShop.Shopping.Infrastructure.Persistence.EntityConfigurations;
 
@@ -15,6 +16,10 @@ public class CartEntityConfiguration : IEntityTypeConfiguration<Cart>
         builder.Property(cart => cart.Id)
             .IsRequired()
             .HasColumnName("Id");
+        
+        builder.Property(cart => cart.ExpirationDate)
+            .IsRequired()
+            .HasColumnName("ExpirationDate");
 
         builder.OwnsMany<CartItem>("_items", itemBuilder =>
         {

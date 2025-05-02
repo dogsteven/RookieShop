@@ -1,4 +1,5 @@
-using RookieShop.Shopping.Domain.Events;
+using RookieShop.Shopping.Domain.StockItems;
+using RookieShop.Shopping.Domain.StockItems.Events;
 
 namespace RookieShop.Shopping.Domain.Test;
 

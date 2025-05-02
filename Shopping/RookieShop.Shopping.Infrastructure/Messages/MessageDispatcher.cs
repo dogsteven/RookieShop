@@ -5,7 +5,7 @@ using RookieShop.Shopping.Application.Abstractions.Messages;
 
 namespace RookieShop.Shopping.Infrastructure.Messages;
 
-public class MessageDispatcher : IDomainEventPublisher
+public class MessageDispatcher : IMessageDispatcher
 {
     private readonly IServiceProvider _provider;
     private readonly ConsumeMethodRegistry _consumeMethodRegistry;
@@ -23,9 +23,9 @@ public class MessageDispatcher : IDomainEventPublisher
         
         var consumer = _provider.GetRequiredService(consumerType);
 
-        var consumeAsync = _consumeMethodRegistry.GetConsumeMethod(consumerType);
+        var consumeMethod = _consumeMethodRegistry.GetConsumeMethod(messageType);
         
-        return (Task)consumeAsync.Invoke(consumer, [message, cancellationToken])!;
+        return (Task)consumeMethod.DynamicInvoke(consumer, message, cancellationToken)!;
     }
 
     public async Task PublishAsync(object message, CancellationToken cancellationToken = default)
@@ -37,55 +37,40 @@ public class MessageDispatcher : IDomainEventPublisher
 
         foreach (var consumer in consumers)
         {
-            var consumeAsync = _consumeMethodRegistry.GetConsumeMethod(consumerType);
+            var consumeMethod = _consumeMethodRegistry.GetConsumeMethod(messageType);
             
-            await (Task)consumeAsync.Invoke(consumer, [message, cancellationToken])!;
-        }
-    }
-
-    public async Task PublishAsync(DomainEventSource source, CancellationToken cancellationToken = default)
-    {
-        var domainEvents = source.DomainEvents.ToList();
-        
-        source.ClearDomainEvents();
-
-        foreach (var domainEvent in domainEvents)
-        {
-            await PublishAsync(domainEvent, cancellationToken);
+            await (Task)consumeMethod.DynamicInvoke(consumer, message, cancellationToken)!;
         }
     }
 
     public class ConsumeMethodRegistry
     {
-        private readonly Dictionary<Type, MethodInfo> _consumeMethods;
+        private readonly Dictionary<Type, Delegate> _consumeDelegates;
 
         public ConsumeMethodRegistry()
         {
-            _consumeMethods = [];
+            _consumeDelegates = [];
         }
 
-        public MethodInfo GetConsumeMethod(Type consumerType)
+        public Delegate GetConsumeMethod(Type consumerType)
         {
-            return _consumeMethods[consumerType];
+            return _consumeDelegates[consumerType];
         }
 
-        public void Add(Type consumerType)
+        public void Add(Type messageType)
         {
-            var consumeMethods = consumerType.GetInterfaces()
-                .FirstOrDefault(type => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IMessageConsumer<>))!
-                .GetMethod("ConsumeAsync")!;
+            var consumerType = typeof(IMessageConsumer<>).MakeGenericType(messageType);
+
+            var consumerMethod = consumerType.GetMethod("ConsumeAsync", BindingFlags.Public | BindingFlags.Instance)!;
             
-            _consumeMethods[consumerType] = consumeMethods;
+            var consumeDelegate = Delegate.CreateDelegate(typeof(Func<,,,>).MakeGenericType(consumerType, messageType, typeof(CancellationToken), typeof(Task)), consumerMethod);
+            
+            _consumeDelegates[messageType] = consumeDelegate;
         }
 
-        public void AddCommandConsumer<TMessage>()
+        public void Add<TMessage>()
         {
-            Add(typeof(ICommandConsumer<>).MakeGenericType(typeof(TMessage)));
-        }
-
-        public void AddEventConsumer<TMessage>()
-        {
-            Add(typeof(IEventConsumer<>).MakeGenericType(typeof(TMessage)));
+            Add(typeof(TMessage));
         }
     }
 }

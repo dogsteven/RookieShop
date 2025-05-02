@@ -1,7 +1,7 @@
 using RookieShop.Shared.Domain;
-using RookieShop.Shopping.Domain.Events;
+using RookieShop.Shopping.Domain.StockItems.Events;
 
-namespace RookieShop.Shopping.Domain;
+namespace RookieShop.Shopping.Domain.StockItems;
 
 public class StockItem : DomainEventSource
 {

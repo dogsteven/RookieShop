@@ -7,17 +7,17 @@ namespace RookieShop.Shopping.Infrastructure.UnitOfWork;
 public class EntityFrameworkCoreUnitOfWork : IUnitOfWork
 {
     private readonly ShoppingDbContext _context;
-    private readonly IntegrationEventPublisher _integrationEventPublisher;
+    private readonly ExternalMessageDispatcher _externalMessageDispatcher;
 
-    public EntityFrameworkCoreUnitOfWork(ShoppingDbContext context, IntegrationEventPublisher integrationEventPublisher)
+    public EntityFrameworkCoreUnitOfWork(ShoppingDbContext context, ExternalMessageDispatcher externalMessageDispatcher)
     {
         _context = context;
-        _integrationEventPublisher = integrationEventPublisher;
+        _externalMessageDispatcher = externalMessageDispatcher;
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         await _context.SaveChangesAsync(cancellationToken);
-        await _integrationEventPublisher.PublishAsync(cancellationToken);
+        await _externalMessageDispatcher.DispatchAsync(cancellationToken);
     }
 }

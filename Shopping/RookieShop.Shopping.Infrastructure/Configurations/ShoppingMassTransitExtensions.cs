@@ -1,4 +1,5 @@
 using MassTransit;
+using RookieShop.Shopping.Application.Commands;
 using RookieShop.Shopping.Application.Events;
 using RookieShop.Shopping.Application.Events.IntegrationEventConsumers;
 
@@ -10,12 +11,22 @@ public static class ShoppingMassTransitExtensions
     {
         bus.AddConsumer<ProductCreatedOrUpdatedConsumer, ProductCreatedOrUpdatedConsumerDefinition>();
         bus.AddConsumer<ProductDeletedConsumer, ProductDeletedConsumerDefinition>();
+        bus.AddConsumer<TryClearCartConsumer, TryClearCartConsumerDefinition>();
         
         return bus;
     }
 }
 
-internal class ProductCreatedOrUpdatedConsumerDefinition : ConsumerDefinition<ProductCreatedOrUpdatedConsumer>
+public class TryClearCartConsumerDefinition : ConsumerDefinition<TryClearCartConsumer>
+{
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<TryClearCartConsumer> consumerConfigurator,
+        IRegistrationContext context)
+    {
+        consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(500)));
+    }
+}
+
+public class ProductCreatedOrUpdatedConsumerDefinition : ConsumerDefinition<ProductCreatedOrUpdatedConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ProductCreatedOrUpdatedConsumer> consumerConfigurator,
         IRegistrationContext context)
@@ -24,7 +35,7 @@ internal class ProductCreatedOrUpdatedConsumerDefinition : ConsumerDefinition<Pr
     }
 }
 
-internal class ProductDeletedConsumerDefinition : ConsumerDefinition<ProductDeletedConsumer>
+public class ProductDeletedConsumerDefinition : ConsumerDefinition<ProductDeletedConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ProductDeletedConsumer> consumerConfigurator,
         IRegistrationContext context)

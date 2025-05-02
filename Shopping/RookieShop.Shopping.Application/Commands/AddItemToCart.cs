@@ -19,14 +19,16 @@ public class AddItemToCartConsumer : ICommandConsumer<AddItemToCart>
     private readonly CartRepositoryHelper _cartRepositoryHelper;
     private readonly ICartRepository _cartRepository;
     private readonly IStockItemRepository _stockItemRepository;
-    private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly TimeProvider _timeProvider;
+    private readonly DomainEventPublisher _domainEventPublisher;
 
     public AddItemToCartConsumer(CartRepositoryHelper cartRepositoryHelper, ICartRepository cartRepository,
-        IStockItemRepository stockItemRepository, IDomainEventPublisher domainEventPublisher)
+        TimeProvider timeProvider, IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
     {
         _cartRepositoryHelper = cartRepositoryHelper;
         _cartRepository = cartRepository;
         _stockItemRepository = stockItemRepository;
+        _timeProvider = timeProvider;
         _domainEventPublisher = domainEventPublisher;
     }
     
@@ -42,6 +44,7 @@ public class AddItemToCartConsumer : ICommandConsumer<AddItemToCart>
         }
         
         cart.AddItem(stockItem.Sku, stockItem.Name, stockItem.Price, stockItem.ImageId, message.Quantity);
+        cart.ExtendExpiration(_timeProvider);
         
         _cartRepository.Save(cart);
         

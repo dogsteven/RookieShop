@@ -25,7 +25,7 @@ public static class ImageGalleryMassTransitExtensions
     }
 }
 
-internal class
+public class
     SyncTemporaryEntryToPersistentStorageConsumerDefinition : ConsumerDefinition<
     SyncTemporaryEntryToPersistentStorageConsumer>
 {
@@ -45,7 +45,7 @@ internal class
     }
 }
 
-internal class
+public class
     CleanUpTemporaryStorageOnSyncedConsumerDefinition : ConsumerDefinition<CleanUpTemporaryStorageOnSyncedConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<CleanUpTemporaryStorageOnSyncedConsumer> consumerConfigurator,
@@ -55,7 +55,7 @@ internal class
     }
 }
 
-internal class
+public class
     CleanUpPersistentStorageOnDeletedConsumerDefinition : ConsumerDefinition<CleanUpPersistentStorageOnDeletedConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<CleanUpPersistentStorageOnDeletedConsumer> consumerConfigurator,

@@ -1,11 +1,13 @@
 using RookieShop.Shared.Domain;
-using RookieShop.Shopping.Domain.Events;
+using RookieShop.Shopping.Domain.Carts.Events;
 
-namespace RookieShop.Shopping.Domain;
+namespace RookieShop.Shopping.Domain.Carts;
 
 public class Cart : DomainEventSource
 {
     public readonly Guid Id;
+    
+    public DateTimeOffset ExpirationDate { get; private set; }
 
     private readonly List<CartItem> _items;
     public IReadOnlyList<CartItem> Items => _items;
@@ -92,6 +94,37 @@ public class Cart : DomainEventSource
             Sku = sku,
             Quantity = item.Quantity
         });
+    }
+
+    public void ExtendExpiration(TimeProvider timeProvider)
+    {
+        ExpirationDate = timeProvider.GetUtcNow().AddMinutes(1);
+        
+        AddDomainEvent(new CartExpirationDateExtended
+        {
+            Id = Id,
+            ExpirationDate = ExpirationDate
+        });
+    }
+
+    public void TryClear(TimeProvider timeProvider)
+    {
+        if (ExpirationDate > timeProvider.GetUtcNow())
+        {
+            return;
+        }
+        
+        foreach (var item in _items)
+        {
+            AddDomainEvent(new ItemRemovedFromCart
+            {
+                Id = Id,
+                Sku = item.Sku,
+                Quantity = item.Quantity
+            });
+        }
+        
+        _items.Clear();
     }
 }
 

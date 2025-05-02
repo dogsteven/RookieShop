@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using RookieShop.FrontStore.Middlewares;
 using RookieShop.FrontStore.Models;
 using RookieShop.FrontStore.Models.Products;
 using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 
 namespace RookieShop.FrontStore.Controllers;
 
+[TypeFilter(typeof(QueryCartActionFilter))]
 public class ProductsController : Controller
 {
     private readonly IProductService _productService;

@@ -1,5 +1,6 @@
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Domain;
+using RookieShop.Shopping.Domain.Carts;
 
 namespace RookieShop.Shopping.Application.Utilities;
 

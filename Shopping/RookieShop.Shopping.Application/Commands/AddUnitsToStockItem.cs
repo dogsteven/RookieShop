@@ -1,6 +1,7 @@
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
+using RookieShop.Shopping.Application.Utilities;
 
 namespace RookieShop.Shopping.Application.Commands;
 
@@ -14,9 +15,9 @@ public class AddUnitsToStockItem
 public class AddUnitsToStockItemConsumer : ICommandConsumer<AddUnitsToStockItem>
 {
     private readonly IStockItemRepository _stockItemRepository;
-    private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly DomainEventPublisher _domainEventPublisher;
 
-    public AddUnitsToStockItemConsumer(IStockItemRepository stockItemRepository, IDomainEventPublisher domainEventPublisher)
+    public AddUnitsToStockItemConsumer(IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
     {
         _stockItemRepository = stockItemRepository;
         _domainEventPublisher = domainEventPublisher;

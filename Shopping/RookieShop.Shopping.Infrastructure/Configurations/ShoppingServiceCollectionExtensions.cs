@@ -7,7 +7,8 @@ using RookieShop.Shopping.Application.Commands;
 using RookieShop.Shopping.Application.Events.DomainEventConsumers;
 using RookieShop.Shopping.Application.Queries;
 using RookieShop.Shopping.Application.Utilities;
-using RookieShop.Shopping.Domain.Events;
+using RookieShop.Shopping.Domain.Carts.Events;
+using RookieShop.Shopping.Domain.StockItems.Events;
 using RookieShop.Shopping.Infrastructure.Messages;
 using RookieShop.Shopping.Infrastructure.Persistence;
 using RookieShop.Shopping.Infrastructure.UnitOfWork;
@@ -74,12 +75,13 @@ public class ShoppingConfigurator
         
         services.AddScoped<IUnitOfWork, EntityFrameworkCoreUnitOfWork>();
         
-        services.AddScoped<IntegrationEventPublisher>();
-        services.AddScoped<IIntegrationEventPublisher>(provider => provider.GetRequiredService<IntegrationEventPublisher>());
+        services.AddScoped<ExternalMessageDispatcher>();
+        services.AddScoped<IExternalMessageDispatcher>(provider => provider.GetRequiredService<ExternalMessageDispatcher>());
 
         services.AddScoped<MessageDispatcher>();
+        services.AddScoped<IMessageDispatcher>(provider => provider.GetRequiredService<MessageDispatcher>());
+        services.AddScoped<DomainEventPublisher>();
         services.AddScoped<TransactionalMessageDispatcher>();
-        services.AddScoped<IDomainEventPublisher>(provider => provider.GetRequiredService<MessageDispatcher>());
 
         services.AddScoped<ICommandConsumer<AddUnitsToStockItem>, AddUnitsToStockItemConsumer>();
         services.AddScoped<ICommandConsumer<AddItemToCart>, AddItemToCartConsumer>();
@@ -90,23 +92,27 @@ public class ShoppingConfigurator
         services.AddScoped<IEventConsumer<ItemQuantityAdjusted>, HandleStockReservationOnQuantityAdjustedConsumer>();
         services.AddScoped<IEventConsumer<ItemRemovedFromCart>, HandleStockReservationOnItemDeletedConsumer>();
         services.AddScoped<IEventConsumer<StockLevelChanged>, PublishIntegrationEventOnStockLevelChangedConsumer>();
+        services.AddScoped<IEventConsumer<CartExpirationDateExtended>, ScheduleJobOnCartExpirationExtendedConsumer>();
         
         services.AddScoped<CartRepositoryHelper>();
 
         services.AddScoped<ShoppingQueryService>();
 
+        services.AddSingleton(TimeProvider.System);
+
         services.AddSingleton<MessageDispatcher.ConsumeMethodRegistry>(_ =>
         {
             var consumeMethodRegistry = new MessageDispatcher.ConsumeMethodRegistry();
-            consumeMethodRegistry.AddCommandConsumer<AddUnitsToStockItem>();
-            consumeMethodRegistry.AddCommandConsumer<AddItemToCart>();
-            consumeMethodRegistry.AddCommandConsumer<AdjustItemQuantity>();
-            consumeMethodRegistry.AddCommandConsumer<RemoveItemFromCart>();
+            consumeMethodRegistry.Add<AddUnitsToStockItem>();
+            consumeMethodRegistry.Add<AddItemToCart>();
+            consumeMethodRegistry.Add<AdjustItemQuantity>();
+            consumeMethodRegistry.Add<RemoveItemFromCart>();
         
-            consumeMethodRegistry.AddEventConsumer<ItemAddedToCart>();
-            consumeMethodRegistry.AddEventConsumer<ItemQuantityAdjusted>();
-            consumeMethodRegistry.AddEventConsumer<ItemRemovedFromCart>();
-            consumeMethodRegistry.AddEventConsumer<StockLevelChanged>();
+            consumeMethodRegistry.Add<ItemAddedToCart>();
+            consumeMethodRegistry.Add<ItemQuantityAdjusted>();
+            consumeMethodRegistry.Add<ItemRemovedFromCart>();
+            consumeMethodRegistry.Add<StockLevelChanged>();
+            consumeMethodRegistry.Add<CartExpirationDateExtended>();
             
             return consumeMethodRegistry;
         });

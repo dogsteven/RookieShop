@@ -1,16 +1,17 @@
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
-using RookieShop.Shopping.Domain.Events;
+using RookieShop.Shopping.Application.Utilities;
+using RookieShop.Shopping.Domain.Carts.Events;
 
 namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
 
 public class HandleStockReservationOnQuantityAdjustedConsumer : IEventConsumer<ItemQuantityAdjusted>
 {
     private readonly IStockItemRepository _stockItemRepository;
-    private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly DomainEventPublisher _domainEventPublisher;
 
-    public HandleStockReservationOnQuantityAdjustedConsumer(IStockItemRepository stockItemRepository, IDomainEventPublisher domainEventPublisher)
+    public HandleStockReservationOnQuantityAdjustedConsumer(IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
     {
         _stockItemRepository = stockItemRepository;
         _domainEventPublisher = domainEventPublisher;

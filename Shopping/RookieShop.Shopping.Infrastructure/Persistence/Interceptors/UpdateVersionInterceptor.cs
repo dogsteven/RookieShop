@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using RookieShop.Shopping.Domain;
+using RookieShop.Shopping.Domain.Carts;
+using RookieShop.Shopping.Domain.StockItems;
 
 namespace RookieShop.Shopping.Infrastructure.Persistence.Interceptors;
 

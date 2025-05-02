@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Domain;
+using RookieShop.Shopping.Domain.Carts;
+using RookieShop.Shopping.Domain.StockItems;
 
 namespace RookieShop.WebApi.Shopping.ExceptionHandlers;
 

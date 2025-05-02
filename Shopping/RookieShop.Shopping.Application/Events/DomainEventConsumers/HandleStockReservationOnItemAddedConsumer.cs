@@ -1,16 +1,17 @@
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
-using RookieShop.Shopping.Domain.Events;
+using RookieShop.Shopping.Application.Utilities;
+using RookieShop.Shopping.Domain.Carts.Events;
 
 namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
 
 public class HandleStockReservationOnItemAddedConsumer : IEventConsumer<ItemAddedToCart>
 {
     private readonly IStockItemRepository _stockItemRepository;
-    private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly DomainEventPublisher _domainEventPublisher;
 
-    public HandleStockReservationOnItemAddedConsumer(IStockItemRepository stockItemRepository, IDomainEventPublisher domainEventPublisher)
+    public HandleStockReservationOnItemAddedConsumer(IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
     {
         _stockItemRepository = stockItemRepository;
         _domainEventPublisher = domainEventPublisher;

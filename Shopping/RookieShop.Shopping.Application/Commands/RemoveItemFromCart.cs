@@ -14,13 +14,15 @@ public class RemoveItemFromCartConsumer : ICommandConsumer<RemoveItemFromCart>
 {
     private readonly CartRepositoryHelper _cartRepositoryHelper;
     private readonly ICartRepository _cartRepository;
-    private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly TimeProvider _timeProvider;
+    private readonly DomainEventPublisher _domainEventPublisher;
 
     public RemoveItemFromCartConsumer(CartRepositoryHelper cartRepositoryHelper, ICartRepository cartRepository,
-        IDomainEventPublisher domainEventPublisher)
+        TimeProvider timeProvider, DomainEventPublisher domainEventPublisher)
     {
         _cartRepositoryHelper = cartRepositoryHelper;
         _cartRepository = cartRepository;
+        _timeProvider = timeProvider;
         _domainEventPublisher = domainEventPublisher;
     }
     
@@ -29,6 +31,7 @@ public class RemoveItemFromCartConsumer : ICommandConsumer<RemoveItemFromCart>
         var cart = await _cartRepositoryHelper.GetOrCreateCartAsync(message.Id, cancellationToken);
         
         cart.RemoveItem(message.Sku);
+        cart.ExtendExpiration(_timeProvider);
 
         _cartRepository.Save(cart);
 

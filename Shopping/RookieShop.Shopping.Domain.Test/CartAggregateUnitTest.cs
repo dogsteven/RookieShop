@@ -1,4 +1,5 @@
-using RookieShop.Shopping.Domain.Events;
+using RookieShop.Shopping.Domain.Carts;
+using RookieShop.Shopping.Domain.Carts.Events;
 
 namespace RookieShop.Shopping.Domain.Test;
 

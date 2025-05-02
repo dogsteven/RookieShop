@@ -1,4 +1,4 @@
-namespace RookieShop.Shopping.Domain.Events;
+namespace RookieShop.Shopping.Domain.Carts.Events;
 
 public class ItemQuantityAdjusted
 {

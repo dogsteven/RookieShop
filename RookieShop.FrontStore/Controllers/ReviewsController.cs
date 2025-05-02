@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RookieShop.FrontStore.Middlewares;
 using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 
 namespace RookieShop.FrontStore.Controllers;
 
+[TypeFilter(typeof(QueryCartActionFilter))]
 public class ReviewsController : Controller
 {
     private readonly IReviewService _reviewService;

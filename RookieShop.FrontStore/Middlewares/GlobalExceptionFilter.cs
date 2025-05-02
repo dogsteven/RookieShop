@@ -9,17 +9,8 @@ namespace RookieShop.FrontStore.Middlewares;
 
 public class GlobalExceptionFilter : IExceptionFilter
 {
-    private readonly ILogger<GlobalExceptionFilter> _logger;
-
-    public GlobalExceptionFilter(ILogger<GlobalExceptionFilter> logger)
-    {
-        _logger = logger;
-    }
-    
     public void OnException(ExceptionContext context)
     {
-        _logger.LogInformation("Exception Type: {0}", context.Exception.GetType().Name);
-        
         if (context.Exception is RookieShopHttpClientUnauthorizedException)
         {
             context.Result = new RedirectToActionResult("Login", "Account", new { redirectUrl = context.HttpContext.Request.Path });

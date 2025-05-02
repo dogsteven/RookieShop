@@ -1,4 +1,5 @@
 using RookieShop.Shopping.Domain;
+using RookieShop.Shopping.Domain.StockItems;
 
 namespace RookieShop.Shopping.Application.Abstractions.Repositories;
 

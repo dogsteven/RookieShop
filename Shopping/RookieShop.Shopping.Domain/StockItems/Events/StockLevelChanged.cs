@@ -1,4 +1,4 @@
-namespace RookieShop.Shopping.Domain.Events;
+namespace RookieShop.Shopping.Domain.StockItems.Events;
 
 public class StockLevelChanged
 {

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RookieShop.Shopping.Domain;
+using RookieShop.Shopping.Domain.StockItems;
 
 namespace RookieShop.Shopping.Infrastructure.Persistence.EntityConfigurations;
 

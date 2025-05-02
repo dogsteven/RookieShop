@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Domain;
+using RookieShop.Shopping.Domain.StockItems;
 
 namespace RookieShop.Shopping.Infrastructure.Persistence;
 

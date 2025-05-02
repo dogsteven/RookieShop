@@ -55,7 +55,8 @@ public class ProductCatalogDatabaseSeeder
                 IsFeatured = true,
                 CreatedDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(10)),
                 UpdatedDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(9)),
-                Rating = new ProductRating("CELE114LCM")
+                Rating = new ProductRating("CELE114LCM"),
+                StockLevel = new ProductStockLevel("CELE114LCM")
             },
             new Product
             {
@@ -69,7 +70,8 @@ public class ProductCatalogDatabaseSeeder
                 IsFeatured = false,
                 CreatedDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(10)),
                 UpdatedDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(3)),
-                Rating = new ProductRating("SKYWATCH12DOB")
+                Rating = new ProductRating("SKYWATCH12DOB"),
+                StockLevel = new ProductStockLevel("SKYWATCH12DOB")
             },
             new Product
             {
@@ -83,7 +85,8 @@ public class ProductCatalogDatabaseSeeder
                 IsFeatured = false,
                 CreatedDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(8)),
                 UpdatedDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1)),
-                Rating = new ProductRating("BRESSARCT60")
+                Rating = new ProductRating("BRESSARCT60"),
+                StockLevel = new ProductStockLevel("BRESSARCT60")
             },
             new Product
             {
@@ -97,7 +100,8 @@ public class ProductCatalogDatabaseSeeder
                 IsFeatured = true,
                 CreatedDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(7)),
                 UpdatedDate = DateTime.UtcNow.Subtract(TimeSpan.FromDays(5)),
-                Rating = new ProductRating("ASKAR160APO")
+                Rating = new ProductRating("ASKAR160APO"),
+                StockLevel = new ProductStockLevel("ASKAR160APO")
             }
         };
         
