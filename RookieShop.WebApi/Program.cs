@@ -19,6 +19,23 @@ using RookieShop.WebApi.Shopping.ExceptionHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource =>
+    {
+        resource
+            .AddService("RookieShop.WebApi");
+    })
+    .WithTracing(tracing =>
+    {
+        tracing
+            .AddSource(DiagnosticHeaders.DefaultListenerName)
+            .AddSource("Shopping.MessageDispatcher")
+            .AddSource("Shopping.MassTransitMessageDispatcher")
+            .AddSource("Shopping.MassTransitMessageDispatcher")
+            .SetSampler<AlwaysOnSampler>()
+            .AddZipkinExporter();
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(swaggerGen =>

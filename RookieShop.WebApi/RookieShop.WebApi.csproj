@@ -19,6 +19,7 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
         <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.11.2" />
         <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.11.2" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.11.1" />
         <PackageReference Include="Profanity.Detector" Version="0.1.8" />
         <PackageReference Include="Quartz.AspNetCore" Version="3.14.0" />
         <PackageReference Include="Quartz.Serialization.SystemTextJson" Version="3.14.0" />

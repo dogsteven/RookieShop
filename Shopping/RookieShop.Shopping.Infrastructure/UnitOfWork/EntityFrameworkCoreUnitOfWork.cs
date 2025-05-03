@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using RookieShop.Shopping.Application.Abstractions;
 using RookieShop.Shopping.Infrastructure.Messages;
 using RookieShop.Shopping.Infrastructure.Persistence;

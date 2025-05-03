@@ -76,11 +76,14 @@ public class ShoppingConfigurator
         services.AddScoped<ICartRepository, CartRepository>();
         services.AddScoped<IStockItemRepository, StockItemRepository>();
         
+        services.AddSingleton<MessageDispatcherInstrumentation>();
+        services.AddSingleton<MassTransitMessageDispatcherInstrumentation>();
+        
         services.AddScoped<IUnitOfWork, EntityFrameworkCoreUnitOfWork>();
         
         services.AddScoped<MassTransitMessageDispatcher>();
         services.AddScoped<IExternalMessageDispatcher>(provider => provider.GetRequiredService<MassTransitMessageDispatcher>());
-
+        
         services.AddScoped<MessageDispatcher>();
         services.AddScoped<IMessageDispatcher>(provider => provider.GetRequiredService<MessageDispatcher>());
         services.AddScoped<DomainEventPublisher>();

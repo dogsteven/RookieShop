@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 
 namespace RookieShop.Shopping.Infrastructure.Messages;
@@ -8,14 +10,26 @@ public class MessageDispatcher : IMessageDispatcher
 {
     private readonly IServiceProvider _provider;
     private readonly ConsumeMethodRegistry _consumeMethodRegistry;
+    private readonly MessageDispatcherInstrumentation _instrumentation;
+    private readonly ILogger<MessageDispatcher> _logger;
     
-    public MessageDispatcher(IServiceProvider provider)
+    public MessageDispatcher(IServiceProvider provider, ConsumeMethodRegistry consumeMethodRegistry, MessageDispatcherInstrumentation instrumentation, ILogger<MessageDispatcher> logger)
     {
         _provider = provider;
-        _consumeMethodRegistry = _provider.GetRequiredService<ConsumeMethodRegistry>();
+        _consumeMethodRegistry = consumeMethodRegistry;
+        _instrumentation = instrumentation;
+        _logger = logger;
     }
 
-    public Task SendAsync(object message, CancellationToken cancellationToken = default)
+    private async Task ConsumeMessageAsync(object consumer, object message, Delegate consumeMethod,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = _instrumentation.MessageDispatcherActivitySource.StartActivity($"{consumer.GetType().Name} consume");
+
+        await (Task)consumeMethod.DynamicInvoke(consumer, message, cancellationToken)!;
+    }
+
+    public async Task SendAsync(object message, CancellationToken cancellationToken = default)
     {
         var messageType = message.GetType();
         var consumerType = typeof(ICommandConsumer<>).MakeGenericType(messageType);
@@ -23,8 +37,8 @@ public class MessageDispatcher : IMessageDispatcher
         var consumer = _provider.GetRequiredService(consumerType);
 
         var consumeMethod = _consumeMethodRegistry.GetConsumeMethod(messageType);
-        
-        return (Task)consumeMethod.DynamicInvoke(consumer, message, cancellationToken)!;
+
+        await ConsumeMessageAsync(consumer, message, consumeMethod, cancellationToken);
     }
 
     public async Task PublishAsync(object message, CancellationToken cancellationToken = default)
@@ -38,7 +52,7 @@ public class MessageDispatcher : IMessageDispatcher
         {
             var consumeMethod = _consumeMethodRegistry.GetConsumeMethod(messageType);
             
-            await (Task)consumeMethod.DynamicInvoke(consumer, message, cancellationToken)!;
+            await ConsumeMessageAsync(consumer!, message, consumeMethod, cancellationToken);
         }
     }
 
@@ -71,5 +85,20 @@ public class MessageDispatcher : IMessageDispatcher
         {
             Add(typeof(TMessage));
         }
+    }
+}
+
+public class MessageDispatcherInstrumentation : IDisposable
+{
+    internal readonly ActivitySource MessageDispatcherActivitySource;
+
+    public MessageDispatcherInstrumentation()
+    {
+        MessageDispatcherActivitySource = new ActivitySource("Shopping.MessageDispatcher");
+    }
+
+    public void Dispose()
+    {
+        MessageDispatcherActivitySource.Dispose();
     }
 }

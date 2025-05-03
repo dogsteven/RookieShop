@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace RookieShop.ProductCatalog.ViewModels;
 
 public class ProductDto
@@ -47,5 +49,6 @@ public class ProductRatingDto
     
     public int FiveCount { get; init; }
     
+    [JsonIgnore]
     public int Count => OneCount + TwoCount + ThreeCount + FourCount + FiveCount;
 }
