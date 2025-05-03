@@ -121,7 +121,7 @@ public class ProductSemanticVector
 {
     public string ProductSku { get; init; }
     
-    public Vector SemanticVector { get; private set; }
+    public Vector SemanticVector { get; set; }
     
 #pragma warning disable CS8618, CS9264
     public ProductSemanticVector() {}
@@ -131,10 +131,5 @@ public class ProductSemanticVector
     {
         ProductSku = productSku;
         SemanticVector = new Vector(new float[384]);
-    }
-
-    public void SetSemanticVector(Vector semanticVector)
-    {
-        SemanticVector = semanticVector;
     }
 }

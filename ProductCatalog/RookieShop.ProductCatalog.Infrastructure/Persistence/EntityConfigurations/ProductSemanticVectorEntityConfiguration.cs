@@ -19,6 +19,7 @@ public class ProductSemanticVectorEntityConfiguration : IEntityTypeConfiguration
 
         builder.Property(productSemanticVector => productSemanticVector.SemanticVector)
             .IsRequired()
+            .HasColumnType("vector")
             .HasColumnName("SemanticVector");
 
         builder.Property<DateTime>("Version")

@@ -52,7 +52,7 @@ public class UpdateSemanticVectorConsumer : IConsumer<ProductCreatedOrUpdated>
             _dbContext.ProductSemanticVectors.Add(productSemanticVector);
         }
         
-        productSemanticVector.SetSemanticVector(semanticVector);
+        productSemanticVector.SemanticVector = semanticVector;
         
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

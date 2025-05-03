@@ -68,6 +68,8 @@ public class ShoppingConfigurator
                 {
                     npgsql.MigrationsAssembly(_migrationAssembly);
                 }
+
+                npgsql.UseVector();
             });
         });
         

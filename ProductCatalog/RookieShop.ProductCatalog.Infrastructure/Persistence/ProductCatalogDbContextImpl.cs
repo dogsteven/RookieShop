@@ -1,15 +1,12 @@
-using MassTransit.UsageTelemetry;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Npgsql;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Entities;
 using RookieShop.ProductCatalog.Infrastructure.Persistence.EntityConfigurations;
 using RookieShop.ProductCatalog.Infrastructure.Persistence.Interceptors;
-using RookieShop.Shared.Models;
+
 
 namespace RookieShop.ProductCatalog.Infrastructure.Persistence;
 

@@ -17,8 +17,8 @@ public class QuartzClearCartScheduler : IClearCartScheduler
     public async Task ScheduleAsync(Guid id, DateTimeOffset scheduledTime, CancellationToken cancellationToken = default)
     {
         var scheduler = await _schedulerFactory.GetScheduler(cancellationToken);
-        var jobKey = new JobKey("TryClearCart", "Shopping");
-        var triggerKey = new TriggerKey($"TryClearCart-{id}", "Shopping");
+        var jobKey = new JobKey("ClearCart", "Shopping");
+        var triggerKey = new TriggerKey($"ClearCart-{id}", "Shopping");
 
         if (await scheduler.CheckExists(triggerKey, cancellationToken))
         {
@@ -27,7 +27,7 @@ public class QuartzClearCartScheduler : IClearCartScheduler
 
         if (!await scheduler.CheckExists(jobKey, cancellationToken))
         {
-            var jobDetail = JobBuilder.Create<TryClearCartJob>()
+            var jobDetail = JobBuilder.Create<ClearCartJob>()
                 .WithIdentity(jobKey)
                 .StoreDurably()
                 .Build();
@@ -46,13 +46,13 @@ public class QuartzClearCartScheduler : IClearCartScheduler
     }
 }
 
-public class TryClearCartJob : IJob
+public class ClearCartJob : IJob
 {
     private readonly IBusTopology _busTopology;
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly TimeProvider _timeProvider;
 
-    public TryClearCartJob(IBus bus, ISendEndpointProvider sendEndpointProvider, TimeProvider timeProvider)
+    public ClearCartJob(IBus bus, ISendEndpointProvider sendEndpointProvider, TimeProvider timeProvider)
     {
         _busTopology = bus.Topology;
         _sendEndpointProvider = sendEndpointProvider;

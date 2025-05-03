@@ -70,6 +70,8 @@ public class ImageGalleryConfigurator
                 {
                     npgsql.MigrationsAssembly(_migrationAssembly);
                 }
+
+                npgsql.UseVector();
             });
         });
 
