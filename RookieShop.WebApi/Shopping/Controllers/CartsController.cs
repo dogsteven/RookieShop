@@ -3,9 +3,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RookieShop.Shopping.Application.Commands;
-using RookieShop.Shopping.Application.Models;
 using RookieShop.Shopping.Application.Queries;
 using RookieShop.Shopping.Infrastructure.Messages;
+using RookieShop.Shopping.ViewModels;
 
 namespace RookieShop.WebApi.Shopping.Controllers;
 

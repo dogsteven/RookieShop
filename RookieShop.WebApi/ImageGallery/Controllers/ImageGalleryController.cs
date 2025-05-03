@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using RookieShop.ImageGallery.Application.Commands;
 using RookieShop.ImageGallery.Application.Exceptions;
-using RookieShop.ImageGallery.Application.Models;
 using RookieShop.ImageGallery.Application.Queries;
+using RookieShop.ImageGallery.ViewModels;
 using RookieShop.Shared.Models;
 
 namespace RookieShop.WebApi.ImageGallery.Controllers;

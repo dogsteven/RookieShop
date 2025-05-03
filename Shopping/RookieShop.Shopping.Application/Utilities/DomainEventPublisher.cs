@@ -1,5 +1,5 @@
-using RookieShop.Shared.Domain;
 using RookieShop.Shopping.Application.Abstractions.Messages;
+using RookieShop.Shopping.Domain;
 
 namespace RookieShop.Shopping.Application.Utilities;
 

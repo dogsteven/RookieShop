@@ -1,10 +1,9 @@
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authentication;
 using RookieShop.FrontStore.Exceptions;
 using RookieShop.FrontStore.Modules.Shared;
 using RookieShop.FrontStore.Modules.Shopping.Abstractions;
-using RookieShop.FrontStore.Modules.Shopping.Models;
+using RookieShop.Shopping.ViewModels;
 
 namespace RookieShop.FrontStore.Modules.Shopping.Services;
 
@@ -17,13 +16,13 @@ public class CartService : ICartService
         _httpClient = httpClient;
     }
     
-    public async Task<Cart> GetCartAsync(CancellationToken cancellationToken = default)
+    public async Task<CartDto> GetCartAsync(CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "/shopping/api/carts");
         
         var response = await _httpClient.SecurelySendAsync(request, cancellationToken);
 
-        return await response.ReadFromJsonAsync<Cart>(cancellationToken);
+        return await response.ReadFromJsonAsync<CartDto>(cancellationToken);
     }
 
     public async Task AddItemToCartAsync(string sku, int quantity, CancellationToken cancellationToken = default)

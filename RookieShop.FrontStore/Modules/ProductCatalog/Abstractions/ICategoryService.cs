@@ -1,9 +1,9 @@
-using RookieShop.FrontStore.Modules.ProductCatalog.Models;
+using RookieShop.ProductCatalog.ViewModels;
 
 namespace RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
 
 public interface ICategoryService
 {
-    public Task<Category> GetCategoryByIdAsync(int id, CancellationToken cancellationToken);
-    public Task<IEnumerable<Category>> GetCategoriesAsync(CancellationToken cancellationToken);
+    public Task<CategoryDto> GetCategoryByIdAsync(int id, CancellationToken cancellationToken);
+    public Task<IEnumerable<CategoryDto>> GetCategoriesAsync(CancellationToken cancellationToken);
 }

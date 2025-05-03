@@ -1,11 +1,10 @@
 using System.Text;
 using System.Text.Json;
 using System.Web;
-using Microsoft.AspNetCore.Authentication;
 using RookieShop.FrontStore.Exceptions;
 using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
-using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 using RookieShop.FrontStore.Modules.Shared;
+using RookieShop.ProductCatalog.ViewModels;
 using RookieShop.Shared.Models;
 
 namespace RookieShop.FrontStore.Modules.ProductCatalog.Services;
@@ -19,7 +18,7 @@ public class ReviewService : IReviewService
         _httpClient = httpClient;
     }
     
-    public async Task<Pagination<Review>> GetReviewsBySkuAsync(string sku, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Pagination<ReviewDto>> GetReviewsBySkuAsync(string sku, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var queries = HttpUtility.ParseQueryString(string.Empty);
         queries["pageSize"] = $"{pageSize}";
@@ -33,7 +32,7 @@ public class ReviewService : IReviewService
         
         response.EnsureSuccessStatusCode();
         
-        var pagination = await response.Content.ReadFromJsonAsync<Pagination<Review>>(cancellationToken: cancellationToken);
+        var pagination = await response.Content.ReadFromJsonAsync<Pagination<ReviewDto>>(cancellationToken: cancellationToken);
         
         ArgumentNullException.ThrowIfNull(pagination);
         

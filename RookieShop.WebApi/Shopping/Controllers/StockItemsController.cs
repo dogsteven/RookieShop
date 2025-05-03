@@ -18,25 +18,25 @@ public class StockItemsController : ControllerBase
         _dispatcher = dispatcher;
     }
 
-    public class AddUnitsToStockItemBody
+    public class IncreaseStockBody
     {
         [Required, Range(1, int.MaxValue)]
         public int Quantity { get; set; }
         
-        public AddUnitsToStockItemBody() {}
+        public IncreaseStockBody() {}
     }
 
-    [HttpPut("{sku}/add-units")]
+    [HttpPut("{sku}/increase-stock")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Authorize(Roles = "admin")]
-    public async Task<ActionResult> AddUnitsToStockItemAsync(
+    public async Task<ActionResult> IncreaseStockAsync(
         [FromRoute] string sku,
-        [FromBody] AddUnitsToStockItemBody body,
+        [FromBody] IncreaseStockBody body,
         CancellationToken cancellationToken)
     {
-        await _dispatcher.SendAsync(new AddUnitsToStockItem
+        await _dispatcher.SendAsync(new IncreaseStock
         {
             Sku = sku,
             Quantity = body.Quantity

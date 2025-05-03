@@ -16,6 +16,7 @@
       <ProjectReference Include="..\..\RookieShop.Shared\RookieShop.Shared.csproj" />
       <ProjectReference Include="..\..\Shopping\RookieShop.Shopping.Contracts\RookieShop.Shopping.Contracts.csproj" />
       <ProjectReference Include="..\RookieShop.ProductCatalog.Contracts\RookieShop.ProductCatalog.Contracts.csproj" />
+      <ProjectReference Include="..\RookieShop.ProductCatalog.ViewModels\RookieShop.ProductCatalog.ViewModels.csproj" />
     </ItemGroup>
 
     <ItemGroup>

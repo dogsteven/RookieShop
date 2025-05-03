@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\RookieShop.Shared\RookieShop.Shared.csproj" />
+      <ProjectReference Include="..\RookieShop.ImageGallery.ViewModels\RookieShop.ImageGallery.ViewModels.csproj" />
     </ItemGroup>
 
 </Project>

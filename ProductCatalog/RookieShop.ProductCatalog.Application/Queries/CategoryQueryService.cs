@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Exceptions;
-using RookieShop.ProductCatalog.Application.Models;
+using RookieShop.ProductCatalog.ViewModels;
 
 namespace RookieShop.ProductCatalog.Application.Queries;
 

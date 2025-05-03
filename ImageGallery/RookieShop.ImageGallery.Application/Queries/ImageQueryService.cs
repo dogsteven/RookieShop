@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RookieShop.ImageGallery.Application.Abstractions;
 using RookieShop.ImageGallery.Application.Exceptions;
-using RookieShop.ImageGallery.Application.Models;
+using RookieShop.ImageGallery.ViewModels;
 using RookieShop.Shared.Models;
 
 namespace RookieShop.ImageGallery.Application.Queries;
@@ -24,7 +24,14 @@ public class ImageQueryService
     {
         var query = _dbContext.Images
             .OrderByDescending(image => image.CreatedDate)
-            .Select(image => new ImageDto(image))
+            .Select(image => new ImageDto
+            {
+                Id = image.Id,
+                ContentType = image.ContentType,
+                TemporaryEntryId = image.TemporaryEntryId,
+                CreatedDate = image.CreatedDate,
+                IsSynced = image.IsSynced
+            })
             .AsNoTracking();
         
         var images = await query

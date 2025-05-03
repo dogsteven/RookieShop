@@ -1,6 +1,4 @@
-using RookieShop.ProductCatalog.Application.Entities;
-
-namespace RookieShop.ProductCatalog.Application.Models;
+namespace RookieShop.ProductCatalog.ViewModels;
 
 public class ProductDto
 {
@@ -48,4 +46,6 @@ public class ProductRatingDto
     public int FourCount { get; init; }
     
     public int FiveCount { get; init; }
+    
+    public int Count => OneCount + TwoCount + ThreeCount + FourCount + FiveCount;
 }

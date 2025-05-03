@@ -51,6 +51,10 @@ public class UnitTestProductSemanticVectorEntityConfiguration : IEntityTypeConfi
             .IsRequired()
             .HasConversion<string>(vector => "", column => new Vector(Array.Empty<float>()))
             .HasColumnName("SemanticVector");
+
+        builder.Property<DateTime>("Version")
+            .IsRequired()
+            .IsConcurrencyToken();
     }
 }
 

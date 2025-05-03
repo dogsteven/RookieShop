@@ -1,12 +1,12 @@
-namespace RookieShop.FrontStore.Modules.ProductCatalog.Models;
+namespace RookieShop.ProductCatalog.ViewModels;
 
-public class Review
+public class ReviewDto
 {
     public Guid WriterId { get; init; }
 
-    public string WriterName { get; init; } = null!;
-
     public string ProductSku { get; init; } = null!;
+    
+    public string WriterName { get; init; } = null!;
     
     public int Score { get; init; }
 

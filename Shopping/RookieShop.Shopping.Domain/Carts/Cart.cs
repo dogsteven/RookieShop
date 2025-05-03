@@ -1,4 +1,3 @@
-using RookieShop.Shared.Domain;
 using RookieShop.Shopping.Domain.Carts.Events;
 
 namespace RookieShop.Shopping.Domain.Carts;

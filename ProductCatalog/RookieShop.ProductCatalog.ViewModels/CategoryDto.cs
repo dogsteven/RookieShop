@@ -1,6 +1,6 @@
-namespace RookieShop.FrontStore.Modules.ProductCatalog.Models;
+namespace RookieShop.ProductCatalog.ViewModels;
 
-public class Category
+public class CategoryDto
 {
     public int Id { get; init; }
 

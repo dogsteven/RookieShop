@@ -3,8 +3,8 @@ using MassTransit.Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RookieShop.ProductCatalog.Application.Commands;
-using RookieShop.ProductCatalog.Application.Models;
 using RookieShop.ProductCatalog.Application.Queries;
+using RookieShop.ProductCatalog.ViewModels;
 using RookieShop.Shared.Models;
 
 namespace RookieShop.WebApi.ProductCatalog.Controllers;

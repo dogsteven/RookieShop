@@ -1,8 +1,8 @@
-using RookieShop.FrontStore.Modules.Shopping.Models;
+using RookieShop.Shopping.ViewModels;
 
 namespace RookieShop.FrontStore.Models.Shared.Components;
 
 public class HeaderViewModel
 {
-    public Cart? Cart { get; set; }
+    public CartDto? Cart { get; set; }
 }

@@ -1,4 +1,4 @@
-namespace RookieShop.Shared.Domain;
+namespace RookieShop.Shopping.Domain;
 
 public abstract class DomainEventSource
 {

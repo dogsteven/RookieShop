@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using RookieShop.FrontStore.Modules.Shopping.Abstractions;
-using RookieShop.FrontStore.Modules.Shopping.Models;
+using RookieShop.Shopping.ViewModels;
 
 namespace RookieShop.FrontStore.Middlewares;
 
@@ -32,7 +32,7 @@ public class QueryCartActionFilter : IAsyncActionFilter
         
         _logger.LogInformation("Query cart from {route}", request.Path);
         
-        Cart? cart = null;
+        CartDto? cart = null;
 
         if (context.HttpContext.User.Identity is { IsAuthenticated: true })
         {

@@ -99,6 +99,8 @@ public class ProductCommandUnitTest
         var harness = scope.ServiceProvider.GetRequiredService<ITestHarness>();
         
         var scopedMediator = scope.ServiceProvider.GetRequiredService<IScopedMediator>();
+
+        var supportingImageId = Guid.NewGuid();
         
         var createProduct = new CreateProduct
         {
@@ -108,7 +110,7 @@ public class ProductCommandUnitTest
             Price = 1000,
             CategoryId = 2,
             PrimaryImageId = Guid.NewGuid(),
-            SupportingImageIds = new HashSet<Guid>(),
+            SupportingImageIds = new HashSet<Guid>([supportingImageId]),
             IsFeatured = true
         };
 
@@ -125,6 +127,8 @@ public class ProductCommandUnitTest
             var product = await context.Products.FirstOrDefaultAsync(product => product.Sku == "TestSku");
 
             Assert.NotNull(product);
+            
+            Assert.Equal([supportingImageId], product.SupportingImageIds);
             
             Assert.True(await harness.Published.Any<ProductCreatedOrUpdated>());
         }

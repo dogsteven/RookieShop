@@ -1,9 +1,9 @@
-using RookieShop.FrontStore.Modules.Shopping.Models;
+using RookieShop.Shopping.ViewModels;
 
 namespace RookieShop.FrontStore.Models;
 
 public class CartViewModel
 {
-    public Cart Cart { get; set; } = null!;
+    public CartDto Cart { get; set; } = null!;
     public string? ContinueUrl { get; set; }
 }

@@ -1,4 +1,3 @@
-using RookieShop.Shared.Domain;
 using RookieShop.Shopping.Domain.StockItems.Events;
 
 namespace RookieShop.Shopping.Domain.StockItems;

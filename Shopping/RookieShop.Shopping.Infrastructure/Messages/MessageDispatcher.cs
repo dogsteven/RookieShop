@@ -1,6 +1,5 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using RookieShop.Shared.Domain;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 
 namespace RookieShop.Shopping.Infrastructure.Messages;

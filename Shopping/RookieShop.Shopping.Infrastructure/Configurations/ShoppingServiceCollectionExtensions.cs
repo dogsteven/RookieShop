@@ -88,7 +88,7 @@ public class ShoppingConfigurator
 
         services.AddSingleton<IClearCartScheduler, QuartzClearCartScheduler>();
 
-        services.AddScoped<ICommandConsumer<AddUnitsToStockItem>, AddUnitsToStockItemConsumer>();
+        services.AddScoped<ICommandConsumer<IncreaseStock>, IncreaseStockConsumer>();
         services.AddScoped<ICommandConsumer<AddItemToCart>, AddItemToCartConsumer>();
         services.AddScoped<ICommandConsumer<AdjustItemQuantity>, AdjustItemQuantityConsumer>();
         services.AddScoped<ICommandConsumer<RemoveItemFromCart>, RemoveItemFromCartConsumer>();
@@ -108,7 +108,7 @@ public class ShoppingConfigurator
         services.AddSingleton<MessageDispatcher.ConsumeMethodRegistry>(_ =>
         {
             var consumeMethodRegistry = new MessageDispatcher.ConsumeMethodRegistry();
-            consumeMethodRegistry.Add<AddUnitsToStockItem>();
+            consumeMethodRegistry.Add<IncreaseStock>();
             consumeMethodRegistry.Add<AddItemToCart>();
             consumeMethodRegistry.Add<AdjustItemQuantity>();
             consumeMethodRegistry.Add<RemoveItemFromCart>();

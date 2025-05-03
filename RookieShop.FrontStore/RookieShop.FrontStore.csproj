@@ -29,7 +29,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\ImageGallery\RookieShop.ImageGallery.ViewModels\RookieShop.ImageGallery.ViewModels.csproj" />
+        <ProjectReference Include="..\ProductCatalog\RookieShop.ProductCatalog.ViewModels\RookieShop.ProductCatalog.ViewModels.csproj" />
         <ProjectReference Include="..\RookieShop.Shared\RookieShop.Shared.csproj" />
+        <ProjectReference Include="..\Shopping\RookieShop.Shopping.ViewModels\RookieShop.Shopping.ViewModels.csproj" />
     </ItemGroup>
 
     <Target Name="Tailwind" BeforeTargets="Build">

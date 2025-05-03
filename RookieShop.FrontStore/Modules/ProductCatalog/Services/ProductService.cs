@@ -1,8 +1,7 @@
 using System.Web;
-using Microsoft.AspNetCore.Authentication;
 using RookieShop.FrontStore.Exceptions;
-using RookieShop.FrontStore.Modules.ProductCatalog.Models;
 using RookieShop.FrontStore.Modules.Shared;
+using RookieShop.ProductCatalog.ViewModels;
 using RookieShop.Shared.Models;
 using IProductService = RookieShop.FrontStore.Modules.ProductCatalog.Abstractions.IProductService;
 
@@ -17,16 +16,16 @@ public class ProductService : IProductService
         _httpClient = httpClient;
     }
     
-    public async Task<Product> GetProductBySkuAsync(string sku, CancellationToken cancellationToken)
+    public async Task<ProductDto> GetProductBySkuAsync(string sku, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"/product-catalog/api/products/{sku}");
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
         
-        return await response.ReadFromJsonAsync<Product>(cancellationToken);
+        return await response.ReadFromJsonAsync<ProductDto>(cancellationToken);
     }
 
-    public async Task<Pagination<Product>> GetProductsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Pagination<ProductDto>> GetProductsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var queries = HttpUtility.ParseQueryString(string.Empty);
         queries["pageNumber"] = $"{pageNumber}";
@@ -38,10 +37,10 @@ public class ProductService : IProductService
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        return await response.ReadFromJsonAsync<Pagination<Product>>(cancellationToken);
+        return await response.ReadFromJsonAsync<Pagination<ProductDto>>(cancellationToken);
     }
 
-    public async Task<IEnumerable<Product>> GetFeaturedProductsAsync(int maxCount, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ProductDto>> GetFeaturedProductsAsync(int maxCount, CancellationToken cancellationToken)
     {
         var queries = HttpUtility.ParseQueryString(string.Empty);
         queries["maxCount"] = $"{maxCount}";
@@ -52,10 +51,10 @@ public class ProductService : IProductService
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        return await response.ReadFromJsonAsync<IEnumerable<Product>>(cancellationToken);
+        return await response.ReadFromJsonAsync<IEnumerable<ProductDto>>(cancellationToken);
     }
 
-    public async Task<Pagination<Product>> GetProductsByCategoryIdAsync(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Pagination<ProductDto>> GetProductsByCategoryIdAsync(int categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var queries = HttpUtility.ParseQueryString(string.Empty);
         queries["pageSize"] = $"{pageSize}";
@@ -67,10 +66,10 @@ public class ProductService : IProductService
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        return await response.ReadFromJsonAsync<Pagination<Product>>(cancellationToken);
+        return await response.ReadFromJsonAsync<Pagination<ProductDto>>(cancellationToken);
     }
 
-    public async Task<Pagination<Product>> GetProductsSemanticAsync(string semantic, int pageNumber, int pageSize,
+    public async Task<Pagination<ProductDto>> GetProductsSemanticAsync(string semantic, int pageNumber, int pageSize,
         CancellationToken cancellationToken)
     {
         var queries = HttpUtility.ParseQueryString(string.Empty);
@@ -84,6 +83,6 @@ public class ProductService : IProductService
         
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        return await response.ReadFromJsonAsync<Pagination<Product>>(cancellationToken);
+        return await response.ReadFromJsonAsync<Pagination<ProductDto>>(cancellationToken);
     }
 }
