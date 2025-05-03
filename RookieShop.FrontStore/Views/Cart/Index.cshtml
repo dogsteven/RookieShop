@@ -66,7 +66,7 @@
               </div>
             }
 
-            <form id="quantity-adjustment-form" asp-controller="Cart" asp-action="AdjustItemQuantity" method="post" class="hidden">
+            <form id="quantity-adjustment-form" asp-controller="Cart" asp-action="AdjustItemQuantity" asp-route-continueUrl="@Model.ContinueUrl" method="post" class="hidden">
               @foreach (var (item, index) in Model.Cart.Items.Select((item, index) => (item, index)))
               {
                 <input type="hidden" name="Adjustments[@index].Sku" value="@item.Sku"/>
@@ -110,7 +110,7 @@
 
             <div class="flex items-center justify-center gap-2">
               <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> or </span>
-              <a asp-controller="Products" asp-action="Index" title="" class="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500">
+              <a href="@Model.ContinueUrl" title="" class="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500">
                 Continue Shopping
                 <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>

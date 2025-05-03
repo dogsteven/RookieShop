@@ -1,32 +1,32 @@
 using MassTransit;
 using RookieShop.Shopping.Application.Abstractions;
+using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
-using RookieShop.Shopping.Application.Utilities;
 
 namespace RookieShop.Shopping.Application.Commands;
 
-public class TryClearCart
+public class ClearCart
 {
     public Guid Id { get; set; }
 }
 
-public class TryClearCartConsumer : IConsumer<TryClearCart>
+public class ClearCartConsumer : IConsumer<ClearCart>
 {
     private readonly ICartRepository _cartRepository;
     private readonly TimeProvider _timeProvider;
-    private readonly DomainEventPublisher _domainEventPublisher;
+    private readonly IExternalMessageDispatcher _externalMessageDispatcher;
     private readonly IUnitOfWork _unitOfWork;
 
-    public TryClearCartConsumer(ICartRepository cartRepository, TimeProvider timeProvider,
-        DomainEventPublisher domainEventPublisher, IUnitOfWork unitOfWork)
+    public ClearCartConsumer(ICartRepository cartRepository, TimeProvider timeProvider,
+        IExternalMessageDispatcher externalMessageDispatcher, IUnitOfWork unitOfWork)
     {
         _cartRepository = cartRepository;
         _timeProvider = timeProvider;
-        _domainEventPublisher = domainEventPublisher;
+        _externalMessageDispatcher = externalMessageDispatcher;
         _unitOfWork = unitOfWork;
     }
     
-    public async Task Consume(ConsumeContext<TryClearCart> context)
+    public async Task Consume(ConsumeContext<ClearCart> context)
     {
         var message = context.Message;
 
@@ -39,9 +39,16 @@ public class TryClearCartConsumer : IConsumer<TryClearCart>
             return;
         }
         
-        cart.TryClear(_timeProvider);
+        cart.Clear(_timeProvider);
+        
+        _cartRepository.Save(cart);
 
-        await _domainEventPublisher.PublishAsync(cart, cancellationToken);
+        foreach (var domainEvent in cart.DomainEvents)
+        {
+            _externalMessageDispatcher.EnqueuePublish(domainEvent);
+        }
+        
+        cart.ClearDomainEvents();
         
         await _unitOfWork.CommitAsync(cancellationToken);
     }

@@ -9,6 +9,7 @@ using RookieShop.Shopping.Application.Queries;
 using RookieShop.Shopping.Application.Utilities;
 using RookieShop.Shopping.Domain.Carts.Events;
 using RookieShop.Shopping.Domain.StockItems.Events;
+using RookieShop.Shopping.Infrastructure.ClearCartScheduler;
 using RookieShop.Shopping.Infrastructure.Messages;
 using RookieShop.Shopping.Infrastructure.Persistence;
 using RookieShop.Shopping.Infrastructure.UnitOfWork;
@@ -75,13 +76,15 @@ public class ShoppingConfigurator
         
         services.AddScoped<IUnitOfWork, EntityFrameworkCoreUnitOfWork>();
         
-        services.AddScoped<ExternalMessageDispatcher>();
-        services.AddScoped<IExternalMessageDispatcher>(provider => provider.GetRequiredService<ExternalMessageDispatcher>());
+        services.AddScoped<MassTransitMessageDispatcher>();
+        services.AddScoped<IExternalMessageDispatcher>(provider => provider.GetRequiredService<MassTransitMessageDispatcher>());
 
         services.AddScoped<MessageDispatcher>();
         services.AddScoped<IMessageDispatcher>(provider => provider.GetRequiredService<MessageDispatcher>());
         services.AddScoped<DomainEventPublisher>();
         services.AddScoped<TransactionalMessageDispatcher>();
+
+        services.AddSingleton<IClearCartScheduler, QuartzClearCartScheduler>();
 
         services.AddScoped<ICommandConsumer<AddUnitsToStockItem>, AddUnitsToStockItemConsumer>();
         services.AddScoped<ICommandConsumer<AddItemToCart>, AddItemToCartConsumer>();
@@ -90,9 +93,9 @@ public class ShoppingConfigurator
         
         services.AddScoped<IEventConsumer<ItemAddedToCart>, HandleStockReservationOnItemAddedConsumer>();
         services.AddScoped<IEventConsumer<ItemQuantityAdjusted>, HandleStockReservationOnQuantityAdjustedConsumer>();
-        services.AddScoped<IEventConsumer<ItemRemovedFromCart>, HandleStockReservationOnItemDeletedConsumer>();
+        services.AddScoped<IEventConsumer<ItemRemovedFromCart>, HandleStockReservationOnItemRemovedConsumer>();
         services.AddScoped<IEventConsumer<StockLevelChanged>, PublishIntegrationEventOnStockLevelChangedConsumer>();
-        services.AddScoped<IEventConsumer<CartExpirationDateExtended>, ScheduleJobOnCartExpirationExtendedConsumer>();
+        services.AddScoped<IEventConsumer<CartExpirationDateExtended>, ScheduleClearCartOnExpirationConsumer>();
         
         services.AddScoped<CartRepositoryHelper>();
 

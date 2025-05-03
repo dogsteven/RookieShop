@@ -1,5 +1,6 @@
 using RookieShop.Shopping.Domain.Carts;
 using RookieShop.Shopping.Domain.Carts.Events;
+using RookieShop.Shopping.Domain.Test.Utilities;
 
 namespace RookieShop.Shopping.Domain.Test;
 
@@ -143,6 +144,38 @@ public class CartAggregateUnitTest
     }
 
     [Fact]
+    public void Should_AdjustItemQuantity_SuccessWithItemRemoved()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var cart = new Cart(id);
+        cart.AddItem("sku", "name", 10, Guid.NewGuid(), 3);
+        cart.ClearDomainEvents();
+        
+        // Act
+        cart.AdjustItemQuantity("sku", 0);
+        
+        // Assert
+        var item = cart.Items.FirstOrDefault(item => item.Sku == "sku");
+        
+        Assert.Null(item);
+
+        Assert.Contains(cart.DomainEvents, domainEvent =>
+        {
+            var isItemRemovedFromCart = domainEvent is ItemRemovedFromCart;
+
+            if (!isItemRemovedFromCart)
+            {
+                return false;
+            }
+
+            var itemRemovedFromCart = (ItemRemovedFromCart)domainEvent;
+
+            return itemRemovedFromCart is { Sku: "sku", Quantity: 3 };
+        });
+    }
+
+    [Fact]
     public void Should_AdjustItemQuantity_Success()
     {
         // Arrange
@@ -220,6 +253,94 @@ public class CartAggregateUnitTest
             var itemRemovedFromCart = (ItemRemovedFromCart)domainEvent;
 
             return itemRemovedFromCart is { Sku: "sku", Quantity: 3 };
+        });
+    }
+
+    [Fact]
+    public void Test_ExtendExpirationDate()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var cart = new Cart(id);
+        
+        var fakeTimeProvider = new FakeTimeProvider(new DateTime(2025, 5, 2, 20, 11, 56, DateTimeKind.Utc));
+        
+        // Act
+        cart.ExtendExpiration(fakeTimeProvider);
+        
+        // Assert
+        Assert.Equal(new DateTime(2025, 5, 2, 21, 11, 56, DateTimeKind.Utc), cart.ExpirationDate);
+    }
+
+    [Fact]
+    public void Should_TryClear_SuccessWithNothingHappens()
+    {
+        // Arrange
+        var extendExpirationTimeProvider = new FakeTimeProvider(new DateTime(2025, 5, 2, 20, 11, 56, DateTimeKind.Utc));
+        var tryClearTimeProvider = new FakeTimeProvider(new DateTime(2025, 5, 2, 20, 49, 56, DateTimeKind.Utc));
+        
+        var id = Guid.NewGuid();
+        var cart = new Cart(id);
+        cart.AddItem("sku", "name", 10, Guid.NewGuid(), 3);
+        cart.ExtendExpiration(extendExpirationTimeProvider);
+        cart.ClearDomainEvents();
+        
+        // Act
+        cart.Clear(tryClearTimeProvider);
+        
+        // Assert
+        Assert.Single(cart.Items);
+        Assert.Empty(cart.DomainEvents);
+    }
+    
+    [Fact]
+    public void Should_TryClear_Success()
+    {
+        // Arrange
+        var extendExpirationTimeProvider = new FakeTimeProvider(new DateTime(2025, 5, 2, 20, 11, 56, DateTimeKind.Utc));
+        var tryClearTimeProvider = new FakeTimeProvider(new DateTime(2025, 5, 2, 22, 0, 56, DateTimeKind.Utc));
+        
+        var id = Guid.NewGuid();
+        var cart = new Cart(id);
+        cart.AddItem("sku1", "name1", 10, Guid.NewGuid(), 3);
+        cart.AddItem("sku2", "name2", 10, Guid.NewGuid(), 2);
+        cart.ExtendExpiration(extendExpirationTimeProvider);
+        cart.ClearDomainEvents();
+        
+        // Act
+        cart.Clear(tryClearTimeProvider);
+        
+        // Assert
+        Assert.Empty(cart.Items);
+
+        var domainEvents = cart.DomainEvents.ToList();
+        
+        Assert.Contains(domainEvents, domainEvent =>
+        {
+            var isItemRemovedFromCart = domainEvent is ItemRemovedFromCart;
+
+            if (!isItemRemovedFromCart)
+            {
+                return false;
+            }
+
+            var itemRemovedFromCart = (ItemRemovedFromCart)domainEvent;
+
+            return itemRemovedFromCart is { Sku: "sku1", Quantity: 3 };
+        });
+        
+        Assert.Contains(domainEvents, domainEvent =>
+        {
+            var isItemRemovedFromCart = domainEvent is ItemRemovedFromCart;
+
+            if (!isItemRemovedFromCart)
+            {
+                return false;
+            }
+
+            var itemRemovedFromCart = (ItemRemovedFromCart)domainEvent;
+
+            return itemRemovedFromCart is { Sku: "sku2", Quantity: 2 };
         });
     }
 }

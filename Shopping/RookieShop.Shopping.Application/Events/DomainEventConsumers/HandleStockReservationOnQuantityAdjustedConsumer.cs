@@ -29,8 +29,6 @@ public class HandleStockReservationOnQuantityAdjustedConsumer : IEventConsumer<I
         stockItem.ReleaseReservation(message.OldQuantity);
         stockItem.Reserve(message.NewQuantity);
         
-        _stockItemRepository.Save(stockItem);
-        
         await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
     }
 }

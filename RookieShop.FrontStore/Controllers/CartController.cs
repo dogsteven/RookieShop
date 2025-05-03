@@ -1,14 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RookieShop.FrontStore.Middlewares;
 using RookieShop.FrontStore.Models;
 using RookieShop.FrontStore.Modules.Shopping.Abstractions;
 
 namespace RookieShop.FrontStore.Controllers;
 
-[TypeFilter(typeof(QueryCartActionFilter))]
 public class CartController : Controller
 {
     private readonly ICartService _cartService;
@@ -19,13 +16,14 @@ public class CartController : Controller
     }
 
     [Authorize(Roles = "customer")]
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(CancellationToken cancellationToken, string? continueUrl)
     {
         var cart = await _cartService.GetCartAsync(cancellationToken);
         
         return View(new CartViewModel
         {
-            Cart = cart
+            Cart = cart,
+            ContinueUrl = continueUrl
         });
     }
 
@@ -44,17 +42,12 @@ public class CartController : Controller
 
     [HttpPost]
     [Authorize(Roles = "customer")]
-    public async Task<IActionResult> AddItemToCart([FromForm] AddItemToCartForm form, string? redirectUrl,
+    public async Task<IActionResult> AddItemToCart([FromForm] AddItemToCartForm form, string? continueUrl,
         CancellationToken cancellationToken)
     {
         await _cartService.AddItemToCartAsync(form.Sku, form.Quantity, cancellationToken);
-
-        if (redirectUrl != null)
-        {
-            return Redirect(redirectUrl);
-        }
         
-        return RedirectToAction("Index", "Cart");
+        return RedirectToAction("Index", "Cart", new { continueUrl });
     }
 
     public class AdjustItemQuantityForm
@@ -82,17 +75,11 @@ public class CartController : Controller
 
     [HttpPost]
     [Authorize(Roles = "customer")]
-    public async Task<IActionResult> AdjustItemQuantity([FromForm] AdjustItemQuantityForm form, string? redirectUrl,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> AdjustItemQuantity([FromForm] AdjustItemQuantityForm form, string? continueUrl, CancellationToken cancellationToken)
     {
         await _cartService.AdjustItemQuantityAsync(form.Adjustments.Select(adjustment => new QuantityAdjustment(adjustment.Sku, adjustment.NewQuantity)), cancellationToken);
-
-        if (redirectUrl != null)
-        {
-            return Redirect(redirectUrl);
-        }
         
-        return RedirectToAction("Index", "Cart");
+        return RedirectToAction("Index", "Cart", new { continueUrl });
     }
 
     public class RemoveItemFromCartForm
@@ -107,16 +94,11 @@ public class CartController : Controller
 
     [HttpPost]
     [Authorize(Roles = "customer")]
-    public async Task<IActionResult> RemoveItemFromCart([FromForm] RemoveItemFromCartForm form, string? redirectUrl,
+    public async Task<IActionResult> RemoveItemFromCart([FromForm] RemoveItemFromCartForm form, string? continueUrl,
         CancellationToken cancellationToken)
     {
         await _cartService.RemoveItemFromCartAsync(form.Sku, cancellationToken);
-
-        if (redirectUrl != null)
-        {
-            return Redirect(redirectUrl);
-        }
         
-        return RedirectToAction("Index", "Cart");
+        return RedirectToAction("Index", "Cart", new { continueUrl });
     }
 }

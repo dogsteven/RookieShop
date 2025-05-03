@@ -47,6 +47,6 @@
   <div class="mt-6 flex items-center justify-between gap-4">
     <p class="text-lg font-extrabold leading-tight text-gray-900 dark:text-white">$@Model.Product.Price.ToString("F2")</p>
 
-    @await Component.InvokeAsync("AddToCartButton", new { product = Model.Product, redirectUrl = $"/Products/ProductDetails/{Model.Product.Sku}" })
+    @await Component.InvokeAsync("AddToCartButton", new { product = Model.Product })
   </div>
 </div>

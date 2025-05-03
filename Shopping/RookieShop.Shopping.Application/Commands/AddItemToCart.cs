@@ -46,8 +46,6 @@ public class AddItemToCartConsumer : ICommandConsumer<AddItemToCart>
         cart.AddItem(stockItem.Sku, stockItem.Name, stockItem.Price, stockItem.ImageId, message.Quantity);
         cart.ExtendExpiration(_timeProvider);
         
-        _cartRepository.Save(cart);
-        
         await _domainEventPublisher.PublishAsync(cart, cancellationToken);
     }
 }

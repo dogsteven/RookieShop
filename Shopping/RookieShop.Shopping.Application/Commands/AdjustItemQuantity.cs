@@ -49,8 +49,6 @@ public class AdjustItemQuantityConsumer : ICommandConsumer<AdjustItemQuantity>
         }
         
         cart.ExtendExpiration(_timeProvider);
-        
-        _cartRepository.Save(cart);
 
         await _domainEventPublisher.PublishAsync(cart, cancellationToken);
     }

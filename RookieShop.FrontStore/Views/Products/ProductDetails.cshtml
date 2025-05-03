@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
-                    @await Component.InvokeAsync("AddToCartButton", new { product = Model.Product, redirectUrl = $"/Products/ProductDetails/{Model.Product.Sku}" })
+                    @await Component.InvokeAsync("AddToCartButton", new { product = Model.Product })
                 </div>
 
                 <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800"/>

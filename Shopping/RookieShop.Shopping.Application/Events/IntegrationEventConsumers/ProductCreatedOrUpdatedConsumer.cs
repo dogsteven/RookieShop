@@ -32,13 +32,13 @@ public class ProductCreatedOrUpdatedConsumer : IConsumer<ProductCreatedOrUpdated
         if (stockItem == null)
         {
             stockItem = new StockItem(sku, name, price, imageId);
+            
+            _stockItemRepository.Save(stockItem);
         }
         else
         {
             stockItem.UpdateInfo(name, price, imageId);
         }
-
-        _stockItemRepository.Save(stockItem);
 
         await _unitOfWork.CommitAsync(cancellationToken);
     }

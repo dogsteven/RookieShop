@@ -5,4 +5,5 @@ namespace RookieShop.FrontStore.Models;
 public class CartViewModel
 {
     public Cart Cart { get; set; } = null!;
+    public string? ContinueUrl { get; set; }
 }

@@ -33,8 +33,6 @@ public class RemoveItemFromCartConsumer : ICommandConsumer<RemoveItemFromCart>
         cart.RemoveItem(message.Sku);
         cart.ExtendExpiration(_timeProvider);
 
-        _cartRepository.Save(cart);
-
         await _domainEventPublisher.PublishAsync(cart, cancellationToken);
     }
 }

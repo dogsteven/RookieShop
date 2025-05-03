@@ -28,8 +28,6 @@ public class HandleStockReservationOnItemAddedConsumer : IEventConsumer<ItemAdde
         
         stockItem.Reserve(message.Quantity);
         
-        _stockItemRepository.Save(stockItem);
-        
         await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
     }
 }

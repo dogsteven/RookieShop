@@ -17,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<GlobalExceptionFilter>();
+    options.Filters.Add<QueryCartActionFilter>();
 });
 
 builder.Services.AddRazorPages();
@@ -33,6 +34,7 @@ builder.Services.AddAuthentication(options =>
     options.LogoutPath = "/Account/Logout";
 
     options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(29);
 })
 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>

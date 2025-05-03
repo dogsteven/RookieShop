@@ -7,12 +7,12 @@ namespace RookieShop.FrontStore.Components;
 [ViewComponent(Name = "AddToCartButton")]
 public class AddToCartButtonViewComponent : ViewComponent
 {
-    public IViewComponentResult Invoke(Product product, string? redirectUrl)
+    public IViewComponentResult Invoke(Product product, string? continueUrl)
     {
         return View(new AddToCartButtonViewModel
         {
             Product = product,
-            RedirectUrl = redirectUrl
+            ContinueUrl = continueUrl
         });
     }
 }

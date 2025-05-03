@@ -19,6 +19,7 @@ public class Cart : DomainEventSource
     public Cart(Guid id)
     {
         Id = id;
+        ExpirationDate = DateTimeOffset.UtcNow;
         _items = [];
     }
     
@@ -66,15 +67,23 @@ public class Cart : DomainEventSource
         if (newQuantity == 0)
         {
             _items.Remove(item);
+            AddDomainEvent(new ItemRemovedFromCart
+            {
+                Id = Id,
+                Sku = sku,
+                Quantity = oldQuantity
+            });
         }
-        
-        AddDomainEvent(new ItemQuantityAdjusted
+        else
         {
-            Id = Id,
-            Sku = sku,
-            OldQuantity = oldQuantity,
-            NewQuantity = newQuantity
-        });
+            AddDomainEvent(new ItemQuantityAdjusted
+            {
+                Id = Id,
+                Sku = sku,
+                OldQuantity = oldQuantity,
+                NewQuantity = newQuantity
+            });
+        }
     }
 
     public void RemoveItem(string sku)
@@ -107,7 +116,7 @@ public class Cart : DomainEventSource
         });
     }
 
-    public void TryClear(TimeProvider timeProvider)
+    public void Clear(TimeProvider timeProvider)
     {
         if (ExpirationDate > timeProvider.GetUtcNow())
         {
