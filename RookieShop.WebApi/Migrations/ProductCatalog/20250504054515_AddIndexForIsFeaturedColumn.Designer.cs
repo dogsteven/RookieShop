@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
@@ -13,9 +14,11 @@ using RookieShop.ProductCatalog.Infrastructure.Persistence;
 namespace RookieShop.WebApi.Migrations.ProductCatalog
 {
     [DbContext(typeof(ProductCatalogDbContextImpl))]
-    partial class ProductCatalogDbContextImplModelSnapshot : ModelSnapshot
+    [Migration("20250504054515_AddIndexForIsFeaturedColumn")]
+    partial class AddIndexForIsFeaturedColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -28,6 +28,7 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(tracing =>
     {
         tracing
+            .AddAspNetCoreInstrumentation()
             .AddSource(DiagnosticHeaders.DefaultListenerName)
             .AddSource("Shopping.MessageDispatcher")
             .AddSource("Shopping.MassTransitMessageDispatcher")

@@ -33,5 +33,9 @@ public class ImageEntityConfiguration : IEntityTypeConfiguration<Image>
         builder.Property(image => image.IsSynced)
             .IsRequired()
             .HasColumnName("IsSynced");
+
+        builder.Property<DateTime>("Version")
+            .IsRequired()
+            .IsConcurrencyToken();
     }
 }

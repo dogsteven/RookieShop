@@ -71,5 +71,7 @@ public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasIndex("CategoryId");
+
+        builder.HasIndex(product => product.IsFeatured);
     }
 }
