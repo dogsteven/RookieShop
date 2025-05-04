@@ -28,7 +28,7 @@ public class MassTransitMessageDispatcher : IExternalMessageDispatcher
     {
         foreach (var message in _publishes)
         {
-            using var activity = _instrumentation.MassTransitMessageDispatcherActivitySource.StartActivity($"{message.GetType().Name} publish");
+            using var activity = _instrumentation.MassTransitMessageDispatcherActivitySource.StartActivity($"{message.GetType().Name} externally publish");
             
             await _publishEndpoint.Publish(message, cancellationToken);
         }

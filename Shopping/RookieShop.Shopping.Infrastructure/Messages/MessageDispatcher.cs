@@ -21,10 +21,10 @@ public class MessageDispatcher : IMessageDispatcher
         _logger = logger;
     }
 
-    private async Task ConsumeMessageAsync(object consumer, object message, Delegate consumeMethod,
+    private async Task ConsumeMessageAsync(string operation, object consumer, object message, Delegate consumeMethod,
         CancellationToken cancellationToken = default)
     {
-        using var activity = _instrumentation.MessageDispatcherActivitySource.StartActivity($"{consumer.GetType().Name} consume");
+        using var activity = _instrumentation.MessageDispatcherActivitySource.StartActivity($"{consumer.GetType().Name} {operation}");
 
         await (Task)consumeMethod.DynamicInvoke(consumer, message, cancellationToken)!;
     }
@@ -38,7 +38,7 @@ public class MessageDispatcher : IMessageDispatcher
 
         var consumeMethod = _consumeMethodRegistry.GetConsumeMethod(messageType);
 
-        await ConsumeMessageAsync(consumer, message, consumeMethod, cancellationToken);
+        await ConsumeMessageAsync("send", consumer, message, consumeMethod, cancellationToken);
     }
 
     public async Task PublishAsync(object message, CancellationToken cancellationToken = default)
@@ -52,7 +52,7 @@ public class MessageDispatcher : IMessageDispatcher
         {
             var consumeMethod = _consumeMethodRegistry.GetConsumeMethod(messageType);
             
-            await ConsumeMessageAsync(consumer!, message, consumeMethod, cancellationToken);
+            await ConsumeMessageAsync("publish", consumer!, message, consumeMethod, cancellationToken);
         }
     }
 

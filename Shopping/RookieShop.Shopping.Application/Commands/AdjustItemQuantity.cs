@@ -21,15 +21,13 @@ public class AdjustItemQuantity
 public class AdjustItemQuantityConsumer : ICommandConsumer<AdjustItemQuantity>
 {
     private readonly CartRepositoryHelper _cartRepositoryHelper;
-    private readonly ICartRepository _cartRepository;
     private readonly TimeProvider _timeProvider;
     private readonly DomainEventPublisher _domainEventPublisher;
 
-    public AdjustItemQuantityConsumer(CartRepositoryHelper cartRepositoryHelper, ICartRepository cartRepository,
-        TimeProvider timeProvider, DomainEventPublisher domainEventPublisher)
+    public AdjustItemQuantityConsumer(CartRepositoryHelper cartRepositoryHelper, TimeProvider timeProvider,
+        DomainEventPublisher domainEventPublisher)
     {
         _cartRepositoryHelper = cartRepositoryHelper;
-        _cartRepository = cartRepository;
         _timeProvider = timeProvider;
         _domainEventPublisher = domainEventPublisher;
     }

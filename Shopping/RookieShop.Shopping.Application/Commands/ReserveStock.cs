@@ -2,22 +2,28 @@ using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Application.Utilities;
-using RookieShop.Shopping.Domain.Carts.Events;
 
-namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
+namespace RookieShop.Shopping.Application.Commands;
 
-public class HandleStockReservationOnItemAddedConsumer : IEventConsumer<ItemAddedToCart>
+public class ReserveStock
+{
+    public string Sku { get; init; } = null!;
+    
+    public int Quantity { get; init; }
+}
+
+public class ReserveStockConsumer : ICommandConsumer<ReserveStock>
 {
     private readonly IStockItemRepository _stockItemRepository;
     private readonly DomainEventPublisher _domainEventPublisher;
 
-    public HandleStockReservationOnItemAddedConsumer(IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
+    public ReserveStockConsumer(IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
     {
         _stockItemRepository = stockItemRepository;
         _domainEventPublisher = domainEventPublisher;
     }
     
-    public async Task ConsumeAsync(ItemAddedToCart message, CancellationToken cancellationToken = default)
+    public async Task ConsumeAsync(ReserveStock message, CancellationToken cancellationToken = default)
     {
         var stockItem = await _stockItemRepository.GetBySkuAsync(message.Sku, cancellationToken);
 

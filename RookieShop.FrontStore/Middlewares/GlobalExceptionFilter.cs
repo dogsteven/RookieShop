@@ -13,7 +13,14 @@ public class GlobalExceptionFilter : IExceptionFilter
     {
         if (context.Exception is RookieShopHttpClientUnauthorizedException)
         {
-            context.Result = new RedirectToActionResult("Login", "Account", new { redirectUrl = context.HttpContext.Request.Path });
+            var redirectUrl = context.HttpContext.Request.Path;
+
+            if (context.HttpContext.Request.Method != "GET")
+            {
+                redirectUrl = "/";
+            }
+            
+            context.Result = new RedirectToActionResult("Login", "Account", new { redirectUrl });
         }
         else
         {

@@ -10,7 +10,7 @@ public static class ShoppingMassTransitExtensions
 {
     public static IBusRegistrationConfigurator AddShoppingConsumers(this IBusRegistrationConfigurator bus)
     {
-        bus.AddConsumer<HandleStockReservationOnItemRemovedConsumer, HandleStockReservationOnItemRemovedConsumerDefinition>();
+        bus.AddConsumer<ReleaseStockReservationConsumer, ReleaseStockReservationConsumerDefinition>();
         bus.AddConsumer<ClearCartConsumer, ClearCartConsumerDefinition>();
         bus.AddConsumer<ScheduleClearCartOnExpirationConsumer, ScheduleClearCartOnExpirationConsumerDefinition>();
         
@@ -21,12 +21,12 @@ public static class ShoppingMassTransitExtensions
     }
 }
 
-public class HandleStockReservationOnItemRemovedConsumerDefinition : ConsumerDefinition<HandleStockReservationOnItemRemovedConsumer>
+public class ReleaseStockReservationConsumerDefinition : ConsumerDefinition<ReleaseStockReservationConsumer>
 {
-    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<HandleStockReservationOnItemRemovedConsumer> consumerConfigurator,
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ReleaseStockReservationConsumer> consumerConfigurator,
         IRegistrationContext context)
     {
-        consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(250)));
+        consumerConfigurator.UseMessageRetry(retry  => retry.Interval(10, TimeSpan.FromMilliseconds(250)));
     }
 }
 

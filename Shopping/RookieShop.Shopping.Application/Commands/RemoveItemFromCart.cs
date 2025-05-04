@@ -13,15 +13,13 @@ public class RemoveItemFromCart
 public class RemoveItemFromCartConsumer : ICommandConsumer<RemoveItemFromCart>
 {
     private readonly CartRepositoryHelper _cartRepositoryHelper;
-    private readonly ICartRepository _cartRepository;
     private readonly TimeProvider _timeProvider;
     private readonly DomainEventPublisher _domainEventPublisher;
 
-    public RemoveItemFromCartConsumer(CartRepositoryHelper cartRepositoryHelper, ICartRepository cartRepository,
-        TimeProvider timeProvider, DomainEventPublisher domainEventPublisher)
+    public RemoveItemFromCartConsumer(CartRepositoryHelper cartRepositoryHelper, TimeProvider timeProvider,
+        DomainEventPublisher domainEventPublisher)
     {
         _cartRepositoryHelper = cartRepositoryHelper;
-        _cartRepository = cartRepository;
         _timeProvider = timeProvider;
         _domainEventPublisher = domainEventPublisher;
     }

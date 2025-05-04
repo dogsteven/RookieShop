@@ -17,16 +17,14 @@ public class AddItemToCart
 public class AddItemToCartConsumer : ICommandConsumer<AddItemToCart>
 {
     private readonly CartRepositoryHelper _cartRepositoryHelper;
-    private readonly ICartRepository _cartRepository;
     private readonly IStockItemRepository _stockItemRepository;
     private readonly TimeProvider _timeProvider;
     private readonly DomainEventPublisher _domainEventPublisher;
 
-    public AddItemToCartConsumer(CartRepositoryHelper cartRepositoryHelper, ICartRepository cartRepository,
-        TimeProvider timeProvider, IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
+    public AddItemToCartConsumer(CartRepositoryHelper cartRepositoryHelper, TimeProvider timeProvider,
+        IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
     {
         _cartRepositoryHelper = cartRepositoryHelper;
-        _cartRepository = cartRepository;
         _stockItemRepository = stockItemRepository;
         _timeProvider = timeProvider;
         _domainEventPublisher = domainEventPublisher;

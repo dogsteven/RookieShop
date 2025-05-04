@@ -4,24 +4,31 @@ using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Application.Utilities;
-using RookieShop.Shopping.Domain.Carts.Events;
 
-namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
+namespace RookieShop.Shopping.Application.Commands;
 
-public class HandleStockReservationOnItemRemovedConsumer : IEventConsumer<ItemRemovedFromCart>, IConsumer<ItemRemovedFromCart>
+public class ReleaseStockReservation
+{
+    public string Sku { get; init; } = null!;
+    
+    public int Quantity { get; init; }
+}
+
+public class ReleaseStockReservationConsumer : ICommandConsumer<ReleaseStockReservation>, IConsumer<ReleaseStockReservation>
 {
     private readonly IStockItemRepository _stockItemRepository;
     private readonly DomainEventPublisher _domainEventPublisher;
     private readonly IUnitOfWork _unitOfWork;
 
-    public HandleStockReservationOnItemRemovedConsumer(IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher, IUnitOfWork unitOfWork)
+    public ReleaseStockReservationConsumer(IStockItemRepository stockItemRepository,
+        DomainEventPublisher domainEventPublisher, IUnitOfWork unitOfWork)
     {
         _stockItemRepository = stockItemRepository;
         _domainEventPublisher = domainEventPublisher;
         _unitOfWork = unitOfWork;
     }
     
-    public async Task ConsumeAsync(ItemRemovedFromCart message, CancellationToken cancellationToken = default)
+    public async Task ConsumeAsync(ReleaseStockReservation message, CancellationToken cancellationToken = default)
     {
         var stockItem = await _stockItemRepository.GetBySkuAsync(message.Sku, cancellationToken);
 
@@ -31,11 +38,11 @@ public class HandleStockReservationOnItemRemovedConsumer : IEventConsumer<ItemRe
         }
         
         stockItem.ReleaseReservation(message.Quantity);
-
+        
         await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
     }
 
-    public async Task Consume(ConsumeContext<ItemRemovedFromCart> context)
+    public async Task Consume(ConsumeContext<ReleaseStockReservation> context)
     {
         await ConsumeAsync(context.Message, context.CancellationToken);
         

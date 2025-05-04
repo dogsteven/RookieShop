@@ -2,6 +2,7 @@ using MassTransit;
 using RookieShop.Shopping.Application.Abstractions;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
+using RookieShop.Shopping.Application.Utilities;
 
 namespace RookieShop.Shopping.Application.Commands;
 
@@ -14,15 +15,15 @@ public class ClearCartConsumer : IConsumer<ClearCart>
 {
     private readonly ICartRepository _cartRepository;
     private readonly TimeProvider _timeProvider;
-    private readonly IExternalMessageDispatcher _externalMessageDispatcher;
+    private readonly DomainEventPublisher _domainEventPublisher;
     private readonly IUnitOfWork _unitOfWork;
 
     public ClearCartConsumer(ICartRepository cartRepository, TimeProvider timeProvider,
-        IExternalMessageDispatcher externalMessageDispatcher, IUnitOfWork unitOfWork)
+        DomainEventPublisher domainEventPublisher, IUnitOfWork unitOfWork)
     {
         _cartRepository = cartRepository;
         _timeProvider = timeProvider;
-        _externalMessageDispatcher = externalMessageDispatcher;
+        _domainEventPublisher = domainEventPublisher;
         _unitOfWork = unitOfWork;
     }
     
@@ -43,12 +44,7 @@ public class ClearCartConsumer : IConsumer<ClearCart>
         
         _cartRepository.Save(cart);
 
-        foreach (var domainEvent in cart.DomainEvents)
-        {
-            _externalMessageDispatcher.EnqueuePublish(domainEvent);
-        }
-        
-        cart.ClearDomainEvents();
+        await _domainEventPublisher.PublishAsync(cart, cancellationToken);
         
         await _unitOfWork.CommitAsync(cancellationToken);
     }
