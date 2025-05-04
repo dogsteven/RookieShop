@@ -11,7 +11,7 @@
     </div>
 
     <div class="pt-6 h-fit flex flex-col justify-between">
-      <a href="/Products/ProductDetails/@Model.Product.Sku" class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">@Model.Product.Name</a>
+      <a href="/Products/ProductDetails/@Model.Product.Sku" class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white truncate">@Model.Product.Name</a>
 
       <div class="mt-2 flex items-center gap-2">
         @await Component.InvokeAsync("RatingStars", new { stars = (int)Math.Round(Model.Product.Rating.Score), isBig = false })

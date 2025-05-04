@@ -11,8 +11,8 @@ public static class ShoppingMassTransitExtensions
     public static IBusRegistrationConfigurator AddShoppingConsumers(this IBusRegistrationConfigurator bus)
     {
         bus.AddConsumer<ReleaseStockReservationConsumer, ReleaseStockReservationConsumerDefinition>();
-        bus.AddConsumer<ClearCartConsumer, ClearCartConsumerDefinition>();
-        bus.AddConsumer<ScheduleClearCartOnExpirationConsumer, ScheduleClearCartOnExpirationConsumerDefinition>();
+        bus.AddConsumer<ExpireCartConsumer, ClearCartOnExpiredConsumerDefinition>();
+        bus.AddConsumer<ScheduleExpireCartConsumer, ScheduleClearCartOnExpirationConsumerDefinition>();
         
         bus.AddConsumer<ProductCreatedOrUpdatedConsumer, ProductCreatedOrUpdatedConsumerDefinition>();
         bus.AddConsumer<ProductDeletedConsumer, ProductDeletedConsumerDefinition>();
@@ -30,18 +30,18 @@ public class ReleaseStockReservationConsumerDefinition : ConsumerDefinition<Rele
     }
 }
 
-public class ClearCartConsumerDefinition : ConsumerDefinition<ClearCartConsumer>
+public class ClearCartOnExpiredConsumerDefinition : ConsumerDefinition<ExpireCartConsumer>
 {
-    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ClearCartConsumer> consumerConfigurator,
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ExpireCartConsumer> consumerConfigurator,
         IRegistrationContext context)
     {
         consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(500)));
     }
 }
 
-public class ScheduleClearCartOnExpirationConsumerDefinition : ConsumerDefinition<ScheduleClearCartOnExpirationConsumer>
+public class ScheduleClearCartOnExpirationConsumerDefinition : ConsumerDefinition<ScheduleExpireCartConsumer>
 {
-    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ScheduleClearCartOnExpirationConsumer> consumerConfigurator,
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ScheduleExpireCartConsumer> consumerConfigurator,
         IRegistrationContext context)
     {
         consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(2000)));

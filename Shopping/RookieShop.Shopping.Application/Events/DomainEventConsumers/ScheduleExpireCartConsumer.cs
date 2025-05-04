@@ -5,12 +5,12 @@ using RookieShop.Shopping.Domain.Carts.Events;
 
 namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
 
-public class ScheduleClearCartOnExpirationConsumer : IEventConsumer<CartExpirationDateExtended>, IConsumer<CartExpirationDateExtended>
+public class ScheduleExpireCartConsumer : IEventConsumer<CartExpirationDateExtended>, IConsumer<CartExpirationDateExtended>
 {
     private readonly IExternalMessageDispatcher _externalMessageDispatcher;
     private readonly IClearCartScheduler _clearCartScheduler;
 
-    public ScheduleClearCartOnExpirationConsumer(IExternalMessageDispatcher externalMessageDispatcher, IClearCartScheduler clearCartScheduler)
+    public ScheduleExpireCartConsumer(IExternalMessageDispatcher externalMessageDispatcher, IClearCartScheduler clearCartScheduler)
     {
         _externalMessageDispatcher = externalMessageDispatcher;
         _clearCartScheduler = clearCartScheduler;

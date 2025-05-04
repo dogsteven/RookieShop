@@ -100,10 +100,12 @@ public class ShoppingConfigurator
         services.AddScoped<ICommandConsumer<ReleaseStockReservation>, ReleaseStockReservationConsumer>();
         
         services.AddScoped<IEventConsumer<ItemAddedToCart>, HandleStockReservationOnItemAddedToCartConsumer>();
-        services.AddScoped<IEventConsumer<ItemQuantityAdjusted>, HandleStockReservationOnItemQuantityAdjustedConsumer>();
+        services.AddScoped<IEventConsumer<ItemQuantityIncreased>, HandleStockReservationOnItemQuantityIncreasedConsumer>();
+        services.AddScoped<IEventConsumer<ItemQuantityDecreased>, HandleStockReservationOnItemQuantityDecreasedConsumer>();
         services.AddScoped<IEventConsumer<ItemRemovedFromCart>, HandleStockReservationOnItemRemovedFromCartConsumer>();
         services.AddScoped<IEventConsumer<StockLevelChanged>, PublishIntegrationEventOnStockLevelChangedConsumer>();
-        services.AddScoped<IEventConsumer<CartExpirationDateExtended>, ScheduleClearCartOnExpirationConsumer>();
+        services.AddScoped<IEventConsumer<CartExpirationDateExtended>, ScheduleExpireCartConsumer>();
+        services.AddScoped<IEventConsumer<CartExpired>, HandleStockReservationOnCartExpiredConsumer>();
         
         services.AddScoped<CartRepositoryHelper>();
 
@@ -124,10 +126,12 @@ public class ShoppingConfigurator
             consumeMethodRegistry.Add<ReleaseStockReservation>();
         
             consumeMethodRegistry.Add<ItemAddedToCart>();
-            consumeMethodRegistry.Add<ItemQuantityAdjusted>();
+            consumeMethodRegistry.Add<ItemQuantityIncreased>();
+            consumeMethodRegistry.Add<ItemQuantityDecreased>();
             consumeMethodRegistry.Add<ItemRemovedFromCart>();
             consumeMethodRegistry.Add<StockLevelChanged>();
             consumeMethodRegistry.Add<CartExpirationDateExtended>();
+            consumeMethodRegistry.Add<CartExpired>();
             
             return consumeMethodRegistry;
         });

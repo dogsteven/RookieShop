@@ -1,3 +1,4 @@
+using RookieShop.Shopping.Domain.Abstractions;
 using RookieShop.Shopping.Domain.StockItems.Events;
 
 namespace RookieShop.Shopping.Domain.StockItems;

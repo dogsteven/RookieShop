@@ -17,8 +17,8 @@ public class QuartzClearCartScheduler : IClearCartScheduler
     public async Task ScheduleAsync(Guid id, DateTimeOffset scheduledTime, CancellationToken cancellationToken = default)
     {
         var scheduler = await _schedulerFactory.GetScheduler(cancellationToken);
-        var jobKey = new JobKey("ClearCart", "Shopping");
-        var triggerKey = new TriggerKey($"ClearCart-{id}", "Shopping");
+        var jobKey = new JobKey("ExpireCart", "Shopping");
+        var triggerKey = new TriggerKey($"ExpireCart-{id}", "Shopping");
 
         if (await scheduler.CheckExists(triggerKey, cancellationToken))
         {
@@ -27,7 +27,7 @@ public class QuartzClearCartScheduler : IClearCartScheduler
 
         if (!await scheduler.CheckExists(jobKey, cancellationToken))
         {
-            var jobDetail = JobBuilder.Create<ClearCartJob>()
+            var jobDetail = JobBuilder.Create<ExpireCartJob>()
                 .WithIdentity(jobKey)
                 .StoreDurably()
                 .Build();
@@ -38,7 +38,7 @@ public class QuartzClearCartScheduler : IClearCartScheduler
         var trigger = TriggerBuilder.Create()
             .WithIdentity(triggerKey)
             .ForJob(jobKey)
-            .UsingJobData("CartId", id.ToString())
+            .UsingJobData("Id", id.ToString())
             .StartAt(scheduledTime)
             .Build();
 
@@ -46,13 +46,13 @@ public class QuartzClearCartScheduler : IClearCartScheduler
     }
 }
 
-public class ClearCartJob : IJob
+public class ExpireCartJob : IJob
 {
     private readonly IBusTopology _busTopology;
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly TimeProvider _timeProvider;
 
-    public ClearCartJob(IBus bus, ISendEndpointProvider sendEndpointProvider, TimeProvider timeProvider)
+    public ExpireCartJob(IBus bus, ISendEndpointProvider sendEndpointProvider, TimeProvider timeProvider)
     {
         _busTopology = bus.Topology;
         _sendEndpointProvider = sendEndpointProvider;
@@ -61,19 +61,18 @@ public class ClearCartJob : IJob
     
     public async Task Execute(IJobExecutionContext context)
     {
-        var id = new Guid(context.Trigger.JobDataMap.GetString("CartId")!);
+        var id = new Guid(context.Trigger.JobDataMap.GetString("Id")!);
         
-        if (!_busTopology.TryGetPublishAddress(typeof(ClearCart), out var sendAddress))
+        if (!_busTopology.TryGetPublishAddress(typeof(ExpireCart), out var sendAddress))
         {
             return;
         }
 
         try
         {
-
             var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(sendAddress);
 
-            await sendEndpoint.Send(new ClearCart
+            await sendEndpoint.Send(new ExpireCart
             {
                 Id = id
             }, context.CancellationToken);
@@ -81,8 +80,9 @@ public class ClearCartJob : IJob
         catch (Exception exception)
         {
             var newTrigger = TriggerBuilder.Create()
+                .WithIdentity(context.Trigger.Key)
                 .ForJob(context.JobDetail)
-                .UsingJobData("CartId", id.ToString())
+                .UsingJobData("Id", id.ToString())
                 .StartAt(_timeProvider.GetUtcNow().AddMinutes(1))
                 .Build();
             

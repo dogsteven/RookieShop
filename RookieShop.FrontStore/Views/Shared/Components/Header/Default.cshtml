@@ -1,6 +1,4 @@
-@using RookieShop.FrontStore.Modules.ImageGallery
 @model RookieShop.FrontStore.Models.Shared.Components.HeaderViewModel
-@inject ImageGalleryUrlResolver ImageGalleryUrlResolver
 
 <header>
     <nav class="bg-white dark:bg-gray-800 antialiased">
@@ -59,13 +57,28 @@
                             <span class="sr-only">
                                 Cart
                             </span>
-                            <svg class="w-5 h-5 lg:me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
-                            </svg>
-                            <span class="hidden sm:flex">Cart</span>
+                            <div class="relative">
+                                <svg class="relative w-5 h-5 lg:me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"/>
+                                </svg>
+                                
+                                @if (Model.Cart != null)
+                                {
+                                    var count = Model.Cart.Items.Count();
+
+                                    if (count > 0)
+                                    {
+                                        <span class="sr-only">Notifications</span>
+                                        <div class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-3 -end-3 dark:border-gray-900">
+                                            @count
+                                        </div>
+                                    }
+                                }
+                            </div>
                             <svg class="hidden sm:flex w-4 h-4 text-gray-900 dark:text-white ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
                             </svg>
+                            
                         </button>
 
                         <div id="cartNavBarDropdown" class="hidden z-10 mx-auto max-w-sm space-y-4 overflow-hidden rounded-lg bg-white p-4 antialiased shadow-lg dark:bg-gray-800">

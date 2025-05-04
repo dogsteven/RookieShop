@@ -1,24 +1,23 @@
 using MassTransit;
 using RookieShop.Shopping.Application.Abstractions;
-using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Utilities;
 
 namespace RookieShop.Shopping.Application.Commands;
 
-public class ClearCart
+public class ExpireCart
 {
     public Guid Id { get; set; }
 }
 
-public class ClearCartConsumer : IConsumer<ClearCart>
+public class ExpireCartConsumer : IConsumer<ExpireCart>
 {
     private readonly ICartRepository _cartRepository;
     private readonly TimeProvider _timeProvider;
     private readonly DomainEventPublisher _domainEventPublisher;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ClearCartConsumer(ICartRepository cartRepository, TimeProvider timeProvider,
+    public ExpireCartConsumer(ICartRepository cartRepository, TimeProvider timeProvider,
         DomainEventPublisher domainEventPublisher, IUnitOfWork unitOfWork)
     {
         _cartRepository = cartRepository;
@@ -27,7 +26,7 @@ public class ClearCartConsumer : IConsumer<ClearCart>
         _unitOfWork = unitOfWork;
     }
     
-    public async Task Consume(ConsumeContext<ClearCart> context)
+    public async Task Consume(ConsumeContext<ExpireCart> context)
     {
         var message = context.Message;
 
@@ -40,7 +39,7 @@ public class ClearCartConsumer : IConsumer<ClearCart>
             return;
         }
         
-        cart.Clear(_timeProvider);
+        cart.Expire(_timeProvider);
         
         _cartRepository.Save(cart);
 

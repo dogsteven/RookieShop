@@ -176,7 +176,7 @@ public class CartAggregateUnitTest
     }
 
     [Fact]
-    public void Should_AdjustItemQuantity_Success()
+    public void Should_AdjustItemQuantity_SuccessWithCartItemQuantityIncreased()
     {
         // Arrange
         var id = Guid.NewGuid();
@@ -195,16 +195,49 @@ public class CartAggregateUnitTest
 
         Assert.Contains(cart.DomainEvents, domainEvent =>
         {
-            var isItemQuantityAdjusted = domainEvent is ItemQuantityAdjusted;
+            var isItemQuantityAdjusted = domainEvent is ItemQuantityIncreased;
 
             if (!isItemQuantityAdjusted)
             {
                 return false;
             }
 
-            var itemQuantityAdjusted = (ItemQuantityAdjusted)domainEvent;
+            var itemQuantityAdjusted = (ItemQuantityIncreased)domainEvent;
 
-            return itemQuantityAdjusted is { Sku: "sku", OldQuantity: 3, NewQuantity: 5 };
+            return itemQuantityAdjusted is { Sku: "sku", QuantityDifference: 2 };
+        });
+    }
+    
+    [Fact]
+    public void Should_AdjustItemQuantity_SuccessWithCartItemQuantityDecreased()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var cart = new Cart(id);
+        cart.AddItem("sku", "name", 10, Guid.NewGuid(), 5);
+        cart.ClearDomainEvents();
+        
+        // Act
+        cart.AdjustItemQuantity("sku", 1);
+        
+        // Assert
+        var item = cart.Items.FirstOrDefault(item => item.Sku == "sku");
+        
+        Assert.NotNull(item);
+        Assert.Equal(5, item.Quantity);
+
+        Assert.Contains(cart.DomainEvents, domainEvent =>
+        {
+            var isItemQuantityAdjusted = domainEvent is ItemQuantityDecreased;
+
+            if (!isItemQuantityAdjusted)
+            {
+                return false;
+            }
+
+            var itemQuantityAdjusted = (ItemQuantityDecreased)domainEvent;
+
+            return itemQuantityAdjusted is { Sku: "sku", QuantityDifference: 4 };
         });
     }
 
@@ -286,7 +319,7 @@ public class CartAggregateUnitTest
         cart.ClearDomainEvents();
         
         // Act
-        cart.Clear(tryClearTimeProvider);
+        cart.Expire(tryClearTimeProvider);
         
         // Assert
         Assert.Single(cart.Items);
@@ -308,7 +341,7 @@ public class CartAggregateUnitTest
         cart.ClearDomainEvents();
         
         // Act
-        cart.Clear(tryClearTimeProvider);
+        cart.Expire(tryClearTimeProvider);
         
         // Assert
         Assert.Empty(cart.Items);

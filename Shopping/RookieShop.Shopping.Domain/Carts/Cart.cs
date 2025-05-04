@@ -1,3 +1,4 @@
+using RookieShop.Shopping.Domain.Abstractions;
 using RookieShop.Shopping.Domain.Carts.Events;
 
 namespace RookieShop.Shopping.Domain.Carts;
@@ -66,21 +67,24 @@ public class Cart : DomainEventSource
         if (newQuantity == 0)
         {
             _items.Remove(item);
-            AddDomainEvent(new ItemRemovedFromCart
+        }
+
+        if (oldQuantity < newQuantity)
+        {
+            AddDomainEvent(new ItemQuantityIncreased
             {
                 Id = Id,
                 Sku = sku,
-                Quantity = oldQuantity
+                QuantityDifference = newQuantity - oldQuantity
             });
         }
         else
         {
-            AddDomainEvent(new ItemQuantityAdjusted
+            AddDomainEvent(new ItemQuantityDecreased
             {
                 Id = Id,
                 Sku = sku,
-                OldQuantity = oldQuantity,
-                NewQuantity = newQuantity
+                QuantityDifference = oldQuantity - newQuantity
             });
         }
     }
@@ -115,22 +119,22 @@ public class Cart : DomainEventSource
         });
     }
 
-    public void Clear(TimeProvider timeProvider)
+    public void Expire(TimeProvider timeProvider)
     {
         if (ExpirationDate > timeProvider.GetUtcNow())
         {
             return;
         }
         
-        foreach (var item in _items)
+        AddDomainEvent(new CartExpired
         {
-            AddDomainEvent(new ItemRemovedFromCart
+            Id = Id,
+            Items = _items.Select(item => new CartExpired.Item
             {
-                Id = Id,
                 Sku = item.Sku,
-                Quantity = item.Quantity
-            });
-        }
+                Quantity = item.Quantity,
+            }).ToList()
+        });
         
         _items.Clear();
     }
