@@ -1,7 +1,9 @@
+using RookieShop.Shopping.Application.Abstractions;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Application.Utilities;
+using RookieShop.Shopping.Domain.Services;
 
 namespace RookieShop.Shopping.Application.Commands;
 
@@ -18,15 +20,19 @@ public class AddItemToCartConsumer : ICommandConsumer<AddItemToCart>
 {
     private readonly CartRepositoryHelper _cartRepositoryHelper;
     private readonly IStockItemRepository _stockItemRepository;
+    private readonly CartService _cartService;
     private readonly TimeProvider _timeProvider;
+    private readonly ICartOptionsProvider _cartOptionsProvider;
     private readonly DomainEventPublisher _domainEventPublisher;
 
-    public AddItemToCartConsumer(CartRepositoryHelper cartRepositoryHelper, TimeProvider timeProvider,
-        IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
+    public AddItemToCartConsumer(CartRepositoryHelper cartRepositoryHelper, IStockItemRepository stockItemRepository,
+        CartService cartService, TimeProvider timeProvider, ICartOptionsProvider cartOptionsProvider, DomainEventPublisher domainEventPublisher)
     {
         _cartRepositoryHelper = cartRepositoryHelper;
         _stockItemRepository = stockItemRepository;
+        _cartService = cartService;
         _timeProvider = timeProvider;
+        _cartOptionsProvider = cartOptionsProvider;
         _domainEventPublisher = domainEventPublisher;
     }
     
@@ -41,9 +47,10 @@ public class AddItemToCartConsumer : ICommandConsumer<AddItemToCart>
             throw new StockItemNotFoundException(message.Sku);
         }
         
-        cart.AddItem(stockItem.Sku, stockItem.Name, stockItem.Price, stockItem.ImageId, message.Quantity);
-        cart.ExtendExpiration(_timeProvider);
+        _cartService.AddItemToCart(cart, stockItem, message.Quantity);
+        cart.ExtendExpiration(_timeProvider, _cartOptionsProvider.LifeTimeInMinutes);
         
         await _domainEventPublisher.PublishAsync(cart, cancellationToken);
+        await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
     }
 }

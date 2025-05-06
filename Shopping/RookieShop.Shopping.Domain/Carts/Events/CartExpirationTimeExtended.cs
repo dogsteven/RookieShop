@@ -1,6 +1,6 @@
 namespace RookieShop.Shopping.Domain.Carts.Events;
 
-public class CartExpirationDateExtended
+public class CartExpirationTimeExtended
 {
     public Guid Id { get; init; }
     

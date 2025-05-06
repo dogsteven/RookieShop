@@ -1,3 +1,4 @@
+using RookieShop.Shared.Models;
 using RookieShop.Shopping.Domain.Abstractions;
 using RookieShop.Shopping.Domain.Carts.Events;
 
@@ -7,7 +8,7 @@ public class Cart : DomainEventSource
 {
     public readonly Guid Id;
     
-    public DateTimeOffset ExpirationDate { get; private set; }
+    public DateTimeOffset ExpirationTime { get; private set; }
 
     private readonly List<CartItem> _items;
     public IReadOnlyList<CartItem> Items => _items;
@@ -19,11 +20,23 @@ public class Cart : DomainEventSource
     public Cart(Guid id)
     {
         Id = id;
-        ExpirationDate = DateTimeOffset.UtcNow;
+        ExpirationTime = DateTimeOffset.UtcNow;
         _items = [];
     }
     
     public decimal Total => Items.Sum(item => item.Subtotal);
+
+    public int GetItemQuantity(string sku)
+    {
+        var item = Items.FirstOrDefault(item => item.Sku == sku);
+
+        if (item == null)
+        {
+            throw new CartItemNotFoundException(Id, sku);
+        }
+
+        return item.Quantity;
+    }
 
     public void AddItem(string sku, string name, decimal price, Guid imageId, int quantity)
     {
@@ -71,20 +84,20 @@ public class Cart : DomainEventSource
 
         if (oldQuantity < newQuantity)
         {
-            AddDomainEvent(new ItemQuantityIncreased
+            AddDomainEvent(new ItemAddedToCart
             {
                 Id = Id,
                 Sku = sku,
-                QuantityDifference = newQuantity - oldQuantity
+                Quantity = newQuantity - oldQuantity
             });
         }
         else
         {
-            AddDomainEvent(new ItemQuantityDecreased
+            AddDomainEvent(new ItemRemovedFromCart
             {
                 Id = Id,
                 Sku = sku,
-                QuantityDifference = oldQuantity - newQuantity
+                Quantity = oldQuantity - newQuantity
             });
         }
     }
@@ -108,20 +121,20 @@ public class Cart : DomainEventSource
         });
     }
 
-    public void ExtendExpiration(TimeProvider timeProvider)
+    public void ExtendExpiration(TimeProvider timeProvider, int lifeTimeInMinutes)
     {
-        ExpirationDate = timeProvider.GetUtcNow().AddMinutes(1);
+        ExpirationTime = timeProvider.GetUtcNow().AddMinutes(lifeTimeInMinutes);
         
-        AddDomainEvent(new CartExpirationDateExtended
+        AddDomainEvent(new CartExpirationTimeExtended
         {
             Id = Id,
-            ExpirationDate = ExpirationDate
+            ExpirationDate = ExpirationTime
         });
     }
 
     public void Expire(TimeProvider timeProvider)
     {
-        if (ExpirationDate > timeProvider.GetUtcNow())
+        if (ExpirationTime > timeProvider.GetUtcNow())
         {
             return;
         }
@@ -136,6 +149,11 @@ public class Cart : DomainEventSource
             }).ToList()
         });
         
+        _items.Clear();
+    }
+
+    public void Clear()
+    {
         _items.Clear();
     }
 }

@@ -195,16 +195,16 @@ public class CartAggregateUnitTest
 
         Assert.Contains(cart.DomainEvents, domainEvent =>
         {
-            var isItemQuantityAdjusted = domainEvent is ItemQuantityIncreased;
+            var isItemQuantityAdjusted = domainEvent is ItemAddedToCart;
 
             if (!isItemQuantityAdjusted)
             {
                 return false;
             }
 
-            var itemQuantityAdjusted = (ItemQuantityIncreased)domainEvent;
+            var itemQuantityAdjusted = (ItemAddedToCart)domainEvent;
 
-            return itemQuantityAdjusted is { Sku: "sku", QuantityDifference: 2 };
+            return itemQuantityAdjusted is { Sku: "sku", Quantity: 2 };
         });
     }
     
@@ -224,20 +224,20 @@ public class CartAggregateUnitTest
         var item = cart.Items.FirstOrDefault(item => item.Sku == "sku");
         
         Assert.NotNull(item);
-        Assert.Equal(5, item.Quantity);
+        Assert.Equal(1, item.Quantity);
 
         Assert.Contains(cart.DomainEvents, domainEvent =>
         {
-            var isItemQuantityAdjusted = domainEvent is ItemQuantityDecreased;
+            var isItemQuantityAdjusted = domainEvent is ItemRemovedFromCart;
 
             if (!isItemQuantityAdjusted)
             {
                 return false;
             }
 
-            var itemQuantityAdjusted = (ItemQuantityDecreased)domainEvent;
+            var itemQuantityAdjusted = (ItemRemovedFromCart)domainEvent;
 
-            return itemQuantityAdjusted is { Sku: "sku", QuantityDifference: 4 };
+            return itemQuantityAdjusted is { Sku: "sku", Quantity: 4 };
         });
     }
 
@@ -299,14 +299,14 @@ public class CartAggregateUnitTest
         var fakeTimeProvider = new FakeTimeProvider(new DateTime(2025, 5, 2, 20, 11, 56, DateTimeKind.Utc));
         
         // Act
-        cart.ExtendExpiration(fakeTimeProvider);
+        cart.ExtendExpiration(fakeTimeProvider, 60);
         
         // Assert
-        Assert.Equal(new DateTime(2025, 5, 2, 21, 11, 56, DateTimeKind.Utc), cart.ExpirationDate);
+        Assert.Equal(new DateTime(2025, 5, 2, 21, 11, 56, DateTimeKind.Utc), cart.ExpirationTime);
     }
 
     [Fact]
-    public void Should_TryClear_SuccessWithNothingHappens()
+    public void Should_Expire_SuccessWithNothingHappens()
     {
         // Arrange
         var extendExpirationTimeProvider = new FakeTimeProvider(new DateTime(2025, 5, 2, 20, 11, 56, DateTimeKind.Utc));
@@ -315,7 +315,7 @@ public class CartAggregateUnitTest
         var id = Guid.NewGuid();
         var cart = new Cart(id);
         cart.AddItem("sku", "name", 10, Guid.NewGuid(), 3);
-        cart.ExtendExpiration(extendExpirationTimeProvider);
+        cart.ExtendExpiration(extendExpirationTimeProvider, 60);
         cart.ClearDomainEvents();
         
         // Act
@@ -327,7 +327,7 @@ public class CartAggregateUnitTest
     }
     
     [Fact]
-    public void Should_TryClear_Success()
+    public void Should_Expire_Success()
     {
         // Arrange
         var extendExpirationTimeProvider = new FakeTimeProvider(new DateTime(2025, 5, 2, 20, 11, 56, DateTimeKind.Utc));
@@ -337,7 +337,7 @@ public class CartAggregateUnitTest
         var cart = new Cart(id);
         cart.AddItem("sku1", "name1", 10, Guid.NewGuid(), 3);
         cart.AddItem("sku2", "name2", 10, Guid.NewGuid(), 2);
-        cart.ExtendExpiration(extendExpirationTimeProvider);
+        cart.ExtendExpiration(extendExpirationTimeProvider, 60);
         cart.ClearDomainEvents();
         
         // Act
@@ -350,30 +350,16 @@ public class CartAggregateUnitTest
         
         Assert.Contains(domainEvents, domainEvent =>
         {
-            var isItemRemovedFromCart = domainEvent is ItemRemovedFromCart;
+            var isCartExpired = domainEvent is CartExpired;
 
-            if (!isItemRemovedFromCart)
+            if (!isCartExpired)
             {
                 return false;
             }
 
-            var itemRemovedFromCart = (ItemRemovedFromCart)domainEvent;
+            var cartExpired = (CartExpired)domainEvent;
 
-            return itemRemovedFromCart is { Sku: "sku1", Quantity: 3 };
-        });
-        
-        Assert.Contains(domainEvents, domainEvent =>
-        {
-            var isItemRemovedFromCart = domainEvent is ItemRemovedFromCart;
-
-            if (!isItemRemovedFromCart)
-            {
-                return false;
-            }
-
-            var itemRemovedFromCart = (ItemRemovedFromCart)domainEvent;
-
-            return itemRemovedFromCart is { Sku: "sku2", Quantity: 2 };
+            return cartExpired.Items.Count() == 2;
         });
     }
 }

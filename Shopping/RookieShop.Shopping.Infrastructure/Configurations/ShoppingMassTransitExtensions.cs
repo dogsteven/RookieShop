@@ -11,8 +11,8 @@ public static class ShoppingMassTransitExtensions
     public static IBusRegistrationConfigurator AddShoppingConsumers(this IBusRegistrationConfigurator bus)
     {
         bus.AddConsumer<ReleaseStockReservationConsumer, ReleaseStockReservationConsumerDefinition>();
-        bus.AddConsumer<ExpireCartConsumer, ClearCartOnExpiredConsumerDefinition>();
-        bus.AddConsumer<ScheduleExpireCartConsumer, ScheduleClearCartOnExpirationConsumerDefinition>();
+        bus.AddConsumer<ExpireCartConsumer, ExpireCardConsumerDefinition>();
+        bus.AddConsumer<ScheduleExpireCartConsumer, ScheduleExpireCartConsumerDefinition>();
         
         bus.AddConsumer<ProductCreatedOrUpdatedConsumer, ProductCreatedOrUpdatedConsumerDefinition>();
         bus.AddConsumer<ProductDeletedConsumer, ProductDeletedConsumerDefinition>();
@@ -30,7 +30,7 @@ public class ReleaseStockReservationConsumerDefinition : ConsumerDefinition<Rele
     }
 }
 
-public class ClearCartOnExpiredConsumerDefinition : ConsumerDefinition<ExpireCartConsumer>
+public class ExpireCardConsumerDefinition : ConsumerDefinition<ExpireCartConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ExpireCartConsumer> consumerConfigurator,
         IRegistrationContext context)
@@ -39,7 +39,7 @@ public class ClearCartOnExpiredConsumerDefinition : ConsumerDefinition<ExpireCar
     }
 }
 
-public class ScheduleClearCartOnExpirationConsumerDefinition : ConsumerDefinition<ScheduleExpireCartConsumer>
+public class ScheduleExpireCartConsumerDefinition : ConsumerDefinition<ScheduleExpireCartConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ScheduleExpireCartConsumer> consumerConfigurator,
         IRegistrationContext context)

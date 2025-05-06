@@ -17,9 +17,9 @@ public class CartEntityConfiguration : IEntityTypeConfiguration<Cart>
             .IsRequired()
             .HasColumnName("Id");
         
-        builder.Property(cart => cart.ExpirationDate)
+        builder.Property(cart => cart.ExpirationTime)
             .IsRequired()
-            .HasColumnName("ExpirationDate");
+            .HasColumnName("ExpirationTime");
 
         builder.OwnsMany<CartItem>("_items", itemBuilder =>
             {

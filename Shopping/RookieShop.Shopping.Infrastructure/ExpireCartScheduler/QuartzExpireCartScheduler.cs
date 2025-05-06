@@ -5,11 +5,11 @@ using RookieShop.Shopping.Application.Commands;
 
 namespace RookieShop.Shopping.Infrastructure.ClearCartScheduler;
 
-public class QuartzClearCartScheduler : IClearCartScheduler
+public class QuartzExpireCartScheduler : IExpireCartScheduler
 {
     private readonly ISchedulerFactory _schedulerFactory;
 
-    public QuartzClearCartScheduler(ISchedulerFactory schedulerFactory)
+    public QuartzExpireCartScheduler(ISchedulerFactory schedulerFactory)
     {
         _schedulerFactory = schedulerFactory;
     }

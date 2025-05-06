@@ -5,30 +5,30 @@ using RookieShop.Shopping.Domain.Carts.Events;
 
 namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;
 
-public class ScheduleExpireCartConsumer : IEventConsumer<CartExpirationDateExtended>, IConsumer<CartExpirationDateExtended>
+public class ScheduleExpireCartConsumer : IEventConsumer<CartExpirationTimeExtended>, IConsumer<CartExpirationTimeExtended>
 {
     private readonly IExternalMessageDispatcher _externalMessageDispatcher;
-    private readonly IClearCartScheduler _clearCartScheduler;
+    private readonly IExpireCartScheduler _expireCartScheduler;
 
-    public ScheduleExpireCartConsumer(IExternalMessageDispatcher externalMessageDispatcher, IClearCartScheduler clearCartScheduler)
+    public ScheduleExpireCartConsumer(IExternalMessageDispatcher externalMessageDispatcher, IExpireCartScheduler expireCartScheduler)
     {
         _externalMessageDispatcher = externalMessageDispatcher;
-        _clearCartScheduler = clearCartScheduler;
+        _expireCartScheduler = expireCartScheduler;
     }
     
-    public Task ConsumeAsync(CartExpirationDateExtended message, CancellationToken cancellationToken = default)
+    public Task ConsumeAsync(CartExpirationTimeExtended message, CancellationToken cancellationToken = default)
     {
         _externalMessageDispatcher.EnqueuePublish(message);
         
         return Task.CompletedTask;
     }
 
-    public async Task Consume(ConsumeContext<CartExpirationDateExtended> context)
+    public async Task Consume(ConsumeContext<CartExpirationTimeExtended> context)
     {
         var message = context.Message;
         
         var cancellationToken = context.CancellationToken;
         
-        await _clearCartScheduler.ScheduleAsync(message.Id, message.ExpirationDate, cancellationToken);
+        await _expireCartScheduler.ScheduleAsync(message.Id, message.ExpirationDate, cancellationToken);
     }
 }

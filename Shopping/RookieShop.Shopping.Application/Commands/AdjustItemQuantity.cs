@@ -1,6 +1,9 @@
+using RookieShop.Shopping.Application.Abstractions;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
+using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Application.Utilities;
+using RookieShop.Shopping.Domain.Services;
 
 namespace RookieShop.Shopping.Application.Commands;
 
@@ -21,33 +24,48 @@ public class AdjustItemQuantity
 public class AdjustItemQuantityConsumer : ICommandConsumer<AdjustItemQuantity>
 {
     private readonly CartRepositoryHelper _cartRepositoryHelper;
+    private readonly IStockItemRepository _stockItemRepository;
+    private readonly CartService _cartService;
     private readonly TimeProvider _timeProvider;
+    private readonly ICartOptionsProvider _cartOptionsProvider;
     private readonly DomainEventPublisher _domainEventPublisher;
 
-    public AdjustItemQuantityConsumer(CartRepositoryHelper cartRepositoryHelper, TimeProvider timeProvider,
-        DomainEventPublisher domainEventPublisher)
+    public AdjustItemQuantityConsumer(CartRepositoryHelper cartRepositoryHelper,
+        IStockItemRepository stockItemRepository, CartService cartService, TimeProvider timeProvider,
+        ICartOptionsProvider cartOptionsProvider, DomainEventPublisher domainEventPublisher)
     {
         _cartRepositoryHelper = cartRepositoryHelper;
+        _stockItemRepository = stockItemRepository;
+        _cartService = cartService;
         _timeProvider = timeProvider;
+        _cartOptionsProvider = cartOptionsProvider;
         _domainEventPublisher = domainEventPublisher;
     }
     
     public async Task ConsumeAsync(AdjustItemQuantity message, CancellationToken cancellationToken = default)
     {
-        var cart = await _cartRepositoryHelper.GetOrCreateCartAsync(message.Id, cancellationToken);
-
         if (!message.Adjustments.Any())
         {
             return;
         }
         
+        var cart = await _cartRepositoryHelper.GetOrCreateCartAsync(message.Id, cancellationToken);
+        
         foreach (var adjustment in message.Adjustments)
         {
-            cart.AdjustItemQuantity(adjustment.Sku, adjustment.NewQuantity);
+            var stockItem = await _stockItemRepository.GetBySkuAsync(adjustment.Sku, cancellationToken);
+
+            if (stockItem == null)
+            {
+                throw new StockItemNotFoundException(adjustment.Sku);
+            }
+            
+            _cartService.AdjustItemQuantity(cart, stockItem, adjustment.NewQuantity);
+            await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
         }
         
-        cart.ExtendExpiration(_timeProvider);
-
+        cart.ExtendExpiration(_timeProvider, _cartOptionsProvider.LifeTimeInMinutes);
+        
         await _domainEventPublisher.PublishAsync(cart, cancellationToken);
     }
 }

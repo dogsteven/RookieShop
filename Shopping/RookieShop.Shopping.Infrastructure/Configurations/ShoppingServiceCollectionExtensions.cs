@@ -7,8 +7,11 @@ using RookieShop.Shopping.Application.Commands;
 using RookieShop.Shopping.Application.Events.DomainEventConsumers;
 using RookieShop.Shopping.Application.Queries;
 using RookieShop.Shopping.Application.Utilities;
+using RookieShop.Shopping.Domain.Abstractions;
 using RookieShop.Shopping.Domain.Carts.Events;
+using RookieShop.Shopping.Domain.Services;
 using RookieShop.Shopping.Domain.StockItems.Events;
+using RookieShop.Shopping.Infrastructure.CartOptionsProvider;
 using RookieShop.Shopping.Infrastructure.ClearCartScheduler;
 using RookieShop.Shopping.Infrastructure.Messages;
 using RookieShop.Shopping.Infrastructure.Persistence;
@@ -72,6 +75,10 @@ public class ShoppingConfigurator
                 npgsql.UseVector();
             });
         });
+
+        services.AddSingleton<CartService>();
+        services.AddSingleton(TimeProvider.System);
+        services.AddSingleton<ICartOptionsProvider, ConfigurationCartOptionsProvider>();
         
         services.AddScoped<ICartRepository, CartRepository>();
         services.AddScoped<IStockItemRepository, StockItemRepository>();
@@ -88,8 +95,8 @@ public class ShoppingConfigurator
         services.AddScoped<IMessageDispatcher>(provider => provider.GetRequiredService<MessageDispatcher>());
         services.AddScoped<DomainEventPublisher>();
         services.AddScoped<TransactionalMessageDispatcher>();
-
-        services.AddSingleton<IClearCartScheduler, QuartzClearCartScheduler>();
+        
+        services.AddSingleton<IExpireCartScheduler, QuartzExpireCartScheduler>();
         
         services.AddScoped<ICommandConsumer<AddItemToCart>, AddItemToCartConsumer>();
         services.AddScoped<ICommandConsumer<AdjustItemQuantity>, AdjustItemQuantityConsumer>();
@@ -99,19 +106,12 @@ public class ShoppingConfigurator
         services.AddScoped<ICommandConsumer<ReserveStock>, ReserveStockConsumer>();
         services.AddScoped<ICommandConsumer<ReleaseStockReservation>, ReleaseStockReservationConsumer>();
         
-        services.AddScoped<IEventConsumer<ItemAddedToCart>, HandleStockReservationOnItemAddedToCartConsumer>();
-        services.AddScoped<IEventConsumer<ItemQuantityIncreased>, HandleStockReservationOnItemQuantityIncreasedConsumer>();
-        services.AddScoped<IEventConsumer<ItemQuantityDecreased>, HandleStockReservationOnItemQuantityDecreasedConsumer>();
-        services.AddScoped<IEventConsumer<ItemRemovedFromCart>, HandleStockReservationOnItemRemovedFromCartConsumer>();
         services.AddScoped<IEventConsumer<StockLevelChanged>, PublishIntegrationEventOnStockLevelChangedConsumer>();
-        services.AddScoped<IEventConsumer<CartExpirationDateExtended>, ScheduleExpireCartConsumer>();
+        services.AddScoped<IEventConsumer<CartExpirationTimeExtended>, ScheduleExpireCartConsumer>();
         services.AddScoped<IEventConsumer<CartExpired>, HandleStockReservationOnCartExpiredConsumer>();
         
         services.AddScoped<CartRepositoryHelper>();
-
         services.AddScoped<ShoppingQueryService>();
-
-        services.AddSingleton(TimeProvider.System);
 
         services.AddSingleton<MessageDispatcher.ConsumeMethodRegistry>(_ =>
         {
@@ -126,11 +126,9 @@ public class ShoppingConfigurator
             consumeMethodRegistry.Add<ReleaseStockReservation>();
         
             consumeMethodRegistry.Add<ItemAddedToCart>();
-            consumeMethodRegistry.Add<ItemQuantityIncreased>();
-            consumeMethodRegistry.Add<ItemQuantityDecreased>();
             consumeMethodRegistry.Add<ItemRemovedFromCart>();
             consumeMethodRegistry.Add<StockLevelChanged>();
-            consumeMethodRegistry.Add<CartExpirationDateExtended>();
+            consumeMethodRegistry.Add<CartExpirationTimeExtended>();
             consumeMethodRegistry.Add<CartExpired>();
             
             return consumeMethodRegistry;

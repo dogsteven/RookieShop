@@ -1,5 +1,6 @@
 using MassTransit;
 using RookieShop.Shopping.Application.Abstractions;
+using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Utilities;
 
@@ -10,7 +11,7 @@ public class ExpireCart
     public Guid Id { get; set; }
 }
 
-public class ExpireCartConsumer : IConsumer<ExpireCart>
+public class ExpireCartConsumer : ICommandConsumer<ExpireCart>, IConsumer<ExpireCart>
 {
     private readonly ICartRepository _cartRepository;
     private readonly TimeProvider _timeProvider;
@@ -26,12 +27,8 @@ public class ExpireCartConsumer : IConsumer<ExpireCart>
         _unitOfWork = unitOfWork;
     }
     
-    public async Task Consume(ConsumeContext<ExpireCart> context)
+    public async Task ConsumeAsync(ExpireCart message, CancellationToken cancellationToken = default)
     {
-        var message = context.Message;
-
-        var cancellationToken = context.CancellationToken;
-
         var cart = await _cartRepository.GetByIdAsync(message.Id, cancellationToken);
 
         if (cart == null)
@@ -44,6 +41,15 @@ public class ExpireCartConsumer : IConsumer<ExpireCart>
         _cartRepository.Save(cart);
 
         await _domainEventPublisher.PublishAsync(cart, cancellationToken);
+    }
+    
+    public async Task Consume(ConsumeContext<ExpireCart> context)
+    {
+        var message = context.Message;
+
+        var cancellationToken = context.CancellationToken;
+
+        await ConsumeAsync(message, cancellationToken);
         
         await _unitOfWork.CommitAsync(cancellationToken);
     }

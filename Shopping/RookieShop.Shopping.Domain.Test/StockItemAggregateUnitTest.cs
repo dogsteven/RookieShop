@@ -49,11 +49,11 @@ public class StockItemAggregateUnitTest
     {
         // Arrange
         var stockItem = new StockItem("sku", "name", 100, Guid.NewGuid());
-        stockItem.AddUnits(20);
+        stockItem.IncreaseStock(20);
         stockItem.ClearDomainEvents();
         
         // Act
-        stockItem.AddUnits(10);
+        stockItem.IncreaseStock(10);
         
         // Assert
         Assert.Equal(30, stockItem.AvailableQuantity);
@@ -78,7 +78,7 @@ public class StockItemAggregateUnitTest
     {
         // Arrange
         var stockItem = new StockItem("sku", "name", 100, Guid.NewGuid());
-        stockItem.AddUnits(5);
+        stockItem.IncreaseStock(5);
         stockItem.Reserve(3);
         stockItem.ClearDomainEvents();
         
@@ -86,7 +86,7 @@ public class StockItemAggregateUnitTest
         var reserveAction = () => stockItem.Reserve(4);
         
         // Assert
-        Assert.Throws<NotEnoughUnitsToReserveException>(reserveAction);
+        Assert.Throws<InsufficientStockException>(reserveAction);
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class StockItemAggregateUnitTest
     {
         // Arrange
         var stockItem = new StockItem("sku", "name", 100, Guid.NewGuid());
-        stockItem.AddUnits(5);
+        stockItem.IncreaseStock(5);
         stockItem.Reserve(2);
         stockItem.ClearDomainEvents();
         
@@ -125,7 +125,7 @@ public class StockItemAggregateUnitTest
     {
         // Arrange
         var stockItem = new StockItem("sku", "name", 100, Guid.NewGuid());
-        stockItem.AddUnits(5);
+        stockItem.IncreaseStock(5);
         stockItem.Reserve(2);
         stockItem.ClearDomainEvents();
         
@@ -141,7 +141,7 @@ public class StockItemAggregateUnitTest
     {
         // Arrange
         var stockItem = new StockItem("sku", "name", 100, Guid.NewGuid());
-        stockItem.AddUnits(5);
+        stockItem.IncreaseStock(5);
         stockItem.Reserve(4);
         stockItem.ClearDomainEvents();
         
@@ -160,7 +160,7 @@ public class StockItemAggregateUnitTest
     {
         // Arrange
         var stockItem = new StockItem("sku", "name", 100, Guid.NewGuid());
-        stockItem.AddUnits(5);
+        stockItem.IncreaseStock(5);
         stockItem.Reserve(2);
         stockItem.ClearDomainEvents();
         
@@ -176,7 +176,7 @@ public class StockItemAggregateUnitTest
     {
         // Arrange
         var stockItem = new StockItem("sku", "name", 100, Guid.NewGuid());
-        stockItem.AddUnits(5);
+        stockItem.IncreaseStock(5);
         stockItem.Reserve(3);
         stockItem.ClearDomainEvents();
         

@@ -36,7 +36,7 @@ public class ShoppingExceptionHandler : IExceptionHandler
                 };
                 break;
             
-            case NotEnoughUnitsToReserveException notEnoughUnitsToReserveException:
+            case InsufficientStockException notEnoughUnitsToReserveException:
                 problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status422UnprocessableEntity,

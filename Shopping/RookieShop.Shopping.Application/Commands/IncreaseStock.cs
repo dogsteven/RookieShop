@@ -32,7 +32,7 @@ public class IncreaseStockConsumer : ICommandConsumer<IncreaseStock>
             throw new StockItemNotFoundException(message.Sku);
         }
         
-        stockItem.AddUnits(message.Quantity);
+        stockItem.IncreaseStock(message.Quantity);
         
         await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
     }

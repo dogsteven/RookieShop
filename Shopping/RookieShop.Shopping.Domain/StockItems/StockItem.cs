@@ -34,7 +34,7 @@ public class StockItem : DomainEventSource
         ImageId = imageId;
     }
 
-    public void AddUnits(int quantity)
+    public void IncreaseStock(int quantity)
     {
         AvailableQuantity += quantity;
         
@@ -49,7 +49,7 @@ public class StockItem : DomainEventSource
     {
         if (AvailableQuantity < quantity)
         {
-            throw new NotEnoughUnitsToReserveException(Sku, quantity);
+            throw new InsufficientStockException(Sku, quantity);
         }
         
         AvailableQuantity -= quantity;
@@ -90,12 +90,12 @@ public class StockItem : DomainEventSource
     }
 }
 
-public class NotEnoughUnitsToReserveException : Exception
+public class InsufficientStockException : Exception
 {
     public readonly string Sku;
     public readonly int Quantity;
 
-    public NotEnoughUnitsToReserveException(string sku, int quantity)
+    public InsufficientStockException(string sku, int quantity)
         : base($"Cannot reserve {quantity} units of item {sku}.")
     {
         Sku = sku;
