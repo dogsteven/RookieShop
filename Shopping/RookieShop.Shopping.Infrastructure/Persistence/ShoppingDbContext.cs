@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Domain;
 using RookieShop.Shopping.Domain.Carts;
+using RookieShop.Shopping.Domain.CheckoutSessions;
 using RookieShop.Shopping.Domain.StockItems;
 using RookieShop.Shopping.Infrastructure.Persistence.EntityConfigurations;
 using RookieShop.Shopping.Infrastructure.Persistence.Interceptors;
@@ -13,12 +14,14 @@ public class ShoppingDbContext : DbContext
 {
     public DbSet<Cart> Carts { get; set; }
     public DbSet<StockItem> StockItems { get; set; }
+    public DbSet<CheckoutSession> CheckoutSessions { get; set; }
     
     public ShoppingDbContext(DbContextOptions<ShoppingDbContext> options) : base(options.WithInterceptor(new UpdateVersionInterceptor())) {}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new CartEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new CheckoutSessionEntityConfiguration());
         modelBuilder.ApplyConfiguration(new StockItemEntityConfiguration());
     }
 }

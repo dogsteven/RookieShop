@@ -21,6 +21,7 @@ public class ShoppingQueryService
         return new CartDto
         {
             Id = cart.Id,
+            IsClosedForCheckout = cart.IsClosedForCheckout,
             Items = cart.Items.Select(item => new CartItemDto
             {
                 Sku = item.Sku,

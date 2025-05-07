@@ -1,11 +1,12 @@
 using RookieShop.Shopping.Application.Abstractions;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
+using RookieShop.Shopping.Application.Abstractions.Schedulers;
 using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Application.Utilities;
 using RookieShop.Shopping.Domain.Services;
 
-namespace RookieShop.Shopping.Application.Commands;
+namespace RookieShop.Shopping.Application.Commands.Carts;
 
 public class AdjustItemQuantity
 {
@@ -27,19 +28,22 @@ public class AdjustItemQuantityConsumer : ICommandConsumer<AdjustItemQuantity>
     private readonly IStockItemRepository _stockItemRepository;
     private readonly CartService _cartService;
     private readonly TimeProvider _timeProvider;
-    private readonly ICartOptionsProvider _cartOptionsProvider;
+    private readonly IShoppingOptionsProvider _shoppingOptionsProvider;
     private readonly DomainEventPublisher _domainEventPublisher;
+    private readonly IExpireCartScheduler _expireCartScheduler;
 
     public AdjustItemQuantityConsumer(CartRepositoryHelper cartRepositoryHelper,
         IStockItemRepository stockItemRepository, CartService cartService, TimeProvider timeProvider,
-        ICartOptionsProvider cartOptionsProvider, DomainEventPublisher domainEventPublisher)
+        IShoppingOptionsProvider shoppingOptionsProvider, DomainEventPublisher domainEventPublisher,
+        IExpireCartScheduler expireCartScheduler)
     {
         _cartRepositoryHelper = cartRepositoryHelper;
         _stockItemRepository = stockItemRepository;
         _cartService = cartService;
         _timeProvider = timeProvider;
-        _cartOptionsProvider = cartOptionsProvider;
+        _shoppingOptionsProvider = shoppingOptionsProvider;
         _domainEventPublisher = domainEventPublisher;
+        _expireCartScheduler = expireCartScheduler;
     }
     
     public async Task ConsumeAsync(AdjustItemQuantity message, CancellationToken cancellationToken = default)
@@ -64,8 +68,8 @@ public class AdjustItemQuantityConsumer : ICommandConsumer<AdjustItemQuantity>
             await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
         }
         
-        cart.ExtendExpiration(_timeProvider, _cartOptionsProvider.LifeTimeInMinutes);
-        
         await _domainEventPublisher.PublishAsync(cart, cancellationToken);
+        
+        _expireCartScheduler.EnqueueSchedule(message.Id, _timeProvider.GetUtcNow().AddMinutes(_shoppingOptionsProvider.CartLifeTimeInMinutes));
     }
 }

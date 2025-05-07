@@ -1,21 +1,70 @@
 using MassTransit;
 using Quartz;
 using RookieShop.Shopping.Application.Abstractions;
+using RookieShop.Shopping.Application.Abstractions.Messages;
+using RookieShop.Shopping.Application.Abstractions.Schedulers;
 using RookieShop.Shopping.Application.Commands;
+using RookieShop.Shopping.Application.Commands.Carts;
+using RookieShop.Shopping.Infrastructure.Messages;
 
-namespace RookieShop.Shopping.Infrastructure.ClearCartScheduler;
+namespace RookieShop.Shopping.Infrastructure.Schedulers;
 
 public class QuartzExpireCartScheduler : IExpireCartScheduler
 {
+    private readonly IExternalMessageDispatcher _externalMessageDispatcher;
+
+    public QuartzExpireCartScheduler(IExternalMessageDispatcher externalMessageDispatcher)
+    {
+        _externalMessageDispatcher = externalMessageDispatcher;
+    }
+
+    public void EnqueueSchedule(Guid id, DateTimeOffset scheduledTime)
+    {
+        _externalMessageDispatcher.EnqueuePublish(new ScheduleExpireCart
+        {
+            Id = id,
+            ScheduledTime = scheduledTime
+        });
+    }
+
+    public void EnqueueUnschedule(Guid id)
+    {
+        _externalMessageDispatcher.EnqueuePublish(new UnscheduleExpireCart
+        {
+            Id = id
+        });
+    }
+}
+
+public class ScheduleExpireCart
+{
+    public Guid Id { get; init; }
+    
+    public DateTimeOffset ScheduledTime { get; init; }
+}
+
+public class UnscheduleExpireCart
+{
+    public Guid Id { get; init; }
+}
+
+public class ScheduleExpireCartConsumer : IConsumer<ScheduleExpireCart>
+{
     private readonly ISchedulerFactory _schedulerFactory;
 
-    public QuartzExpireCartScheduler(ISchedulerFactory schedulerFactory)
+    public ScheduleExpireCartConsumer(ISchedulerFactory schedulerFactory)
     {
         _schedulerFactory = schedulerFactory;
     }
-
-    public async Task ScheduleAsync(Guid id, DateTimeOffset scheduledTime, CancellationToken cancellationToken = default)
+    
+    public async Task Consume(ConsumeContext<ScheduleExpireCart> context)
     {
+        var message = context.Message;
+        var id = message.Id;
+        var scheduledTime = message.ScheduledTime;
+        
+        var cancellationToken = context.CancellationToken;
+        
         var scheduler = await _schedulerFactory.GetScheduler(cancellationToken);
         var jobKey = new JobKey("ExpireCart", "Shopping");
         var triggerKey = new TriggerKey($"ExpireCart-{id}", "Shopping");
@@ -43,6 +92,32 @@ public class QuartzExpireCartScheduler : IExpireCartScheduler
             .Build();
 
         await scheduler.ScheduleJob(trigger, cancellationToken);
+    }
+}
+
+public class UnscheduleExpireCartConsumer : IConsumer<UnscheduleExpireCart>
+{
+    private readonly ISchedulerFactory _schedulerFactory;
+
+    public UnscheduleExpireCartConsumer(ISchedulerFactory schedulerFactory)
+    {
+        _schedulerFactory = schedulerFactory;
+    }
+    
+    public async Task Consume(ConsumeContext<UnscheduleExpireCart> context)
+    {
+        var message = context.Message;
+        var id = message.Id;
+        
+        var cancellationToken = context.CancellationToken;
+        
+        var scheduler = await _schedulerFactory.GetScheduler(cancellationToken);
+        var triggerKey = new TriggerKey($"ExpireCart-{id}", "Shopping");
+
+        if (await scheduler.CheckExists(triggerKey, cancellationToken))
+        {
+            await scheduler.UnscheduleJob(triggerKey, cancellationToken);
+        }
     }
 }
 

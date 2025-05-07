@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using RookieShop.Shopping.Domain;
 using RookieShop.Shopping.Domain.Carts;
+using RookieShop.Shopping.Domain.CheckoutSessions;
 using RookieShop.Shopping.Domain.StockItems;
 
 namespace RookieShop.Shopping.Infrastructure.Persistence.Interceptors;
@@ -21,6 +22,7 @@ public class UpdateVersionInterceptor : SaveChangesInterceptor
         
         var entries = context.ChangeTracker.Entries<Cart>().Cast<EntityEntry>()
             .Concat(context.ChangeTracker.Entries<StockItem>())
+            .Concat(context.ChangeTracker.Entries<CheckoutSession>())
             .Where(entry => entry.State is EntityState.Added or EntityState.Modified or EntityState.Deleted);
             
 

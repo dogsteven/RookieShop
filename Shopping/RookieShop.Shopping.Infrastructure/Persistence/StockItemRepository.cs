@@ -14,9 +14,9 @@ public class StockItemRepository : IStockItemRepository
         _context = context;
     }
     
-    public Task<StockItem?> GetBySkuAsync(string sku, CancellationToken cancellationToken = default)
+    public async Task<StockItem?> GetBySkuAsync(string sku, CancellationToken cancellationToken = default)
     {
-        return _context.StockItems.FirstOrDefaultAsync(stockItem => stockItem.Sku == sku, cancellationToken); 
+        return await _context.StockItems.FindAsync([sku], cancellationToken);
     }
 
     public void Save(StockItem stockItem)

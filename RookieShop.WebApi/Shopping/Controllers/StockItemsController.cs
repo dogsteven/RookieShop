@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RookieShop.Shopping.Application.Commands;
+using RookieShop.Shopping.Application.Commands.StockItems;
 using RookieShop.Shopping.Infrastructure.Messages;
 
 namespace RookieShop.WebApi.Shopping.Controllers;

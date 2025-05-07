@@ -3,6 +3,8 @@ namespace RookieShop.Shopping.ViewModels;
 public class CartDto
 {
     public Guid Id { get; init; }
+    
+    public bool IsClosedForCheckout { get; init; }
 
     public IEnumerable<CartItemDto> Items { get; init; } = null!;
     

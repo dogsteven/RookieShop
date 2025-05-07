@@ -4,7 +4,7 @@ using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Utilities;
 
-namespace RookieShop.Shopping.Application.Commands;
+namespace RookieShop.Shopping.Application.Commands.Carts;
 
 public class ExpireCart
 {
@@ -14,15 +14,13 @@ public class ExpireCart
 public class ExpireCartConsumer : ICommandConsumer<ExpireCart>, IConsumer<ExpireCart>
 {
     private readonly ICartRepository _cartRepository;
-    private readonly TimeProvider _timeProvider;
     private readonly DomainEventPublisher _domainEventPublisher;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ExpireCartConsumer(ICartRepository cartRepository, TimeProvider timeProvider,
-        DomainEventPublisher domainEventPublisher, IUnitOfWork unitOfWork)
+    public ExpireCartConsumer(ICartRepository cartRepository, DomainEventPublisher domainEventPublisher,
+        IUnitOfWork unitOfWork)
     {
         _cartRepository = cartRepository;
-        _timeProvider = timeProvider;
         _domainEventPublisher = domainEventPublisher;
         _unitOfWork = unitOfWork;
     }
@@ -36,7 +34,7 @@ public class ExpireCartConsumer : ICommandConsumer<ExpireCart>, IConsumer<Expire
             return;
         }
         
-        cart.Expire(_timeProvider);
+        cart.Expire();
         
         _cartRepository.Save(cart);
 

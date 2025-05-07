@@ -3,27 +3,27 @@ using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Application.Utilities;
 
-namespace RookieShop.Shopping.Application.Commands;
+namespace RookieShop.Shopping.Application.Commands.StockItems;
 
-public class ReserveStock
+public class IncreaseStock
 {
     public string Sku { get; init; } = null!;
     
     public int Quantity { get; init; }
 }
 
-public class ReserveStockConsumer : ICommandConsumer<ReserveStock>
+public class IncreaseStockConsumer : ICommandConsumer<IncreaseStock>
 {
     private readonly IStockItemRepository _stockItemRepository;
     private readonly DomainEventPublisher _domainEventPublisher;
 
-    public ReserveStockConsumer(IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
+    public IncreaseStockConsumer(IStockItemRepository stockItemRepository, DomainEventPublisher domainEventPublisher)
     {
         _stockItemRepository = stockItemRepository;
         _domainEventPublisher = domainEventPublisher;
     }
-    
-    public async Task ConsumeAsync(ReserveStock message, CancellationToken cancellationToken = default)
+        
+    public async Task ConsumeAsync(IncreaseStock message, CancellationToken cancellationToken = default)
     {
         var stockItem = await _stockItemRepository.GetBySkuAsync(message.Sku, cancellationToken);
 
@@ -32,7 +32,7 @@ public class ReserveStockConsumer : ICommandConsumer<ReserveStock>
             throw new StockItemNotFoundException(message.Sku);
         }
         
-        stockItem.Reserve(message.Quantity);
+        stockItem.IncreaseStock(message.Quantity);
         
         await _domainEventPublisher.PublishAsync(stockItem, cancellationToken);
     }

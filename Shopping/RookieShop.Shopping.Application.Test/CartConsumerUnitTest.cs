@@ -4,6 +4,8 @@ using Moq;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Commands;
+using RookieShop.Shopping.Application.Commands.Carts;
+using RookieShop.Shopping.Application.Commands.StockItems;
 using RookieShop.Shopping.Application.Events.DomainEventConsumers;
 using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Application.Test.Utilities;
@@ -131,9 +133,7 @@ public class CartConsumerUnitTest
         // Assert
         var mockMessageDispatcher = scope.ServiceProvider.GetRequiredService<Mock<IMessageDispatcher>>();
         
-        mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.Is<ItemAddedToCart>(message => message.Sku == "sku" && message.Quantity == 3), It.IsAny<CancellationToken>()), Times.Once);
         mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.Is<StockLevelChanged>(message => message.Sku == "sku" && message.ChangedQuantity == -3), It.IsAny<CancellationToken>()), Times.Once);
-        mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.IsAny<CartExpirationTimeExtended>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -283,9 +283,7 @@ public class CartConsumerUnitTest
         // Assert
         var mockMessageDispatcher = scope.ServiceProvider.GetRequiredService<Mock<IMessageDispatcher>>();
         
-        mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.Is<ItemAddedToCart>(message => message.Sku == "sku" && message.Quantity == 2), It.IsAny<CancellationToken>()), Times.Once);
         mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.Is<StockLevelChanged>(message => message.Sku == "sku" && message.ChangedQuantity == -2), It.IsAny<CancellationToken>()), Times.Once);
-        mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.IsAny<CartExpirationTimeExtended>(), It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Fact]
@@ -343,9 +341,7 @@ public class CartConsumerUnitTest
         // Assert
         var mockMessageDispatcher = scope.ServiceProvider.GetRequiredService<Mock<IMessageDispatcher>>();
         
-        mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.Is<ItemRemovedFromCart>(message => message.Sku == "sku" && message.Quantity == 1), It.IsAny<CancellationToken>()), Times.Once);
         mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.Is<StockLevelChanged>(message => message.Sku == "sku" && message.ChangedQuantity == 1), It.IsAny<CancellationToken>()), Times.Once);
-        mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.IsAny<CartExpirationTimeExtended>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -432,58 +428,7 @@ public class CartConsumerUnitTest
         // Assert
         var mockMessageDispatcher = scope.ServiceProvider.GetRequiredService<Mock<IMessageDispatcher>>();
         
-        mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.Is<ItemRemovedFromCart>(message => message.Sku == "sku" && message.Quantity == 1), It.IsAny<CancellationToken>()), Times.Once);
         mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.Is<StockLevelChanged>(message => message.Sku == "sku" && message.ChangedQuantity == 1), It.IsAny<CancellationToken>()), Times.Once);
-        mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.IsAny<CartExpirationTimeExtended>(), It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Should_ExpireCart_SuccessWithNothing()
-    {
-        // Arrange
-        var service = new ShoppingServiceCollection();
-        
-        var builder = service.BuildServiceProvider();
-        
-        using var scope = builder.CreateScope();
-
-        var mockTimeProvider = scope.ServiceProvider.GetRequiredService<Mock<TimeProvider>>();
-        
-        mockTimeProvider.Setup(provider => provider.GetUtcNow())
-            .Returns(() => new DateTimeOffset(2025, 1, 1, 1, 0, 0, TimeSpan.FromHours(7)));
-        
-        var mockCartRepository = scope.ServiceProvider.GetRequiredService<Mock<ICartRepository>>();
-        
-        mockCartRepository.Setup(repository => repository.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() =>
-            {
-                var fakeTimeProvider = new Mock<TimeProvider>();
-
-                fakeTimeProvider.Setup(provider => provider.GetUtcNow())
-                    .Returns(() => new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.FromHours(7)));
-                
-                var cart = new Cart(Guid.NewGuid());
-                cart.AddItem("sku", "name", 100, Guid.NewGuid(), 1);
-                cart.ExtendExpiration(fakeTimeProvider.Object, 120);
-                cart.ClearDomainEvents();
-                
-                return cart;
-            });
-        
-        var expiredCartConsumer = scope.ServiceProvider.GetRequiredService<ExpireCartConsumer>();
-
-        var command = new ExpireCart
-        {
-            Id = Guid.NewGuid()
-        };
-
-        // Act
-        await expiredCartConsumer.ConsumeAsync(command, default);
-        
-        // Assert
-        var mockMessageDispatcher = scope.ServiceProvider.GetRequiredService<Mock<IMessageDispatcher>>();
-        
-        mockMessageDispatcher.Verify(dispatcher => dispatcher.PublishAsync(It.IsAny<CartExpired>(), It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Fact]
@@ -514,7 +459,6 @@ public class CartConsumerUnitTest
                 var cart = new Cart(Guid.NewGuid());
                 cart.AddItem("sku1", "name1", 100, Guid.NewGuid(), 2);
                 cart.AddItem("sku2", "name2", 200, Guid.NewGuid(), 3);
-                cart.ExtendExpiration(fakeTimeProvider.Object, 30);
                 cart.ClearDomainEvents();
                 
                 return cart;

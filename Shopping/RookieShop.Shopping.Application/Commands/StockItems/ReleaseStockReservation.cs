@@ -5,7 +5,7 @@ using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Application.Utilities;
 
-namespace RookieShop.Shopping.Application.Commands;
+namespace RookieShop.Shopping.Application.Commands.StockItems;
 
 public class ReleaseStockReservation
 {

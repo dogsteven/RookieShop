@@ -81,22 +81,15 @@ public class UtilitiesUnitTest
         using var scope = builder.CreateScope();
 
         var domainEvents = new List<object>([
-            new ItemAddedToCart
-            {
-                Id = Guid.NewGuid(),
-                Sku = "sku1",
-                Quantity = 2
-            },
-            new ItemRemovedFromCart
-            {
-                Id = Guid.NewGuid(),
-                Sku = "sku2",
-                Quantity = 3
-            },
             new StockLevelChanged
             {
                 Sku = "sku3",
                 ChangedQuantity = 3
+            },
+            new CartExpired
+            {
+                Id = Guid.NewGuid(),
+                Items = []
             }
         ]);
         
