@@ -8,7 +8,7 @@ public class PurchaseEntityConfiguration : IEntityTypeConfiguration<Purchase>
 {
     public void Configure(EntityTypeBuilder<Purchase> builder)
     {
-        builder.ToTable("Purchase", schema: "ProductCatalog");
+        builder.ToTable("Purchases", schema: "ProductCatalog");
 
         builder.HasKey(purchase => new { purchase.CustomerId, purchase.ProductSku });
         

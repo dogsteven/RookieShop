@@ -16,10 +16,10 @@ public class CheckoutSessionCompleted
     
     public class CheckoutItem
     {
-        public readonly string Sku;
-        public readonly string Name;
-        public readonly decimal Price;
-        public readonly int Quantity;
+        public string Sku { get; init; }
+        public string Name { get; init; }
+        public decimal Price { get; init; }
+        public int Quantity { get; init; }
     
 #pragma warning disable CS8618, CS9264
         public CheckoutItem() {}

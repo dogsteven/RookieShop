@@ -10,8 +10,8 @@ public class OrderCancelled
     
     public class Item
     {
-        public readonly string Sku;
-        public readonly int Quantity;
+        public string Sku { get; init; }
+        public int Quantity { get; init; }
 
 #pragma warning disable CS8618, CS9264
         public Item() {}
