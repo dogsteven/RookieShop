@@ -16,6 +16,8 @@ public abstract class ProductCatalogDbContext : DbContext
     
     public DbSet<Review> Reviews { get; set; }
     public DbSet<ReviewReaction> ReviewReactions { get; set; }
+    
+    public DbSet<Purchase> Purchases { get; set; }
 
     public abstract Task<List<Product>> GetSemanticallyOrderedProductsAsync(Vector semanticVector, int offset, int limit, CancellationToken cancellationToken);
     
