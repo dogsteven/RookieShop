@@ -1,90 +1,95 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RookieShop.Shopping.Domain.CheckoutSessions;
-using RookieShop.Shopping.Domain.Shared;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using RookieShop.Ordering.Domain.Orders;
 
-namespace RookieShop.Shopping.Infrastructure.Persistence.EntityConfigurations;
+namespace RookieShop.Ordering.Infrastructure.Persistence.EntityConfigurations;
 
-public class CheckoutSessionEntityConfiguration : IEntityTypeConfiguration<CheckoutSession>
+public class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
 {
-    public void Configure(EntityTypeBuilder<CheckoutSession> builder)
+    public void Configure(EntityTypeBuilder<Order> builder)
     {
-        builder.ToTable("CheckoutSessions", schema: "Shopping");
+        builder.ToTable("Orders", schema: "Ordering");
 
-        builder.HasKey(session => session.Id);
-        
-        builder.Property(session => session.Id)
+        builder.HasKey(order => order.Id);
+
+        builder.Property(order => order.Id)
             .IsRequired()
             .HasColumnName("Id");
         
-        builder.Property(session => session.SessionId)
+        builder.Property(order => order.CustomerId)
             .IsRequired()
-            .HasColumnName("SessionId");
+            .HasColumnName("CustomerId");
         
-        builder.Property(session => session.IsActive)
+        builder.Property(order => order.PlacedTime)
             .IsRequired()
-            .HasColumnName("IsActive");
+            .HasColumnName("PlacedTime");
 
-        builder.OwnsOne(session => session.BillingAddress, addressBuilder =>
+        builder.OwnsOne(order => order.BillingAddress, addressBuilder =>
         {
-            addressBuilder.ToTable("CheckoutSessionBillingAddresses", schema: "Shopping");
-            
-            addressBuilder.WithOwner()
-                .HasForeignKey("CheckoutSessionId");
+            addressBuilder.ToTable("OrderBillingAddresses", schema: "Ordering");
 
-            addressBuilder.HasKey("CheckoutSessionId");
-            
+            addressBuilder.WithOwner()
+                .HasForeignKey("OrderId");
+
+            addressBuilder.HasKey("OrderId");
+
             addressBuilder.Property(address => address.Street)
                 .IsRequired()
                 .HasMaxLength(100)
                 .HasColumnName("Street");
-            
-            addressBuilder.Property(address => address.City)
-                .IsRequired()
-                .HasMaxLength(100)
-                .HasColumnName("City");
-            
-            addressBuilder.Property(address => address.State)
-                .IsRequired()
-                .HasMaxLength(100)
-                .HasColumnName("State");
-        });
-        
-        builder.OwnsOne(session => session.ShippingAddress, addressBuilder =>
-        {
-            addressBuilder.ToTable("CheckoutSessionShippingAddresses", schema: "Shopping");
-            
-            addressBuilder.WithOwner()
-                .HasForeignKey("CheckoutSessionId");
 
-            addressBuilder.HasKey("CheckoutSessionId");
-            
-            addressBuilder.Property(address => address.Street)
-                .IsRequired()
-                .HasMaxLength(100)
-                .HasColumnName("Street");
-            
             addressBuilder.Property(address => address.City)
                 .IsRequired()
                 .HasMaxLength(100)
                 .HasColumnName("City");
-            
+
             addressBuilder.Property(address => address.State)
                 .IsRequired()
                 .HasMaxLength(100)
                 .HasColumnName("State");
         });
 
-        builder.OwnsMany<CheckoutItem>("_items", itemBuilder =>
+        builder.OwnsOne(order => order.ShippingAddress, addressBuilder =>
         {
-            itemBuilder.ToTable("CheckoutSessionCheckoutItems", schema: "Shopping");
+            addressBuilder.ToTable("OrderShippingAddresses", schema: "Ordering");
+
+            addressBuilder.WithOwner()
+                .HasForeignKey("OrderId");
+
+            addressBuilder.HasKey("OrderId");
+
+            addressBuilder.Property(address => address.Street)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("Street");
+
+            addressBuilder.Property(address => address.City)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("City");
+
+            addressBuilder.Property(address => address.State)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("State");
+        });
+        
+        builder.Property(order => order.Status)
+            .IsRequired()
+            .HasConversion(new StringToEnumConverter<OrderStatus>())
+            .HasColumnName("Status");
+
+        builder.OwnsMany<OrderItem>("_items", itemBuilder =>
+        {
+            itemBuilder.ToTable("OrderItems", schema: "Ordering");
             
             itemBuilder.WithOwner()
-                .HasForeignKey("CheckoutSessionId");
+                .HasForeignKey("OrderId");
             
-            itemBuilder.HasKey("CheckoutSessionId", "Sku");
+            itemBuilder.HasKey("OrderId", "Sku");
             
-            itemBuilder.Property(item=> item.Sku)
+            itemBuilder.Property(item => item.Sku)
                 .IsRequired()
                 .HasMaxLength(16)
                 .HasColumnName("Sku");
@@ -102,14 +107,15 @@ public class CheckoutSessionEntityConfiguration : IEntityTypeConfiguration<Check
                 .IsRequired()
                 .HasColumnName("Quantity");
 
-            itemBuilder.HasIndex("CheckoutSessionId");
-        })
-        .UsePropertyAccessMode(PropertyAccessMode.Field);
+            itemBuilder.HasIndex("OrderId");
+        });
 
-        builder.Ignore(session => session.Items);
+        builder.Ignore(order => order.Items);
 
         builder.Property<DateTime>("Version")
             .IsRequired()
             .IsConcurrencyToken();
+        
+        builder.HasIndex(order => order.CustomerId);
     }
 }
