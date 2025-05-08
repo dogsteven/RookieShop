@@ -282,9 +282,9 @@ if (app.Environment.IsDevelopment())
     
     app.UseSwaggerUI(swaggerUi =>
     {
-        swaggerUi.OAuthClientId("rookie-shop-web-api");
-        swaggerUi.OAuthClientSecret("WdK1ICYLbzChpYuutps2X82yeFg6MtXx");
-        swaggerUi.OAuthRealm("rookie-shop");
+        swaggerUi.OAuthClientId(builder.Configuration["Keycloak:Swagger:ClientId"]);
+        swaggerUi.OAuthClientSecret(builder.Configuration["Keycloak:Swagger:ClientSecret"]);
+        swaggerUi.OAuthRealm(builder.Configuration["Keycloak:AuthSettings:Realm"]);
     });
 }
 
