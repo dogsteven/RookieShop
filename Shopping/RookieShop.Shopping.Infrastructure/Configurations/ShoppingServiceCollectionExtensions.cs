@@ -124,7 +124,6 @@ public class ShoppingConfigurator
         
         services.AddScoped<IEventConsumer<CheckoutSessionStarted>, StartCartCheckoutOnCheckoutSessionStartedConsumer>();
         services.AddScoped<IEventConsumer<CheckoutSessionCompleted>, CompleteCartCheckoutOnCheckoutSessionCompletedConsumer>();
-        services.AddScoped<IEventConsumer<CheckoutSessionCompleted>, ConfirmStockReservationOnCheckoutSessionCompletedConsumer>();
         services.AddScoped<IEventConsumer<CheckoutSessionCompleted>, PublishIntegrationEventOnCheckoutSessionCompletedConsumer>();
         services.AddScoped<IEventConsumer<CheckoutSessionExpired>, FailCartCheckoutOnCheckoutSessionExpiredConsumer>();
         

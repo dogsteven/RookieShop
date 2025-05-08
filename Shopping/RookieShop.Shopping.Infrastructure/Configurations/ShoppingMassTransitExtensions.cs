@@ -23,6 +23,8 @@ public static class ShoppingMassTransitExtensions
         
         bus.AddConsumer<ProductCreatedOrUpdatedConsumer, ProductCreatedOrUpdatedConsumerDefinition>();
         bus.AddConsumer<ProductDeletedConsumer, ProductDeletedConsumerDefinition>();
+        bus.AddConsumer<OrderCancelledConsumer, OrderCancelledConsumerDefinition>();
+        bus.AddConsumer<OrderCompletedConsumer, OrderCompletedConsumerDefinition>();
         
         bus.AddConsumer<ScheduleExpireCartConsumer, ScheduleExpireCartConsumerDefinition>();
         bus.AddConsumer<UnscheduleExpireCartConsumer, UnscheduleExpireCartConsumerDefinition>();
@@ -99,6 +101,24 @@ public class ProductCreatedOrUpdatedConsumerDefinition : ConsumerDefinition<Prod
 public class ProductDeletedConsumerDefinition : ConsumerDefinition<ProductDeletedConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<ProductDeletedConsumer> consumerConfigurator,
+        IRegistrationContext context)
+    {
+        consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(250)));
+    }
+}
+
+public class OrderCancelledConsumerDefinition : ConsumerDefinition<OrderCancelledConsumer>
+{
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<OrderCancelledConsumer> consumerConfigurator,
+        IRegistrationContext context)
+    {
+        consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(250)));
+    }
+}
+
+public class OrderCompletedConsumerDefinition : ConsumerDefinition<OrderCompletedConsumer>
+{
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<OrderCompletedConsumer> consumerConfigurator,
         IRegistrationContext context)
     {
         consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(250)));
