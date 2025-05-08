@@ -24,7 +24,7 @@ public class StartCartCheckoutConsumer : ICommandConsumer<StartCartCheckout>
     {
         var cart = await _cartRepositoryHelper.GetOrCreateCartAsync(message.Id, cancellationToken);
         
-        cart.Close();
+        cart.StartCheckout();
         
         await _domainEventPublisher.PublishAsync(cart, cancellationToken);
     }

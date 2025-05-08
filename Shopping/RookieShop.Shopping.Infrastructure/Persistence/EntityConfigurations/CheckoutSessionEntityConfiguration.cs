@@ -17,6 +17,10 @@ public class CheckoutSessionEntityConfiguration : IEntityTypeConfiguration<Check
             .IsRequired()
             .HasColumnName("Id");
         
+        builder.Property(session => session.SessionId)
+            .IsRequired()
+            .HasColumnName("SessionId");
+        
         builder.Property(session => session.IsActive)
             .IsRequired()
             .HasColumnName("IsActive");

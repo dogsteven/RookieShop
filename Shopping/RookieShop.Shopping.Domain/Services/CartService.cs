@@ -10,6 +10,7 @@ public class CartService
     public void AddItemToCart(Cart cart, StockItem stockItem, int quantity)
     {
         stockItem.Reserve(quantity);
+        
         cart.AddItem(stockItem.Sku, stockItem.Name, stockItem.Price, stockItem.ImageId, quantity);
     }
 
@@ -38,10 +39,5 @@ public class CartService
         stockItem.ReleaseReservation(quantity);
         
         cart.RemoveItem(stockItem.Sku);
-    }
-
-    public void Checkout(Cart cart, Address shippingAddress)
-    {
-        
     }
 }

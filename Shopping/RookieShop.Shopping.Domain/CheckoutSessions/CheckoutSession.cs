@@ -9,6 +9,8 @@ public class CheckoutSession : DomainEventSource
 {
     public Guid Id { get; init; }
     
+    public Guid SessionId { get; private set; }
+    
     public bool IsActive { get; private set; }
     
     public Address? BillingAddress { get; private set; }
@@ -39,6 +41,7 @@ public class CheckoutSession : DomainEventSource
         }
         
         IsActive = true;
+        SessionId = Guid.NewGuid();
         
         AddDomainEvent(new CheckoutSessionStarted
         {
@@ -105,6 +108,7 @@ public class CheckoutSession : DomainEventSource
         AddDomainEvent(new CheckoutSessionCompleted
         {
             Id = Id,
+            SessionId = SessionId,
             BillingAddress = BillingAddress,
             ShippingAddress = ShippingAddress,
             Items = _items.Select(item => item.Clone()).ToList()

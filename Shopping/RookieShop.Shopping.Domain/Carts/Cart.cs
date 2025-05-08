@@ -127,7 +127,7 @@ public class Cart : DomainEventSource
         InternalExpire();
     }
 
-    public void Close()
+    public void StartCheckout()
     {
         ThrowIfIsClosedForCheckout();
 
