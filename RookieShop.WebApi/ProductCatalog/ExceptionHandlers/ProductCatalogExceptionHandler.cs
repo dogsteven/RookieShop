@@ -77,6 +77,20 @@ public class ProductCatalogExceptionHandler : IExceptionHandler
                 };
                 break;
             
+            case CustomerHasNotPurchasedProductException customerHasNotPurchasedProductException:
+                problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Customer has not purchased product",
+                    Detail = "You have not purchased this product to write a comment.",
+                    Extensions = new Dictionary<string, object?>
+                    {
+                        { "CustomerId", customerHasNotPurchasedProductException.CustomerId },
+                        { "ProductSku", customerHasNotPurchasedProductException.ProductSku }
+                    }
+                };
+                break;
+            
             case CustomerHasAlreadyWrittenReviewException customerHasAlreadyWrittenReviewException:
                 problemDetails = new ProblemDetails
                 {

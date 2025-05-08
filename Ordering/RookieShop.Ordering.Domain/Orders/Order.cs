@@ -42,8 +42,13 @@ public class Order : DomainEventSource
         });
     }
 
-    public void Cancel()
+    public void Cancel(Guid userId)
     {
+        if (userId != CustomerId)
+        {
+            throw new InvalidOperationException("Only the owner of this order is allowed to cancel it.");
+        }
+        
         if (Status != OrderStatus.Placed)
         {
             throw new InvalidOperationException($"Order {Id} has been cancelled or completed.");

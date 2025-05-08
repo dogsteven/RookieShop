@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using RookieShop.ProductCatalog.Application.Abstractions;
 using RookieShop.ProductCatalog.Application.Commands;
+using RookieShop.ProductCatalog.Application.Entities;
 using RookieShop.ProductCatalog.Application.Events;
 using RookieShop.ProductCatalog.Application.Exceptions;
 using RookieShop.ProductCatalog.Test.Utilities;
@@ -51,6 +52,46 @@ public class ReviewCommandUnitTest
         
         // Assert
         await Assert.ThrowsAsync<ProductNotFoundException>(submitReviewAction);
+    }
+
+    [Fact]
+    public async Task Should_SubmitReview_FailedWithHasNotPurchasedProduct()
+    {
+        // Arrange
+        var services = new ProductCatalogServiceCollection();
+        
+        var provider = services.BuildServiceProvider();
+
+        var seeder = new ProductCatalogDatabaseSeeder(provider);
+
+        await seeder.SeedAsync();
+        
+        var mockProfanityChecker = provider.GetRequiredService<Mock<IProfanityChecker>>();
+        
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync("This is fucking bad", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+            
+        mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+        
+        using var scope = provider.CreateScope();
+        
+        var scopedMediator = scope.ServiceProvider.GetRequiredService<IScopedMediator>();
+
+        var submitReview = new SubmitReview
+        {
+            WriterId = seeder.CustomerId,
+            ProductSku = "BRESSARCT60",
+            WriterName = "Khoa",
+            Score = 5,
+            Comment = "This is fucking bad"
+        };
+        
+        // Act
+        var submitReviewAction = async () => await scopedMediator.Send(submitReview);
+        
+        // Assert
+        await Assert.ThrowsAsync<CustomerHasNotPurchasedProductException>(submitReviewAction);
     }
     
     [Fact]
@@ -112,6 +153,19 @@ public class ReviewCommandUnitTest
             
         mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
+
+        using (var seedingScope = provider.CreateScope())
+        {
+            var context = seedingScope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
+
+            context.Purchases.Add(new Purchase
+            {
+                CustomerId = seeder.CustomerId,
+                ProductSku = "BRESSARCT60"
+            });
+            
+            await context.SaveChangesAsync();
+        }
         
         using var scope = provider.CreateScope();
         
@@ -152,6 +206,19 @@ public class ReviewCommandUnitTest
             
         mockProfanityChecker.Setup(checker => checker.CheckProfanityAsync(It.Is<string>(text => text != "This is fucking bad"), It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
+        
+        using (var seedingScope = provider.CreateScope())
+        {
+            var context = seedingScope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
+
+            context.Purchases.Add(new Purchase
+            {
+                CustomerId = seeder.CustomerId,
+                ProductSku = "BRESSARCT60"
+            });
+            
+            await context.SaveChangesAsync();
+        }
         
         using var scope = provider.CreateScope();
 

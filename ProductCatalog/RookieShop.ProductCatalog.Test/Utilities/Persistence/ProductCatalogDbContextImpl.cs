@@ -25,6 +25,7 @@ public class ProductCatalogDbContextImpl : ProductCatalogDbContext
         
         modelBuilder.ApplyConfiguration(new ReviewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewReactionEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new PurchaseEntityConfiguration());
     }
 
     public override Task<List<Product>> GetSemanticallyOrderedProductsAsync(Vector semanticVector, int offset, int limit,

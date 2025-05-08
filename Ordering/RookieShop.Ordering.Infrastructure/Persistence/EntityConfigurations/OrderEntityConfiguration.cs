@@ -77,7 +77,7 @@ public class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
         
         builder.Property(order => order.Status)
             .IsRequired()
-            .HasConversion(new StringToEnumConverter<OrderStatus>())
+            .HasConversion(new EnumToStringConverter<OrderStatus>())
             .HasColumnName("Status");
 
         builder.OwnsMany<OrderItem>("_items", itemBuilder =>

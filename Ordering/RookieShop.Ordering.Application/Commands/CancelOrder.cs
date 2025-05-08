@@ -7,6 +7,8 @@ namespace RookieShop.Ordering.Application.Commands;
 public class CancelOrder
 {
     public Guid Id { get; init; }
+    
+    public Guid UserId { get; init; }
 }
 
 public class CancelOrderConsumer : IConsumer<CancelOrder>
@@ -35,7 +37,7 @@ public class CancelOrderConsumer : IConsumer<CancelOrder>
             throw new OrderNotFoundException(message.Id);
         }
         
-        order.Cancel();
+        order.Cancel(message.UserId);
         
         await _unitOfWork.CommitAsync(cancellationToken);
         

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RookieShop.Ordering.Application.Abstractions;
 using RookieShop.Ordering.Infrastructure.Persistence;
@@ -8,7 +9,14 @@ namespace RookieShop.Ordering.Infrastructure.Configurations;
 
 public static class OrderingServiceCollectionExtensions
 {
-
+    public static IServiceCollection AddOrdering(this IServiceCollection services,
+        Action<OrderingConfigurator> configure)
+    {
+        var configurator = new OrderingConfigurator();
+        configure(configurator);
+        
+        return configurator.ConfigureServices(services);
+    }
 }
 
 public class OrderingConfigurator

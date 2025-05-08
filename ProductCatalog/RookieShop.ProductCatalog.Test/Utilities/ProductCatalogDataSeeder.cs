@@ -146,6 +146,22 @@ public class ProductCatalogDatabaseSeeder
         };
         
         context.Reviews.AddRange(reviews);
+
+        var purchased = new[]
+        {
+            new Purchase
+            {
+                CustomerId = CustomerId,
+                ProductSku = "CELE114LCM",
+            },
+            new Purchase
+            {
+                CustomerId = CustomerId,
+                ProductSku = "ASKAR160APO",
+            }
+        };
+        
+        context.Purchases.AddRange(purchased);
         
         await context.SaveChangesAsync(cancellationToken);
     }
