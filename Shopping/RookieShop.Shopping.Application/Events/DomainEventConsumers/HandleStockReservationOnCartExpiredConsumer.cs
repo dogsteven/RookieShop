@@ -1,5 +1,6 @@
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Commands;
+using RookieShop.Shopping.Application.Commands.StockItems;
 using RookieShop.Shopping.Domain.Carts.Events;
 
 namespace RookieShop.Shopping.Application.Events.DomainEventConsumers;

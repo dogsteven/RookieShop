@@ -1,8 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using RookieShop.Shared.Models;
 using RookieShop.Shopping.Application.Commands;
+using RookieShop.Shopping.Application.Commands.Carts;
+using RookieShop.Shopping.Application.Commands.CheckoutSessions;
 using RookieShop.Shopping.Application.Queries;
 using RookieShop.Shopping.Infrastructure.Messages;
 using RookieShop.Shopping.ViewModels;
@@ -134,6 +138,63 @@ public class CartsController : ControllerBase
         {
             Id = customerId,
             Sku = body.Sku,
+        }, cancellationToken);
+
+        return NoContent();
+    }
+
+    [HttpPost("checkout")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Roles = "customer")]
+    public async Task<ActionResult> StartCheckoutSessionAsync(CancellationToken cancellationToken)
+    {
+        var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        
+        await _dispatcher.SendAsync(new StartCheckoutSession
+        {
+            Id = customerId
+        }, cancellationToken);
+
+        return NoContent();
+    }
+
+    public class SetCheckoutSessionAddressesBody
+    {
+        public Address BillingAddress { get; set; } = null!;
+        
+        public Address ShippingAddress { get; set; } = null!;
+    }
+   
+    [HttpPost("set-checkout-session-addresses")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Roles = "customer")]
+    public async Task<ActionResult> SetCheckoutSessionAddressesAsync([FromBody] SetCheckoutSessionAddressesBody body, CancellationToken cancellationToken)
+    {
+        var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        
+        await _dispatcher.SendAsync(new SetCheckoutSessionAddresses
+        {
+            Id = customerId,
+            BillingAddress = body.BillingAddress,
+            ShippingAddress = body.ShippingAddress,
+        }, cancellationToken);
+
+        return NoContent();
+    }
+    
+    [HttpPost("complete")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Roles = "customer")]
+    public async Task<ActionResult> CompleteCheckoutSessionAsync(CancellationToken cancellationToken)
+    {
+        var customerId = new Guid(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        
+        await _dispatcher.SendAsync(new CompleteCheckoutSession
+        {
+            Id = customerId
         }, cancellationToken);
 
         return NoContent();

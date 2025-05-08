@@ -3,6 +3,7 @@ using Moq;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
 using RookieShop.Shopping.Application.Commands;
+using RookieShop.Shopping.Application.Commands.StockItems;
 using RookieShop.Shopping.Application.Events.DomainEventConsumers;
 using RookieShop.Shopping.Application.Exceptions;
 using RookieShop.Shopping.Application.Test.Utilities;

@@ -10,6 +10,7 @@ using Quartz;
 using Quartz.AspNetCore;
 using RookieShop.Customers.Infrastructure;
 using RookieShop.ImageGallery.Infrastructure.Configurations;
+using RookieShop.Ordering.Infrastructure.Configurations;
 using RookieShop.ProductCatalog.Infrastructure.Configurations;
 using RookieShop.Shopping.Infrastructure.Configurations;
 using RookieShop.WebApi.HostedServices;
@@ -171,11 +172,13 @@ builder.Services.AddMassTransit(bus =>
     bus.AddProductCatalogConsumers();
     bus.AddImageGalleryConsumers();
     bus.AddShoppingConsumers();
+    bus.AddOrderingConsumers();
 
     bus.AddMediator(mediator =>
     {
         mediator.AddProductCatalogConsumers();
         mediator.AddImageGalleryConsumers();
+        mediator.AddOrderingConsumers();
     });
     
     bus.UsingRabbitMq((context, rabbitMq) =>
@@ -212,6 +215,18 @@ builder.Services.AddShopping(shopping =>
     });
     
     shopping.SetMigrationAssembly("RookieShop.WebApi");
+});
+
+builder.Services.AddOrdering(ordering =>
+{
+    ordering.SetDatabaseConnectionString(provider =>
+    {
+        var configuration = provider.GetRequiredService<IConfiguration>();
+
+        return configuration.GetConnectionString("Postgresql")!;
+    });
+    
+    ordering.SetMigrationAssembly("RookieShop.WebApi");
 });
 
 builder.Services.AddImageGallery(imageGallery =>

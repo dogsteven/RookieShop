@@ -4,7 +4,10 @@ using Moq;
 using RookieShop.Shopping.Application.Abstractions;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
+using RookieShop.Shopping.Application.Abstractions.Schedulers;
 using RookieShop.Shopping.Application.Commands;
+using RookieShop.Shopping.Application.Commands.Carts;
+using RookieShop.Shopping.Application.Commands.StockItems;
 using RookieShop.Shopping.Application.Events.DomainEventConsumers;
 using RookieShop.Shopping.Application.Utilities;
 using RookieShop.Shopping.Domain.Abstractions;
@@ -18,10 +21,6 @@ public class ShoppingServiceCollection : ServiceCollection
 {
     public ShoppingServiceCollection()
     {
-        this.AddMassTransitTestHarness(bus =>
-        {
-            bus.AddConsumer<ScheduleExpireCartConsumer>();
-        });
         
         this.AddScoped<Mock<IExternalMessageDispatcher>>();
         this.AddScoped<Mock<IMessageDispatcher>>();
@@ -29,7 +28,7 @@ public class ShoppingServiceCollection : ServiceCollection
         this.AddScoped<Mock<IStockItemRepository>>();
         this.AddScoped<Mock<IUnitOfWork>>();
         
-        this.AddSingleton<Mock<ICartOptionsProvider>>();
+        this.AddSingleton<Mock<IShoppingOptionsProvider>>();
         this.AddSingleton<Mock<IExpireCartScheduler>>();
         this.AddSingleton<Mock<TimeProvider>>();
         
@@ -39,7 +38,7 @@ public class ShoppingServiceCollection : ServiceCollection
         this.AddScoped<IStockItemRepository>(provider => provider.GetRequiredService<Mock<IStockItemRepository>>().Object);
         this.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<Mock<IUnitOfWork>>().Object);
         
-        this.AddSingleton<ICartOptionsProvider>(provider => provider.GetRequiredService<Mock<ICartOptionsProvider>>().Object);
+        this.AddSingleton<IShoppingOptionsProvider>(provider => provider.GetRequiredService<Mock<IShoppingOptionsProvider>>().Object);
         this.AddSingleton<IExpireCartScheduler>(provider => provider.GetRequiredService<Mock<IExpireCartScheduler>>().Object);
         this.AddSingleton<TimeProvider>(provider => provider.GetRequiredService<Mock<TimeProvider>>().Object);
 
@@ -52,7 +51,6 @@ public class ShoppingServiceCollection : ServiceCollection
         this.AddScoped<ReleaseStockReservationConsumer>();
 
         this.AddScoped<PublishIntegrationEventOnStockLevelChangedConsumer>();
-        this.AddScoped<ScheduleExpireCartConsumer>();
         this.AddScoped<HandleStockReservationOnCartExpiredConsumer>();
         
         this.AddScoped<ICommandConsumer<AddItemToCart>>(provider => provider.GetRequiredService<AddItemToCartConsumer>());
@@ -64,7 +62,6 @@ public class ShoppingServiceCollection : ServiceCollection
         this.AddScoped<ICommandConsumer<ReleaseStockReservation>>(provider => provider.GetRequiredService<ReleaseStockReservationConsumer>());
         
         this.AddScoped<IEventConsumer<StockLevelChanged>>(provider => provider.GetRequiredService<PublishIntegrationEventOnStockLevelChangedConsumer>());
-        this.AddScoped<IEventConsumer<CartExpirationTimeExtended>>(provider => provider.GetRequiredService<ScheduleExpireCartConsumer>());
         this.AddScoped<IEventConsumer<CartExpired>>(provider => provider.GetRequiredService<HandleStockReservationOnCartExpiredConsumer>());
 
         this.AddSingleton<CartService>();

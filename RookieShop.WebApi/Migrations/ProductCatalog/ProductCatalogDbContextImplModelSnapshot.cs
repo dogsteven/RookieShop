@@ -192,6 +192,22 @@ namespace RookieShop.WebApi.Migrations.ProductCatalog
                     b.ToTable("ProductStockLevels", "ProductCatalog");
                 });
 
+            modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Purchase", b =>
+                {
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CustomerId");
+
+                    b.Property<string>("ProductSku")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("ProductSku");
+
+                    b.HasKey("CustomerId", "ProductSku");
+
+                    b.ToTable("Purchases", "ProductCatalog");
+                });
+
             modelBuilder.Entity("RookieShop.ProductCatalog.Application.Entities.Review", b =>
                 {
                     b.Property<Guid>("WriterId")

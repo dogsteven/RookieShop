@@ -1,9 +1,7 @@
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using RookieShop.FrontStore.Middlewares;
 using RookieShop.FrontStore.Modules.ImageGallery;
 using RookieShop.FrontStore.Modules.ProductCatalog.Abstractions;
@@ -35,7 +33,7 @@ builder.Services.AddAuthentication(options =>
 
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.Strict;
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(29);
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 })
 .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {

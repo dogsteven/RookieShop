@@ -29,9 +29,8 @@ namespace RookieShop.WebApi.Migrations.Shopping
                         .HasColumnType("uuid")
                         .HasColumnName("Id");
 
-                    b.Property<DateTimeOffset>("ExpirationTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("ExpirationTime");
+                    b.Property<bool>("IsClosedForCheckout")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("Version")
                         .IsConcurrencyToken()
@@ -40,6 +39,30 @@ namespace RookieShop.WebApi.Migrations.Shopping
                     b.HasKey("Id");
 
                     b.ToTable("Carts", "Shopping");
+                });
+
+            modelBuilder.Entity("RookieShop.Shopping.Domain.CheckoutSessions.CheckoutSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsActive");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("SessionId");
+
+                    b.Property<DateTime>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CheckoutSessions", "Shopping");
                 });
 
             modelBuilder.Entity("RookieShop.Shopping.Domain.StockItems.StockItem", b =>
@@ -119,6 +142,111 @@ namespace RookieShop.WebApi.Migrations.Shopping
                             b1.WithOwner()
                                 .HasForeignKey("CartId");
                         });
+
+                    b.Navigation("_items");
+                });
+
+            modelBuilder.Entity("RookieShop.Shopping.Domain.CheckoutSessions.CheckoutSession", b =>
+                {
+                    b.OwnsOne("RookieShop.Shared.Models.Address", "BillingAddress", b1 =>
+                        {
+                            b1.Property<Guid>("CheckoutSessionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("City");
+
+                            b1.Property<string>("State")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("State");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("Street");
+
+                            b1.HasKey("CheckoutSessionId");
+
+                            b1.ToTable("CheckoutSessionBillingAddresses", "Shopping");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CheckoutSessionId");
+                        });
+
+                    b.OwnsOne("RookieShop.Shared.Models.Address", "ShippingAddress", b1 =>
+                        {
+                            b1.Property<Guid>("CheckoutSessionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("City");
+
+                            b1.Property<string>("State")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("State");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("Street");
+
+                            b1.HasKey("CheckoutSessionId");
+
+                            b1.ToTable("CheckoutSessionShippingAddresses", "Shopping");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CheckoutSessionId");
+                        });
+
+                    b.OwnsMany("RookieShop.Shopping.Domain.Shared.CheckoutItem", "_items", b1 =>
+                        {
+                            b1.Property<Guid>("CheckoutSessionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Sku")
+                                .HasMaxLength(16)
+                                .HasColumnType("character varying(16)")
+                                .HasColumnName("Sku");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("Name");
+
+                            b1.Property<decimal>("Price")
+                                .HasColumnType("numeric")
+                                .HasColumnName("Price");
+
+                            b1.Property<int>("Quantity")
+                                .HasColumnType("integer")
+                                .HasColumnName("Quantity");
+
+                            b1.HasKey("CheckoutSessionId", "Sku");
+
+                            b1.HasIndex("CheckoutSessionId");
+
+                            b1.ToTable("CheckoutSessionCheckoutItems", "Shopping");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CheckoutSessionId");
+                        });
+
+                    b.Navigation("BillingAddress");
+
+                    b.Navigation("ShippingAddress");
 
                     b.Navigation("_items");
                 });

@@ -14,6 +14,8 @@ public static class ProductCatalogMassTransitExtensions
         bus.AddConsumer<UpdateSemanticVectorConsumer, UpdateSemanticVectorConsumerDefinition>();
         bus.AddConsumer<PublishProductCreatedOrUpdatedIntegrationEventConsumer, PublishProductCreatedOrUpdatedIntegrationEventConsumerDefinition>();
         bus.AddConsumer<UpdateStockLevelConsumer, UpdateStockLevelConsumerDefinition>();
+        bus.AddConsumer<CreatePurchaseConsumer, CreatePurchaseConsumerDefinition>();
+        bus.AddConsumer<OrderCompletedConsumer, OrderCompletedConsumerDefinition>();
 
         return bus;
     }
@@ -63,9 +65,7 @@ public class UpdateSemanticVectorConsumerDefinition : ConsumerDefinition<UpdateS
     }
 }
 
-public class
-    PublishProductCreatedOrUpdatedIntegrationEventConsumerDefinition : ConsumerDefinition<
-    PublishProductCreatedOrUpdatedIntegrationEventConsumer>
+public class PublishProductCreatedOrUpdatedIntegrationEventConsumerDefinition : ConsumerDefinition<PublishProductCreatedOrUpdatedIntegrationEventConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<PublishProductCreatedOrUpdatedIntegrationEventConsumer> consumerConfigurator,
         IRegistrationContext context)
@@ -77,6 +77,24 @@ public class
 public class UpdateStockLevelConsumerDefinition : ConsumerDefinition<UpdateStockLevelConsumer>
 {
     protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<UpdateStockLevelConsumer> consumerConfigurator,
+        IRegistrationContext context)
+    {
+        consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(250)));
+    }
+}
+
+public class CreatePurchaseConsumerDefinition : ConsumerDefinition<CreatePurchaseConsumer>
+{
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<CreatePurchaseConsumer> consumerConfigurator,
+        IRegistrationContext context)
+    {
+        consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(250)));
+    }
+}
+
+public class OrderCompletedConsumerDefinition : ConsumerDefinition<OrderCompletedConsumer>
+{
+    protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<OrderCompletedConsumer> consumerConfigurator,
         IRegistrationContext context)
     {
         consumerConfigurator.UseMessageRetry(retry => retry.Interval(10, TimeSpan.FromMilliseconds(250)));

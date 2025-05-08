@@ -14,9 +14,9 @@ public class CartRepository : ICartRepository
         _context = context;
     }
     
-    public Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return _context.Carts.FirstOrDefaultAsync(cart => cart.Id == id, cancellationToken);
+        return await _context.Carts.FindAsync([id], cancellationToken);
     }
 
     public void Save(Cart cart)

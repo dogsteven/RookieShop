@@ -1,14 +1,14 @@
-using RookieShop.Shared.Models;
 using RookieShop.Shopping.Domain.Abstractions;
 using RookieShop.Shopping.Domain.Carts.Events;
+using RookieShop.Shopping.Domain.Shared;
 
 namespace RookieShop.Shopping.Domain.Carts;
 
 public class Cart : DomainEventSource
 {
     public readonly Guid Id;
-    
-    public DateTimeOffset ExpirationTime { get; private set; }
+
+    public bool IsClosedForCheckout { get; private set; }
 
     private readonly List<CartItem> _items;
     public IReadOnlyList<CartItem> Items => _items;
@@ -20,11 +20,19 @@ public class Cart : DomainEventSource
     public Cart(Guid id)
     {
         Id = id;
-        ExpirationTime = DateTimeOffset.UtcNow;
+        IsClosedForCheckout = false;
         _items = [];
     }
     
     public decimal Total => Items.Sum(item => item.Subtotal);
+
+    public void ThrowIfIsClosedForCheckout()
+    {
+        if (IsClosedForCheckout)
+        {
+            throw new InvalidOperationException("The cart is closed for checkout.");
+        }
+    }
 
     public int GetItemQuantity(string sku)
     {
@@ -40,6 +48,8 @@ public class Cart : DomainEventSource
 
     public void AddItem(string sku, string name, decimal price, Guid imageId, int quantity)
     {
+        ThrowIfIsClosedForCheckout();
+        
         var item = _items.FirstOrDefault(item => item.Sku == sku);
 
         if (item == null)
@@ -51,17 +61,12 @@ public class Cart : DomainEventSource
         {
             item.Quantity += quantity;
         }
-
-        AddDomainEvent(new ItemAddedToCart
-        {
-            Id = Id,
-            Sku = sku,
-            Quantity = quantity
-        });
     }
 
     public void AdjustItemQuantity(string sku, int newQuantity)
     {
+        ThrowIfIsClosedForCheckout();
+        
         var item = _items.FirstOrDefault(item => item.Sku == sku);
 
         if (item == null)
@@ -81,29 +86,12 @@ public class Cart : DomainEventSource
         {
             _items.Remove(item);
         }
-
-        if (oldQuantity < newQuantity)
-        {
-            AddDomainEvent(new ItemAddedToCart
-            {
-                Id = Id,
-                Sku = sku,
-                Quantity = newQuantity - oldQuantity
-            });
-        }
-        else
-        {
-            AddDomainEvent(new ItemRemovedFromCart
-            {
-                Id = Id,
-                Sku = sku,
-                Quantity = oldQuantity - newQuantity
-            });
-        }
     }
 
     public void RemoveItem(string sku)
     {
+        ThrowIfIsClosedForCheckout();
+        
         var item = _items.FirstOrDefault(item => item.Sku == sku);
 
         if (item == null)
@@ -112,33 +100,10 @@ public class Cart : DomainEventSource
         }
 
         _items.Remove(item);
-        
-        AddDomainEvent(new ItemRemovedFromCart
-        {
-            Id = Id,
-            Sku = sku,
-            Quantity = item.Quantity
-        });
     }
-
-    public void ExtendExpiration(TimeProvider timeProvider, int lifeTimeInMinutes)
+    
+    private void InternalExpire()
     {
-        ExpirationTime = timeProvider.GetUtcNow().AddMinutes(lifeTimeInMinutes);
-        
-        AddDomainEvent(new CartExpirationTimeExtended
-        {
-            Id = Id,
-            ExpirationDate = ExpirationTime
-        });
-    }
-
-    public void Expire(TimeProvider timeProvider)
-    {
-        if (ExpirationTime > timeProvider.GetUtcNow())
-        {
-            return;
-        }
-        
         AddDomainEvent(new CartExpired
         {
             Id = Id,
@@ -152,8 +117,53 @@ public class Cart : DomainEventSource
         _items.Clear();
     }
 
-    public void Clear()
+    public void Expire()
     {
+        if (IsClosedForCheckout)
+        {
+            return;
+        }
+
+        InternalExpire();
+    }
+
+    public void StartCheckout()
+    {
+        ThrowIfIsClosedForCheckout();
+
+        if (_items.Count == 0)
+        {
+            throw new InvalidOperationException("The cart is empty.");
+        }
+        
+        IsClosedForCheckout = true;
+        
+        AddDomainEvent(new CartCheckoutStarted
+        {
+            Id = Id,
+            Items = _items.Select(item => new CheckoutItem(item.Sku, item.Name, item.Price, item.Quantity))
+        });
+    }
+
+    public void FailCheckout()
+    {
+        if (!IsClosedForCheckout)
+        {
+            throw new InvalidOperationException("The cart is not closed for checkout.");
+        }
+        
+        IsClosedForCheckout = false;
+        InternalExpire();
+    }
+
+    public void CompleteCheckout()
+    {
+        if (!IsClosedForCheckout)
+        {
+            throw new InvalidOperationException("The cart is not closed for checkout.");
+        }
+        
+        IsClosedForCheckout = false;
         _items.Clear();
     }
 }

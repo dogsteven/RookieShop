@@ -3,18 +3,24 @@ using Microsoft.Extensions.DependencyInjection;
 using RookieShop.Shopping.Application.Abstractions;
 using RookieShop.Shopping.Application.Abstractions.Messages;
 using RookieShop.Shopping.Application.Abstractions.Repositories;
+using RookieShop.Shopping.Application.Abstractions.Schedulers;
 using RookieShop.Shopping.Application.Commands;
+using RookieShop.Shopping.Application.Commands.Carts;
+using RookieShop.Shopping.Application.Commands.CheckoutSessions;
+using RookieShop.Shopping.Application.Commands.StockItems;
 using RookieShop.Shopping.Application.Events.DomainEventConsumers;
 using RookieShop.Shopping.Application.Queries;
 using RookieShop.Shopping.Application.Utilities;
 using RookieShop.Shopping.Domain.Abstractions;
 using RookieShop.Shopping.Domain.Carts.Events;
+using RookieShop.Shopping.Domain.CheckoutSessions;
+using RookieShop.Shopping.Domain.CheckoutSessions.Events;
 using RookieShop.Shopping.Domain.Services;
 using RookieShop.Shopping.Domain.StockItems.Events;
-using RookieShop.Shopping.Infrastructure.CartOptionsProvider;
-using RookieShop.Shopping.Infrastructure.ClearCartScheduler;
 using RookieShop.Shopping.Infrastructure.Messages;
+using RookieShop.Shopping.Infrastructure.OptionsProvider;
 using RookieShop.Shopping.Infrastructure.Persistence;
+using RookieShop.Shopping.Infrastructure.Schedulers;
 using RookieShop.Shopping.Infrastructure.UnitOfWork;
 
 namespace RookieShop.Shopping.Infrastructure.Configurations;
@@ -78,9 +84,10 @@ public class ShoppingConfigurator
 
         services.AddSingleton<CartService>();
         services.AddSingleton(TimeProvider.System);
-        services.AddSingleton<ICartOptionsProvider, ConfigurationCartOptionsProvider>();
+        services.AddSingleton<IShoppingOptionsProvider, ConfigurationShoppingOptionsProvider>();
         
         services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<ICheckoutSessionRepository, CheckoutSessionRepository>();
         services.AddScoped<IStockItemRepository, StockItemRepository>();
         
         services.AddSingleton<MessageDispatcherInstrumentation>();
@@ -96,40 +103,67 @@ public class ShoppingConfigurator
         services.AddScoped<DomainEventPublisher>();
         services.AddScoped<TransactionalMessageDispatcher>();
         
-        services.AddSingleton<IExpireCartScheduler, QuartzExpireCartScheduler>();
+        services.AddScoped<IExpireCartScheduler, QuartzExpireCartScheduler>();
+        services.AddScoped<IExpireCheckoutSessionScheduler, QuartzExpireCheckoutSessionScheduler>();
         
+        // Cart
         services.AddScoped<ICommandConsumer<AddItemToCart>, AddItemToCartConsumer>();
         services.AddScoped<ICommandConsumer<AdjustItemQuantity>, AdjustItemQuantityConsumer>();
         services.AddScoped<ICommandConsumer<RemoveItemFromCart>, RemoveItemFromCartConsumer>();
+        services.AddScoped<ICommandConsumer<StartCartCheckout>, StartCartCheckoutConsumer>();
         
+        services.AddScoped<IEventConsumer<CartExpired>, HandleStockReservationOnCartExpiredConsumer>();
+        services.AddScoped<IEventConsumer<CartCheckoutStarted>, AddItemsToCheckoutSessionOnCartCheckoutStartedConsumer>();
+        services.AddScoped<IEventConsumer<CartCheckoutStarted>, UnscheduleExpireCartOnCartCheckoutStartedConsumer>();
+        
+        // Checkout session
+        services.AddScoped<ICommandConsumer<StartCheckoutSession>, StartCheckoutSessionConsumer>();
+        services.AddScoped<ICommandConsumer<AddItemsToCheckoutSession>, AddItemsToCheckoutSessionConsumer>();
+        services.AddScoped<ICommandConsumer<SetCheckoutSessionAddresses>, SetCheckoutSessionAddressesConsumer>();
+        services.AddScoped<ICommandConsumer<CompleteCheckoutSession>, CompleteCheckoutSessionConsumer>();
+        
+        services.AddScoped<IEventConsumer<CheckoutSessionStarted>, StartCartCheckoutOnCheckoutSessionStartedConsumer>();
+        services.AddScoped<IEventConsumer<CheckoutSessionCompleted>, CompleteCartCheckoutOnCheckoutSessionCompletedConsumer>();
+        services.AddScoped<IEventConsumer<CheckoutSessionCompleted>, PublishIntegrationEventOnCheckoutSessionCompletedConsumer>();
+        services.AddScoped<IEventConsumer<CheckoutSessionCompleted>, UnscheduleExpireCheckoutSessionOnCheckoutSessionCompletedConsumer>();
+        services.AddScoped<IEventConsumer<CheckoutSessionExpired>, FailCartCheckoutOnCheckoutSessionExpiredConsumer>();
+        
+        // Stock item
         services.AddScoped<ICommandConsumer<IncreaseStock>, IncreaseStockConsumer>();
-        services.AddScoped<ICommandConsumer<ReserveStock>, ReserveStockConsumer>();
-        services.AddScoped<ICommandConsumer<ReleaseStockReservation>, ReleaseStockReservationConsumer>();
         
         services.AddScoped<IEventConsumer<StockLevelChanged>, PublishIntegrationEventOnStockLevelChangedConsumer>();
-        services.AddScoped<IEventConsumer<CartExpirationTimeExtended>, ScheduleExpireCartConsumer>();
-        services.AddScoped<IEventConsumer<CartExpired>, HandleStockReservationOnCartExpiredConsumer>();
         
         services.AddScoped<CartRepositoryHelper>();
+        services.AddScoped<CheckoutSessionRepositoryHelper>();
         services.AddScoped<ShoppingQueryService>();
 
         services.AddSingleton<MessageDispatcher.ConsumeMethodRegistry>(_ =>
         {
             var consumeMethodRegistry = new MessageDispatcher.ConsumeMethodRegistry();
             
+            // Cart
             consumeMethodRegistry.Add<AddItemToCart>();
             consumeMethodRegistry.Add<AdjustItemQuantity>();
             consumeMethodRegistry.Add<RemoveItemFromCart>();
+            consumeMethodRegistry.Add<StartCartCheckout>();
             
-            consumeMethodRegistry.Add<IncreaseStock>();
-            consumeMethodRegistry.Add<ReserveStock>();
-            consumeMethodRegistry.Add<ReleaseStockReservation>();
-        
-            consumeMethodRegistry.Add<ItemAddedToCart>();
-            consumeMethodRegistry.Add<ItemRemovedFromCart>();
-            consumeMethodRegistry.Add<StockLevelChanged>();
-            consumeMethodRegistry.Add<CartExpirationTimeExtended>();
             consumeMethodRegistry.Add<CartExpired>();
+            consumeMethodRegistry.Add<CartCheckoutStarted>();
+            
+            // Stock item
+            consumeMethodRegistry.Add<IncreaseStock>();
+            
+            consumeMethodRegistry.Add<StockLevelChanged>();
+            
+            // Checkout session
+            consumeMethodRegistry.Add<StartCheckoutSession>();
+            consumeMethodRegistry.Add<AddItemsToCheckoutSession>();
+            consumeMethodRegistry.Add<SetCheckoutSessionAddresses>();
+            consumeMethodRegistry.Add<CompleteCheckoutSession>();
+            
+            consumeMethodRegistry.Add<CheckoutSessionStarted>();
+            consumeMethodRegistry.Add<CheckoutSessionCompleted>();
+            consumeMethodRegistry.Add<CheckoutSessionExpired>();
             
             return consumeMethodRegistry;
         });
